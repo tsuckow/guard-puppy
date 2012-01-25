@@ -1,0 +1,164 @@
+
+Guarddog 2.6.0
+~~~~~~~~~~~~~~
+by Simon Edwards <simon@simonzone.com>
+
+!!! READ THESE INSTRUCTIONS THROUGH TO THE END !!!
+
+Guarddog is user friendly firewall generation/management utility for KDE on
+Linux. It allows you simply specify which protocols should be allowed and
+requires no knowledge of port numbers.  Generates scripts for ipchains.
+
+Before try installing, first go to http://www.simonzone.com/software/guarddog/
+and make sure you are using the latest development version, also keep an eye
+on the news section. If you didn't get this tar ball from simonzone.com then
+there is a good chance that it is out of date already.
+
+Installation
+------------
+If you have the option, install from an RPM or DEB or whatever and save
+everyone the trouble. If that's not an option then read on...
+
+Guarddog uses autoconf and should be easily compiled with  ./configure and
+make. See the file INSTALL for generic instructions on this part of the
+install. Make sure you have all the Qt and KDE development material and
+headers installed. Otherwise configure will stop and complain about it. If
+you are using an RPM based distribution then you need to make sure that you
+also have any qt2-devel and kdelibs-devel RPMs installed. Having only the
+libraries installed is not enough. (*-devel RPMs are often *not* installed
+by default).
+
+Install time. Unfortunately a simple "make install" doesn't seem to work
+correctly on many distributions.
+
+* Mandrake and Red Hat 7.1 and probably 7.2 use:
+  
+  make install prefix=/usr
+
+* SuSE 7.2 and probably SuSE 7.1 use:
+  
+  make install prefix=/opt/kde2
+
+  SuSE 7.3 is rumoured to work fine with a normal "make install".
+  
+* Debian:
+
+  I have a report that:
+
+  make install prefix=/usr
+  
+  is what you should use.
+
+iptables and ipchains !!! Attn: Red Hat Users !!!
+-------------------------------------------------
+If you are using a 2.2 series Linux kernel you will need to have ipchains
+installed.
+
+If you are using a 2.4 series Linux kernel you will need to have iptables
+installed.  There is also a compatibility version of ipchains for 2.4 kernels
+but I urgue you not to installed it because it conflicts with iptables. i.e.
+you can only use iptables or ipchains at the same time.
+
+I strongly urge you to use a 2.4 kernel if possible. They have *more* better
+firewalling capabilities.
+
+Red Hat users take note!!! Red Hat seems to happily let you install both
+ipchains and iptables at the same time. Make sure the ipchains package is not
+installed.
+
+gawk !!! Attn: Debian Users !!!
+-------------------------------
+Guarddog needs gawk to be installed in order to operate. Debian installs awk
+by default and not gawk. Make sure you install the gawk deb. If you see
+an error message like  "awk: ... function gensub never defined" then you
+forgot to install gawk.
+
+Boot time
+---------
+Guarddog generates a shell script at /etc/rc.firewall which should be run at
+boot time.
+
+* Mandrake Linux - runs /etc/rc.firewall at boot time by default which
+  is good. But most other distributions are not setup like this. The firewall
+  should be run before any network interfaces are enabled.
+
+* SuSE & Debian - can be setup to run the firewall at boot time by appending
+  the following lines to /sbin/init.d/boot.local for SuSE and for Debian 
+  use /etc/init.d/bootmisc.sh.
+
+  # Guarddog
+  if [ -r /etc/rc.firewall ]; then
+      . /etc/rc.firewall
+  fi
+
+  Thanks to Björn Breitsprecher and Carsten M. Schademann for help with this.
+
+* Other Distributions - I expect that running the firewall script at boottime
+  on other Linux distributions follows similar lines at SuSE above. Basically
+  find a suitable boot script and add some lines to execute the rc.firewall
+  file if it exists.
+
+  If you figure out how to start Guarddog at boot time for your particular
+  distribution, please send me an email and let me know how.
+
+Network Interface Up/Down
+-------------------------
+The firewall script that Guarddog creates needs to be run when ever an 
+network interface is brought up or down.  In fact if Guarddog is not run
+after a network interface is brought up then the firewall *should* stop
+all traffic through that interface. This is a security feature.
+
+* Mandrake Linux and maybe Redhat - Unfortunately this isn't as simple as
+  I would hope... The Mandrake networking scripts have 'hooks' which can
+  be used to for getting things like firewalls run whenever a network
+  interface is brought up or down. Log in as root and execute the next two
+  commands:
+
+ln -s /etc/rc.firewall /sbin/ifup-local
+ln -s /etc/rc.firewall /sbin/ifdown-local
+
+  Now if there is currently no rc.firewall file then execute the next two
+  commands to put a dummy/place holder there:
+
+echo "#!/bin/sh" > /etc/rc.firewall
+chmod u+x /etc/rc.firewall
+
+  That's all good except there are currently a couple of bugs in the Mandrake
+  network scripts at the time of writing. (Mandrake 8 is the current release
+  at the time of writing). These bugs stop will stop the firewall from
+  working for ppp and dial up modem users. Fortunately we can fix them now.
+  
+  While logged in as root go to the /etc/ppp directory and execute this list
+  of commands:
+
+echo "#!/bin/bash" > ip-up.local
+echo "[ -x /etc/rc.firewall ] && /etc/rc.firewall" >> ip-up.local
+cp ip-up.local ip-down.local
+chmod u+x ip-up.local ip-down.local
+
+  Do that perfectly and you should have to short shell scripts in your
+  /etc/ppp directory, one called ip-up.local and the other called
+  ip-down.local.
+
+  These instructions look like they should also work for Redhat because
+  Redhat and Mandrake use the same (or very similar) networking scripts.
+  But I have not tested this out first hand.
+
+I only know how to do this on one Linux distribution at the moment.
+
+
+Menus
+-----
+That's the easy part done. make install should have installed an entry for
+the Debian menu system. If your system uses the Debian menu system (Debian,
+and Mandrake do, possibly others too), then you should update your system's
+menus with a command like (as root user):
+
+/usr/bin/update-menus
+
+-----
+Any questions or ideas etc, first read the docs, the tutorials on the
+website a few times(!) and check the mailing list archives. If all that
+fails then mail me at:
+
+Simon Edwards <simon@simonzone.com>
