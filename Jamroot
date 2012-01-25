@@ -7,7 +7,7 @@ project : requirements # <threading>multi
 #
 # Loads the qt4 library for use
 #
-using qt4 : ../qt32 ;
+using qt4 : $(GUARDDOG_ROOT)/../qt32 ;
 rule loadqt4 ( )
 {
     import qt4 ;
@@ -17,7 +17,7 @@ rule loadqt4 ( )
     {
         ECHO "Warning: Qt4 not initialized in site-config.jam or user-config.jam" ;
         ECHO "This is very likely won't work for you." ;
-        path-constant qt4-path : ../qt32 ;
+        path-constant qt4-path : $(GUARDDOG_ROOT)/../qt32 ;
         using qt4 : $(qt4-path) ;
         ECHO "Assuming:  using qt4 : " $(qt4-path) ";" ;
     }

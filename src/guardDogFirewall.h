@@ -1,436 +1,473 @@
-/***************************************************************************
-                          guarddogdoc.cpp  -  description
-                             -------------------
-    begin                : Thu Feb 10 20:57:36 EST 2000
-    copyright            : (C) 2000-2006 by Simon Edwards
-    email                : simon@simonzone.com
- ***************************************************************************/
+#pragma once
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-// include files for Qt
-#ifndef QT_LITE
-#include <qdir.h>
-#include <qfileinfo.h>
-#include <qwidget.h>
-// include files for KDE
-#include <kapp.h>
-#include <kmessagebox.h>
-#include <kprocess.h>
-#include <kglobal.h>
-#include <kstddirs.h>
-#include <klocale.h>
-#include <ksavefile.h>
-#include <ktempfile.h>
-#else
-    // Console version stuff.
-#include "qdir.h"
-#include "qfileinfo.h"
-
-#endif
-
-#include <errno.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <stdlib.h>
-
-#include <sys/ioctl.h>
-#include <net/if.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <syslog.h>
-#include <string.h>
-
-// application specific includes
 #include "guarddogdoc.h"
+#include "protocoldb.h"
 
-///////////////////////////////////////////////////////////////////////////
-GuarddogDoc::Zone::Zone(ZoneType zt) {
-    zonetype = zt;
-    servedprotocols.setAutoDelete(true);
-    membermachine.setAutoDelete(true);
-}
+#include <iostream>
+#include <fstream>
+#include <boost/foreach.hpp>
+#include <boost/lexical_cast.hpp>
 
-///////////////////////////////////////////////////////////////////////////
-GuarddogDoc::Zone::~Zone() {
-}
+#include "zone.h"
 
-///////////////////////////////////////////////////////////////////////////
-bool GuarddogDoc::Zone::editable() {
-    switch(zonetype) {
-        case LocalZone:
-        case InternetZone:
-            return false;
-        default:
-            return true;
+#define SYSTEM_RC_FIREWALL	"/etc/rc.firewall" 
+
+class GuardDogDialog_w;
+
+enum { LOG_WARNING };
+
+class GuardDogFireWall
+{
+    ProtocolDB  pdb;    // The protocol database we are using.
+    //    GuarddogDoc doc;    // Holds all the info about the firewall we are building.
+    bool modified;
+    bool waspreviousfirewall;       // True if there was a previous Guarddog firewall active/available
+    // at program startup.
+    bool systemfirewallmodified;    // True if the current state of the system has been modified
+    // since program startup. This is needed at 'Cancel' time when
+    // we need to decide if we have any 'Apply'ed changes that need
+    // to be undone.
+
+    bool superUserMode;
+    GuardDogDialog_w * gui;
+
+
+    enum LogRateUnit {SECOND=0, MINUTE, HOUR, DAY};
+
+
+
+public:
+    //    GuarddogDoc(ProtocolDB & database);
+    //    ~GuarddogDoc();
+
+    void setLogDrop(bool on) { logdrop = on; }
+    bool isLogDrop() { return logdrop; }
+    void setLogReject(bool on) { logreject = on; }
+    bool isLogReject() { return logreject; }
+    void setLogIPOptions(bool on) { logipoptions = on; }
+    bool isLogIPOptions() { return logipoptions; }
+    void setLogTCPOptions(bool on) { logtcpoptions = on; }
+    bool isLogTCPOptions() { return logtcpoptions; }
+    void setLogTCPSequence(bool on) { logtcpsequence = on; }
+    bool isLogTCPSequence() { return logtcpsequence; }
+    void setLogAbortedTCP(bool on) { logabortedtcp = on; }
+    bool isLogAbortedTCP() { return logabortedtcp; }
+    void setLogLevel(uint level) { loglevel = level; }
+    uint getLogLevel() { return loglevel; }
+    void setLogRateLimit(bool on) { logratelimit = on; }
+    bool isLogRateLimit() { return logratelimit; }
+    void setLogRate(uint hitsper) { lograte = hitsper; }
+    uint getLogRate() { return lograte; }
+    void setLogRateUnit(LogRateUnit unit) { lograteunit = unit; }
+    LogRateUnit getLogRateUnit() { return lograteunit; }
+    void setLogRateBurst(uint burst) { lograteburst = burst; }
+    uint getLogRateBurst() { return lograteburst; };
+    void setLogWarnLimit(bool on) { logwarnlimit = on; }
+    bool isLogWarnLimit() { return logwarnlimit; }
+    void setLogWarnLimitRate(uint hitsper) { logwarnrate = hitsper; }
+    uint getLogWarnLimitRate() { return logwarnrate; }
+    void setLogWarnLimitRateUnit(LogRateUnit unit) { logwarnrateunit = unit; }
+    LogRateUnit getLogWarnLimitRateUnit() { return logwarnrateunit; }
+    void setDHCPcEnabled(bool on) { dhcpcenabled = on; }
+    bool isDHCPcEnabled() { return dhcpcenabled; }
+    void setDHCPdEnabled(bool on) { dhcpdenabled = on; }
+    bool isDHCPdEnabled() { return dhcpdenabled; }
+    void setAllowTCPTimestamps(bool on) { allowtcptimestamps = on; }
+    bool isAllowTCPTimestamps() { return allowtcptimestamps; }
+
+
+    std::vector< std::string > getZoneList() const
+    {
+        std::vector< std::string > names;
+        BOOST_FOREACH( Zone const & z, zones )
+        {
+            names.push_back( z.getName() );
+        }
+        return names;
     }
-}
 
-///////////////////////////////////////////////////////////////////////////
-// DEPRECIATED
-void GuarddogDoc::Zone::enableProtocol(GuarddogDoc::Zone *clientzone, ProtocolDB::ProtocolEntry *proto) {
-    setProtocolState(clientzone,proto,PERMIT);
-}
+    size_t zoneCount() const { return zones.size(); }
 
-///////////////////////////////////////////////////////////////////////////
-// DEPRECIATED
-void GuarddogDoc::Zone::disableProtocol(GuarddogDoc::Zone *clientzone, ProtocolDB::ProtocolEntry *proto) {
-    setProtocolState(clientzone,proto,DENY);
+    //    std::vector<Zone>::iterator newZonesIterator();
+    //    Zone *zoneAt(int index);
+    void deleteZone(Zone *thiszone);
 
-}
+    std::string description;
 
-///////////////////////////////////////////////////////////////////////////
-// DEPRECIATED
-void  GuarddogDoc::Zone::disableAllProtocols(GuarddogDoc::Zone *clientzone) {
-    denyAllProtocols(clientzone);
-}
-      
-
-///////////////////////////////////////////////////////////////////////////
-// DEPRECIATED
-bool GuarddogDoc::Zone::isProtocolEnabled(GuarddogDoc::Zone *clientzone, ProtocolDB::ProtocolEntry *proto) {
-    return getProtocolState(clientzone,proto)==PERMIT;
-}
-
-///////////////////////////////////////////////////////////////////////////
-void GuarddogDoc::Zone::setProtocolState(Zone *clientzone, ProtocolDB::ProtocolEntry *proto, GuarddogDoc::Zone::ProtocolState state) {
-    ProtocolState currentstate;
-    QPtrDict<ProtocolDB::ProtocolEntry> *zoneinfo;
-
-    if(isConnected(clientzone)==false) {
-        return;
+    Zone const & currentZone( std::string const & name = "" ) const
+    {
+        return zones[0];
     }
 
-    currentstate = getProtocolState(clientzone,proto);
-    if(currentstate==state) {   // Quick return.
-        return;
-    }
-        // Remove the zone/protocol from all the dictionaries.
-        // This basically leaves it in the default DENY state.
-    switch(currentstate) {
-        case PERMIT:    
-            zoneinfo = servedprotocols.find((void *)clientzone);
-            zoneinfo->remove((void *)proto);
-            break;
-            
-        case REJECT:
-            zoneinfo = rejectedprotocols.find((void *)clientzone);
-            zoneinfo->remove((void *)proto);
-            break;
-        
-        default:
-            break;
-    }
+private:
+    //    ProtocolDB & pdb;
+    std::vector< Zone > zones;
 
-        // Now set the state of the protcol by adding it to a dict.    
-    switch(state) {
-        case PERMIT:
-            zoneinfo = servedprotocols.find((void *)clientzone);
-            zoneinfo->insert((void *)proto,proto);
-            break;
-            
-        case REJECT:
-            zoneinfo = rejectedprotocols.find((void *)clientzone);
-            zoneinfo->insert((void *)proto,proto);
-            break;
-        
-        default:
-            break;
-    }
-}
+    uint localPortRangeStart;
+    uint localPortRangeEnd;
+    bool disabled;
+    bool routing;
 
-///////////////////////////////////////////////////////////////////////////
-GuarddogDoc::Zone::ProtocolState GuarddogDoc::Zone::getProtocolState(Zone *clientzone, ProtocolDB::ProtocolEntry *proto) {
-    QPtrDict<ProtocolDB::ProtocolEntry> *zoneinfo;
-    zoneinfo = servedprotocols.find((void *)clientzone);
-    if(zoneinfo!=0) {
-        // The client zone is known to the served dict.
-        if(zoneinfo->find((void *)proto)!=0) {
-            return PERMIT;
+    bool logdrop;
+    bool logreject;
+    bool logipoptions;
+    bool logtcpoptions;
+    bool logtcpsequence;
+    bool logabortedtcp;
+    uint loglevel;
+    bool logratelimit;
+    uint lograte;
+    LogRateUnit lograteunit;
+    uint lograteburst;
+    bool logwarnlimit;
+    uint logwarnrate;
+    LogRateUnit logwarnrateunit;
+    bool dhcpcenabled;
+    std::string dhcpcinterfacename;
+    bool dhcpdenabled;
+    std::string dhcpdinterfacename;
+    bool allowtcptimestamps;
+
+    std::vector< UserDefinedProtocol > userdefinedprotocols;
+
+public:
+    std::vector< UserDefinedProtocol > const & getUserDefinedProtocols() const
+    {
+        return userdefinedprotocols;
+    }
+    GuardDogFireWall( bool superuser, GuardDogDialog_w * _gui = 0 )
+        : pdb( "protocoldb/networkprotocoldb.xml" ), superUserMode( superuser ), gui( _gui )
+    {
+        //        std::string protocollocation = "protocoldb/networkprotocoldb.xml";
+
+        //        if(!pdb->loadDB(protocollocation, QStringList("English") )) {
+        //            QMessageBox::critical(0,"networkprotocoldb",tr("An error occured while reading the protocol database.\n\nDetails: \"%1\"").arg(pdb->errorString()));
+        //            throw "terminating";
+        //        }
+        try 
+        {
+            readOptions();
+            factoryDefaults();
+            openDefault();
+        }
+        catch ( std::string const & msg )
+        {
+            std::cout << "Exception: " << msg << std::endl;
         }
     }
-        // Is is being rejected?
-    zoneinfo = rejectedprotocols.find((void *)clientzone);
-    if(zoneinfo!=0) {
-            // The client zone is known to the reject dict.
-        return zoneinfo->find((void *)proto)!=0 ? REJECT : DENY;
-    }
-        // It's not being served, it's not being rejected, must be DENY.
-    return DENY;
+///////////////////////////////////////////////////////////////////////////
+void setDisabled(bool on) {
+    disabled = on;
 }
 
 ///////////////////////////////////////////////////////////////////////////
-void GuarddogDoc::Zone::denyAllProtocols(Zone *clientzone) {
-    QPtrDict<ProtocolDB::ProtocolEntry> *zoneinfo;
-
-    zoneinfo = servedprotocols.find((void *)clientzone);
-    if(zoneinfo!=0) {
-        zoneinfo->clear();
-    }
-    
-    zoneinfo = rejectedprotocols.find((void *)clientzone);
-    if(zoneinfo!=0) {
-        zoneinfo->clear();
-    }
+bool isDisabled() {
+    return disabled;
 }
-
 ///////////////////////////////////////////////////////////////////////////
-void GuarddogDoc::Zone::deleteZone(GuarddogDoc::Zone *clientzone) {
-    disconnect(clientzone);
-}
-
-///////////////////////////////////////////////////////////////////////////
-void GuarddogDoc::Zone::deleteProtocol(ProtocolDB::ProtocolEntry *proto) {
-    QPtrDictIterator< QPtrDict<ProtocolDB::ProtocolEntry> > *it;
-    
-    it = new QPtrDictIterator< QPtrDict<ProtocolDB::ProtocolEntry> >(servedprotocols);
-    for(;it->current(); ++(*it)) {
-        setProtocolState((Zone *)it->currentKey(),proto,DENY);
-    }
-    delete it;
-}
-
-///////////////////////////////////////////////////////////////////////////
-// DEPRECIATED
-QPtrDictIterator<ProtocolDB::ProtocolEntry> *GuarddogDoc::Zone::newProtocolZoneIterator(Zone *clientzone) {
-    return newPermitProtocolZoneIterator(clientzone);
-}
-
-///////////////////////////////////////////////////////////////////////////
-    
-QPtrDictIterator<ProtocolDB::ProtocolEntry> *GuarddogDoc::Zone::newPermitProtocolZoneIterator(Zone *clientzone) {
-    QPtrDict<ProtocolDB::ProtocolEntry> *protos;
-
-    protos = servedprotocols.find(clientzone);
-    if(protos==0) {
-        return 0;
-    }
-    return new QPtrDictIterator<ProtocolDB::ProtocolEntry>(*protos);
-}
-
-///////////////////////////////////////////////////////////////////////////
-QPtrDictIterator<ProtocolDB::ProtocolEntry> *GuarddogDoc::Zone::newRejectProtocolZoneIterator(Zone *clientzone) {
-    QPtrDict<ProtocolDB::ProtocolEntry> *protos;
-
-    protos = rejectedprotocols.find(clientzone);
-    if(protos==0) {
-        return 0;
-    }
-    return new QPtrDictIterator<ProtocolDB::ProtocolEntry>(*protos);
-}
-
-///////////////////////////////////////////////////////////////////////////
-bool GuarddogDoc::Zone::isLocal() {
-    return zonetype==LocalZone;
-}
-
-///////////////////////////////////////////////////////////////////////////
-bool GuarddogDoc::Zone::isInternet() {
-    return zonetype==InternetZone;
-}
-
-///////////////////////////////////////////////////////////////////////////
-void GuarddogDoc::Zone::connect(Zone *clientzone) {
-    if(isConnected(clientzone) || this==clientzone) {
-        return;
-    }
-    servedprotocols.insert((void *)clientzone,new QPtrDict<ProtocolDB::ProtocolEntry>);
-    rejectedprotocols.insert((void *)clientzone,new QPtrDict<ProtocolDB::ProtocolEntry>);
-}
-
-///////////////////////////////////////////////////////////////////////////
-void GuarddogDoc::Zone::disconnect(Zone *clientzone) {
-    QPtrDict<ProtocolDB::ProtocolEntry> *protodict;
-
-    protodict = servedprotocols.take((void *)clientzone);
-    delete protodict;
-    protodict = rejectedprotocols.take((void *)clientzone);
-    delete protodict;
-}
-
-///////////////////////////////////////////////////////////////////////////
-bool GuarddogDoc::Zone::isConnected(Zone *clientzone) {
-    if(servedprotocols.find((void *)clientzone)==0) {
-        return false;
-    }
-    return true;
-}
-
-///////////////////////////////////////////////////////////////////////////
-bool GuarddogDoc::Zone::isConnectionMutable(Zone *clientzone) {
-    if(this==clientzone) {
-        return false;
-    }
-    if(isLocal() && clientzone->isInternet()) {
-        return false;
-    }
-    if(isInternet() && clientzone->isLocal()) {
-        return false;
-    }
-    return true;
-}
-
-///////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////
-GuarddogDoc::GuarddogDoc(ProtocolDB *database) {
-    pdb = database;
-    zones.setAutoDelete(true);
-//    userdefinedprotocols.setAutoDelete(true);
-	factoryDefaults();
-}
-
-///////////////////////////////////////////////////////////////////////////
-GuarddogDoc::~GuarddogDoc() {
-    while(countUserDefinedProtocols()!=0) {
-        deleteUserDefinedProtocol(userDefinedProtocolAt(0));
-    }
-}
-
-///////////////////////////////////////////////////////////////////////////
-QListIterator<GuarddogDoc::Zone> *GuarddogDoc::newZonesIterator() {
-    return new QListIterator<Zone>(zones);
-}
-
-///////////////////////////////////////////////////////////////////////////
-GuarddogDoc::Zone *GuarddogDoc::zoneAt(int index) {
-    return zones.at(index);
-}
-
-///////////////////////////////////////////////////////////////////////////
-void GuarddogDoc::deleteZone(GuarddogDoc::Zone *thiszone) {
-    QListIterator<Zone> *zit;
-
-    zones.find(thiszone);
-    zones.take();
-    
-    zit = newZonesIterator();
-    
-    for(;zit->current(); ++(*zit)) {
-        zit->current()->deleteZone(thiszone);
-    }
-    delete zit;
-    delete thiszone;
-}
-
-///////////////////////////////////////////////////////////////////////////
-GuarddogDoc::Zone *GuarddogDoc::newZone() {
-    Zone *newzone;
-    
-    newzone = new Zone(UserZone);
-    newzone->name = i18n("new zone");
-    zones.append(newzone);
-    return newzone;
-}
-
-///////////////////////////////////////////////////////////////////////////
-void GuarddogDoc::setLocalDynamicPortRange(uint start,uint end) {
+void setLocalDynamicPortRange(uint start,uint end) {
     localPortRangeStart = start;
     localPortRangeEnd = end;
 }
 
 ///////////////////////////////////////////////////////////////////////////
-void GuarddogDoc::getLocalDynamicPortRange(uint &start,uint &end) {
+void getLocalDynamicPortRange(uint &start,uint &end) {
     start = localPortRangeStart;
     end = localPortRangeEnd;
 }
 
 ///////////////////////////////////////////////////////////////////////////
-void GuarddogDoc::setLogDrop(bool on) { logdrop = on; }
-bool GuarddogDoc::isLogDrop() { return logdrop; }
-void GuarddogDoc::setLogReject(bool on) { logreject = on; }
-bool GuarddogDoc::isLogReject() { return logreject; }
-void GuarddogDoc::setLogIPOptions(bool on) { logipoptions = on; }
-bool GuarddogDoc::isLogIPOptions() { return logipoptions; }
-void GuarddogDoc::setLogTCPOptions(bool on) { logtcpoptions = on; }
-bool GuarddogDoc::isLogTCPOptions() { return logtcpoptions; }
-void GuarddogDoc::setLogTCPSequence(bool on) { logtcpsequence = on; }
-bool GuarddogDoc::isLogTCPSequence() { return logtcpsequence; }
-void GuarddogDoc::setLogAbortedTCP(bool on) { logabortedtcp = on; }
-bool GuarddogDoc::isLogAbortedTCP() { return logabortedtcp; }
-void GuarddogDoc::setLogLevel(uint level) { loglevel = level; }
-uint GuarddogDoc::getLogLevel() { return loglevel; }
-void GuarddogDoc::setLogRateLimit(bool on) { logratelimit = on; }
-bool GuarddogDoc::isLogRateLimit() { return logratelimit; }
-void GuarddogDoc::setLogRate(uint hitsper) { lograte = hitsper; }
-uint GuarddogDoc::getLogRate() { return lograte; }
-void GuarddogDoc::setLogRateUnit(LogRateUnit unit) { lograteunit = unit; }
-GuarddogDoc::LogRateUnit GuarddogDoc::getLogRateUnit() { return lograteunit; }
-void GuarddogDoc::setLogRateBurst(uint burst) { lograteburst = burst; }
-uint GuarddogDoc::getLogRateBurst() { return lograteburst; };
-void GuarddogDoc::setLogWarnLimit(bool on) { logwarnlimit = on; }
-bool GuarddogDoc::isLogWarnLimit() { return logwarnlimit; }
-void GuarddogDoc::setLogWarnLimitRate(uint hitsper) { logwarnrate = hitsper; }
-uint GuarddogDoc::getLogWarnLimitRate() { return logwarnrate; }
-void GuarddogDoc::setLogWarnLimitRateUnit(LogRateUnit unit) { logwarnrateunit = unit; }
-GuarddogDoc::LogRateUnit GuarddogDoc::getLogWarnLimitRateUnit() { return logwarnrateunit; }
-void GuarddogDoc::setDHCPcEnabled(bool on) { dhcpcenabled = on; }
-bool GuarddogDoc::isDHCPcEnabled() { return dhcpcenabled; }
-void GuarddogDoc::setDHCPdEnabled(bool on) { dhcpdenabled = on; }
-bool GuarddogDoc::isDHCPdEnabled() { return dhcpdenabled; }
-void GuarddogDoc::setAllowTCPTimestamps(bool on) { allowtcptimestamps = on; }
-bool GuarddogDoc::isAllowTCPTimestamps() { return allowtcptimestamps; }
-
 ///////////////////////////////////////////////////////////////////////////
-void GuarddogDoc::setDHCPcInterfaceName(const QString &ifacename) {
+void setDHCPcInterfaceName(const std::string &ifacename) {
     dhcpcinterfacename = ifacename;
 }
 
 ///////////////////////////////////////////////////////////////////////////
-QString GuarddogDoc::getDHCPcInterfaceName() {
+std::string getDHCPcInterfaceName() {
     return dhcpcinterfacename;
 }
 
 ///////////////////////////////////////////////////////////////////////////
-void GuarddogDoc::setDHCPdInterfaceName(const QString &ifacename) {
+void setDHCPdInterfaceName(const std::string &ifacename) {
     dhcpdinterfacename = ifacename;
 }
 
 ///////////////////////////////////////////////////////////////////////////
-QString GuarddogDoc::getDHCPdInterfaceName() {
+std::string getDHCPdInterfaceName() {
     return dhcpdinterfacename;
 }
 
-///////////////////////////////////////////////////////////////////////////
-QListIterator<UserDefinedProtocol> *GuarddogDoc::newUserDefinedProtocolsIterator() {
-    return new QListIterator<UserDefinedProtocol>(userdefinedprotocols);
-}
 
-///////////////////////////////////////////////////////////////////////////
-UserDefinedProtocol *GuarddogDoc::userDefinedProtocolAt(int index) {
-    return userdefinedprotocols.at(index);
-}
 
-///////////////////////////////////////////////////////////////////////////
-void GuarddogDoc::deleteUserDefinedProtocol(UserDefinedProtocol *thisudp) {
-    QListIterator<Zone> *zit;
+    bool isSuperUserMode() const 
+    {
+        return superUserMode;
+    }
+    void save() 
+    {
+        std::string errorstring;
+        std::string filename(SYSTEM_RC_FIREWALL);
+
+        if ( modified ) 
+        {
+            if ( saveFirewall(filename,errorstring)==false) {
+                throw ( "An error occurred while writing the firewall script to disk.\n\n"
+                            "(Detailed message: \"" + errorstring + "\")");
+            }
+            if ( applyFirewall(true)) 
+            {
+                saveOptions();
+                //                accept();
+            }
+        } 
+        else 
+        {
+            // The firewall was not modified. Just quickly exit.
+            saveOptions();
+            //            accept();
+        }
+    }
+
+    void saveOptions() {
+        //    KConfig *config;
+        //    config = kapp->config();
+
+        //    config->setGroup("General");
+        //    config->writeEntry("Geometry", size());
+        //    config->writeEntry("CommandrunnerGeometry",commandrunnersize);
+        //    config->writeEntry("ShowAdvancedHelp",showadvancedhelp);
+        //    config->sync();
+    }
+    ///////////////////////////////////////////////////////////////////////////
+    void readOptions() {
+#if 0
+        KConfig *config;
+        config = kapp->config();
+
+        config->setGroup("General");
+        QSize size = config->readSizeEntry("Geometry");
+        if(!size.isEmpty()) {
+            resize(size);
+        }
+        commandrunnersize = config->readSizeEntry("CommandrunnerGeometry");
+        if(commandrunnersize.isEmpty()) {
+            commandrunnersize.setWidth(400);
+            commandrunnersize.setHeight(300);
+        }
+        showadvancedhelp = config->readBoolEntry("ShowAdvancedHelp");
+        showadvancedhelpcheckbox->setChecked(showadvancedhelp);
+#endif
+    }
+
+
+    bool applyFirewall(bool warnfirst) 
+    {
+#if 0
+        std::string errorstring;
+        KTempFile tmpfile(0,0,0700);
+        CommandRunner cr(this);
+
+        tmpfile.setAutoDelete(true);
+
+        if(doc->isDisabled()==false) {
+            // Normal firewall apply.
+            if(warnfirst==false || KMessageBox::warningContinueCancel(this,
+                        i18n("You are about to modify the system's firewall configuration.\n"
+                            "These changes may disrupt current network connections.\n\n"
+                            "Do you wish to continue?"),0,i18n("Continue"))==KMessageBox::Continue) {
+
+                // Is our temp file working?
+                if(tmpfile.status()!=0) {
+                    KMessageBox::error(this,i18n("An error occurred while trying to modify system's firewall configuration.\nThe operating system has this to report about the error: %1")
+                            .arg(strerror(tmpfile.status())));
+                    return false;
+                }
+                // Write the firewall script into the temp file.
+                if(doc->writeFirewall(*(tmpfile.textStream()),errorstring)==false) {
+                    return false;
+                }
+                // Close and flush the file.
+                if(!tmpfile.close()) {
+                    KMessageBox::error(this,i18n("An error occurred while applying the firewall.\nThe operating system has this to report about the error: %1")
+                            .arg(strerror(tmpfile.status())));
+                    return false;
+                }
+                // Now we run the tmp script in our super friendly firewall starter
+                // window.
+                if(!commandrunnersize.isEmpty()) {
+                    cr.resize(commandrunnersize);
+                }
+                cr.setPlainCaption(i18n("Starting firewall"));
+                cr.setHeading(i18n("Starting firewall...\n\nOutput:"));
+                cr.run(std::string("export GUARDDOG_VERBOSE=1;")+tmpfile.name());
+                systemfirewallmodified = true;
+                commandrunnersize = cr.size();
+                return true;
+            }
+            return false;
+        } else {
+            // If we are to actually disable the firewall because the user has set
+            // the Disable checkbox in the advanced section, then we use a different
+            // warning question and use a different method to reset the network stack.
+            if(warnfirst==false || KMessageBox::warningContinueCancel(this,
+                        i18n("You are about to disable the system's firewall.\n"
+                            "This will allow all network traffic and potentially leave your system vulnerable to attack.\n"
+                            "Unless you are an advanced user and know what you are doing I recommend that you cancel this action.\n"
+                            "These changes may also disrupt current network connections.\n\n"
+                            "Do you wish to continue?"),0,i18n("Continue"))==KMessageBox::Continue) {
+
+                if(resetSystemFirewall()) {
+                    systemfirewallmodified = true;
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+            return false;
+        }
+#endif
+        return false;
+    }
+    // true if application should close
+    bool cancel() 
+    {
+#if 0
+        std::string errorstring;
+
+        if ( waspreviousfirewall && systemfirewallmodified) 
+        {
+            // This is where things become complex.
+            // Should we try to restore things to how they were before this program started?
+            switch(QMessageBox::question(0, "Question", 
+                        ("The system's firewall settings have been modified.\n\n"
+                            "Shall I restore them to the previous settings?\n\n"
+                            "These changes may disrupt current network connections."), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Cancel )) {
+                // "Yes, revert to the previous settings."
+                case QMessageBox::Yes:
+                    // Restore from the backup.
+                    copyFile(SYSTEM_RC_FIREWALL "~", SYSTEM_RC_FIREWALL);
+
+                    openDefault();
+                    if(applyFirewall(false)) {
+                        saveOptions();
+                        return true;
+                        //                    accept();
+                    }
+                    break;
+
+                    // "Just leave the settings alone and piss off!!"
+                case QMessageBox::No:
+                    saveOptions();
+                    return true;
+                    //                accept();
+                    break;
+
+                    // "Forget I ever pressed the Cancel button."
+                case QMessageBox::Cancel:
+                    return false;
+                    break;
+                default:
+                    break;
+                    return false;
+
+            }
+        } 
+        else 
+        {
+            // Simple Cancel.
+            saveOptions();
+            return true;
+            //        accept();
+        }
+        #endif
+        return true;
+    }
+    void copyFile(const char *src, const char *dest) {
+        //    KProcess *proc = new KProcess();
+        //    *proc<<"/bin/cp";
+        //    *proc<<src<<dest;
+        //    proc->start(KProcess::Block);
+        //    delete proc;
+    }
+    void openDefault() {
+        std::cout << "openDefault" << std::endl;
+        std::string filename(SYSTEM_RC_FIREWALL);
+        std::string errorstring;
+        std::ifstream fileinfo( SYSTEM_RC_FIREWALL );
+
+        unbuildGUI();
+        if ( superUserMode==false ) 
+        {
+            buildGUI();
+            return; // Sorry, if you are not root then you get no default firewall.
+        }
+
+        if ( !fileinfo ) 
+        {
+            // There doesn't appear to be a previous Guarddog firewall script.
+            // Just warn the user about the ramifications.
+            throw ( "Guarddog was unable to find a Guarddog firewall at " + filename + "\n"
+                        "This is probably ok, it just means that this is the first time Guarddog has been run on this system.\n"
+                        "But please be aware that the firewall settings shown may not represent the system's current firewalling configuration.\n"
+                        "Your Guarddog firewall will take effect once you use the 'Apply' button or exit Guarddog using 'Ok'.");
+        } 
+        else 
+        {
+            if ( openFirewall(filename,errorstring)==false) 
+            {
+                factoryDefaults();
+                // We were unable to open the guarddog firewall.
+                throw ("Guarddog was unable to read the file at " + filename + " as being a Guarddog firewall.\n"
+                            "This probably means that this file in not actually a Guarddog firewall.\n"
+                            "This is not a problem, but please note that if you exit Guarddog via the 'Ok' button this file will be overwritten.\n"
+                            "If you do not want this to happen, then after closing this message, immediately quit Guarddog using the 'Cancel' button.\n"
+                            "Also please be aware that the firewall settings shown may not represent the system's current firewalling configuration.\n\n"
+                            "(Detailed message \"" + errorstring + "\")");
+            } 
+            else 
+            {
+                waspreviousfirewall = true;
+            }
+        }
+        buildGUI();
+
+        // Backup the firewall.
+        copyFile(SYSTEM_RC_FIREWALL,SYSTEM_RC_FIREWALL "~");
+    }
+    void buildGUI();
+    void unbuildGUI() {
+        //    updatinggui = true;
+        //    zonelistbox->clear();
+        //    zoneaddresslistbox->clear();
+        //    unbuildConnectionGUI();
+        //    userdefinedprotocolslistview->clear();
+        //    deleteProtocolPages();
+        //    updatinggui = false;
+    }
+
+
+void deleteUserDefinedProtocol(UserDefinedProtocol *thisudp) 
+{
+#if 0
+//    QList<Zone *>::iterator zit;
     
         // We have to tell the Zones not to reference this protocol
         // before we delete it out from under them.
-    zit = newZonesIterator();
-    for(;zit->current(); ++(*zit)) {
-        zit->current()->deleteProtocol(thisudp->getProtocolEntry());
+//    zit = zones.begin();
+//    for(;zit->current(); ++(*zit)) {
+    BOOST_FOREACH( Zone & zit, zones ) {
+        zit.deleteProtocol(thisudp->getProtocolEntry());
     }
-    delete zit;
+//    delete zit;
     
-    userdefinedprotocols.remove(thisudp);
+    userdefinedprotocols.removeAt(userdefinedprotocols.find(thisudp));
+#endif
 }
     
 ///////////////////////////////////////////////////////////////////////////
-uint GuarddogDoc::countUserDefinedProtocols() {
-    return userdefinedprotocols.count();
-}
-    
-///////////////////////////////////////////////////////////////////////////
-UserDefinedProtocol *GuarddogDoc::newUserDefinedProtocol() {
-    UserDefinedProtocol *newudp,*p;
+#if 0
+UserDefinedProtocol *newUserDefinedProtocol() {
+    UserDefinedProtocol *newudp;
     uint i;
     bool hit;
 
@@ -441,34 +478,34 @@ UserDefinedProtocol *GuarddogDoc::newUserDefinedProtocol() {
     while(hit) {
         i++;
         hit = false;
-        for(p=userdefinedprotocols.first(); p!=0; p=userdefinedprotocols.next()) {
-            if(p->getID()==i) {
+//        for(p=userdefinedprotocols.first(); p!=0; p=userdefinedprotocols.next()) {
+        BOOST_FOREACH( UserDefinedProtocol const & p, userdefinedprotocols ) {
+            if(p.getID()==i) {
                 hit = true;
                 break;
             }
         }
     }
     
-    newudp = new UserDefinedProtocol(pdb,i);
-    newudp->setName(i18n("new"));
+    newudp = new UserDefinedProtocol(&pdb,i);
+    newudp->setName(("new"));
     userdefinedprotocols.append(newudp);
     return newudp;
 }
+#endif
 
 ///////////////////////////////////////////////////////////////////////////
 
-bool GuarddogDoc::writeFirewall(QTextStream &stream,QString &/*errorstring*/) {
-    QListIterator<Zone> *zit,*zit2;
-    QPtrDictIterator<ProtocolDB::ProtocolEntry> *protodictit;
-    IPRange *addy;
-    UserDefinedProtocol *currentudp;
-    uint i;
+bool writeFirewall( std::ostream & stream,std::string &/*errorstring*/) {
+    std::vector<Zone>::iterator zit,zit2;
+    QHash<void *, ProtocolDB::ProtocolEntry *>::iterator protodictit;
+//    uint i;
     int c,oldc;
 
-    zit = newZonesIterator();
-    zit2 = newZonesIterator();
+    zit = zones.begin();
+    zit2 = zones.begin();
 
-    stream.setEncoding(QTextStream::Latin1);
+//    stream.setEncoding(QTextStream::Latin1);
     stream<<"#!/bin/bash\n"
         "# [Guarddog2]\n"
 		"# DO NOT EDIT!\n"
@@ -480,12 +517,12 @@ bool GuarddogDoc::writeFirewall(QTextStream &stream,QString &/*errorstring*/) {
     c = 0;
     oldc = 0;
     while((c = description.find('\n',c))>=0) {
-        stream<<"#  "<<description.mid(oldc,c-oldc)<<"\n";
+        stream<<"#  "<<description.substr(oldc,c-oldc)<<"\n";
         oldc = c + 1;
         c++;
     }
     c = (int)description.length();
-    stream<<"#  "<<description.mid(oldc,c-oldc)<<"\n";
+    stream<<"#  "<<description.substr(oldc,c-oldc)<<"\n";
 
 	stream<<	
 		"# [Config]\n"
@@ -513,56 +550,61 @@ bool GuarddogDoc::writeFirewall(QTextStream &stream,QString &/*errorstring*/) {
         "# ALLOWTCPTIMESTAMPS="<<(allowtcptimestamps?1:0)<<"\n";
 
         // Output the info about the Zones we have. No need to output the default zones.
-    for(zit->toFirst(); zit->current(); ++(*zit)) {
-        if(zit->current()->editable()) {
+//    for(zit->toFirst(); zit->current(); ++(*zit)) {
+        BOOST_FOREACH( Zone & zit, zones ) {
+        if(zit.editable()) {
             stream<<"# [Zone]\n";
-            stream<<"# NAME="<<(zit->current()->name)<<"\n";
-            stream<<"# COMMENT="<<(zit->current()->comment)<<"\n";
-            for(addy=zit->current()->membermachine.first(); addy!=0; addy=zit->current()->membermachine.next()) {
-                stream<<"# ADDRESS="<<addy->getAddress()<<"\n";
+            stream<<"# NAME="<<(zit.getName().c_str())<<"\n";
+            stream<<"# COMMENT="<<(zit.getComment())<<"\n";
+            BOOST_FOREACH( IPRange const & addy, zit.getMemberMachineList() ) 
+            {
+//            for(addy=zit->membermachine.first(); addy!=0; addy=zit->membermachine.next()) {
+                stream<<"# ADDRESS="<<addy.getAddress()<<"\n";
             }
         }
     }
 
         // Output the User Defined Protocols
-    for(i=0; i<userdefinedprotocols.count(); i++) {
-        currentudp = userdefinedprotocols.at(i);
+    for(size_t i=0; i<userdefinedprotocols.size(); i++) {
+        UserDefinedProtocol & currentudp = userdefinedprotocols.at(i);
         stream<<"# [UserDefinedProtocol]\n";
-        stream<<"# ID="<<(currentudp->getID())<<"\n";
-        stream<<"# NAME="<<(currentudp->getName())<<"\n";
-        stream<<"# TYPE="<<(currentudp->getType()==IPPROTO_TCP ? "TCP" : "UDP")<<"\n";
-        stream<<"# PORT="<<currentudp->getStartPort()<<":"<<currentudp->getEndPort()<<"\n";
-        stream<<"# BIDIRECTIONAL="<<(currentudp->isBidirectional() ? 1 : 0)<<"\n";
+        stream<<"# ID="<<(currentudp.getID())<<"\n";
+        stream<<"# NAME="<<(currentudp.getName())<<"\n";
+        stream<<"# TYPE="<<(currentudp.getType()==IPPROTO_TCP ? "TCP" : "UDP")<<"\n";
+        stream<<"# PORT="<<currentudp.getStartPort()<<":"<<currentudp.getEndPort()<<"\n";
+        stream<<"# BIDIRECTIONAL="<<(currentudp.isBidirectional() ? 1 : 0)<<"\n";
     }
 
         // Go over each Zone and output which protocols are allowed to whom.
-    for(zit->toFirst(); zit->current(); ++(*zit)) {
-        stream<<"# [ServerZone] "<<(zit->current()->name)<<"\n";
+    BOOST_FOREACH( Zone & zit, zones ) {
+//    for(zit->toFirst(); zit->current(); ++(*zit)) {
+        stream<<"# [ServerZone] "<<(zit.getName().c_str())<<"\n";
         
             // Iterate over each possible client zone.
-        for(zit2->toFirst(); zit2->current(); ++(*zit2)) {
-            if(zit->current()!=zit2->current()) {
-                stream<<"# [ClientZone] "<<(zit2->current()->name)<<"\n";
+        BOOST_FOREACH( Zone & zit2, zones ) {
+//        for(zit2->toFirst(); zit2->current(); ++(*zit2)) {
+            if(zit != zit2) {
+                stream<<"# [ClientZone] "<<(zit2.getName().c_str())<<"\n";
 
-                if(zit->current()->isConnected(zit2->current())) {
+                if(zit.isConnected(zit2)) {
                     stream<<"# CONNECTED=1\n";
                         // Now we iterate over and output each enabled protocol.
-                    protodictit = zit->current()->newPermitProtocolZoneIterator(zit2->current());
-                    if(protodictit!=0) {
-                        for(;protodictit->current(); ++(*protodictit)) {
-                            stream<<"# PROTOCOL="<<(protodictit->current()->name)<<"\n";
-                        }
-                        delete protodictit;
-                    }
+//                    protodictit = zit.newPermitProtocolZoneIterator(zit2);
+//                    if(protodictit!=0) {
+//                        for(;protodictit->current(); ++(*protodictit)) {
+//                            stream<<"# PROTOCOL="<<(protodictit->current()->name)<<"\n";
+//                        }
+//                        delete protodictit;
+//                    }
 
                         // Output each Rejected protocol.
-                    protodictit = zit->current()->newRejectProtocolZoneIterator(zit2->current());
-                    if(protodictit!=0) {
-                        for(;protodictit->current(); ++(*protodictit)) {
-                            stream<<"# REJECT="<<(protodictit->current()->name)<<"\n";
-                        }
-                        delete protodictit;
-                    }
+//                    protodictit = zit.newRejectProtocolZoneIterator(zit2);
+//                    if(protodictit!=0) {
+//                        for(;protodictit->current(); ++(*protodictit)) {
+//                            stream<<"# REJECT="<<(protodictit->current()->name)<<"\n";
+//                        }
+//                        delete protodictit;
+//                    }
                 } else {
                         // This server/client zone combo is not currently connected.
                     stream<<"# CONNECTED=0\n";
@@ -623,7 +665,7 @@ bool GuarddogDoc::writeFirewall(QTextStream &stream,QString &/*errorstring*/) {
         "fi;\n"
         "if [ $FILTERSYS -eq 0 ]; then\n"
         "  logger -p auth.info -t guarddog \"ERROR Can't determine the firewall command! (Is ipchains or iptables installed?)\"\n"
-        "  [ $GUARDDOG_VERBOSE -eq 1 ] && echo \""<<i18n("ERROR Can't determine the firewall command! (Is ipchains or iptables installed?)")<<"\"\n"
+        "  [ $GUARDDOG_VERBOSE -eq 1 ] && echo \""<< ("ERROR Can't determine the firewall command! (Is ipchains or iptables installed?)")<<"\"\n"
         "  false\n"
         "fi;\n"
         "if [ $FILTERSYS -eq 1 ]; then\n";
@@ -635,35 +677,36 @@ bool GuarddogDoc::writeFirewall(QTextStream &stream,QString &/*errorstring*/) {
         "fi;\n" // Matches the disable firewall IF.
         "true\n";
 
-    delete zit;
-    delete zit2;
+//    delete zit;
+//    delete zit2;
     return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////
-void GuarddogDoc::writeIPChainsFirewall(QTextStream &stream) {
-    QListIterator<Zone> *zit,*zit2;
+void writeIPChainsFirewall(std::ostream &stream) {
+//    QList<Zone *>::iterator zit,zit2;
+#if 0
     ProtocolDB::PortRangeInfo localPRI;
     uint localindex, internetindex;
-    QPtrDictIterator<ProtocolDB::ProtocolEntry> *protodictit;
+    QHash<void *, ProtocolDB::ProtocolEntry *>::iterator protodictit;
     IPRange *addy;
     uint i,j;
     int mask;
     Zone *zoneptr;
     ProtocolDB::ProtocolNetUse *netuse;
 
-    zit = newZonesIterator();
-    zit2 = newZonesIterator();
+    zit = zones.begin();
+    zit2 = zones.begin();
 
     localindex = 0;
     internetindex = 0;
 
         // Work out what the indexes of the local zone and internet zone are.
-    for(zit->toFirst(),i=0; zit->current(); ++(*zit),i++) {
-        if(zit->current()->isLocal()) {
+    for(zit = zones.begin(),i=0; zit != zones.end(); ++zit,i++) {
+        if((*zit)->isLocal()) {
             localindex = i;
         }
-        if(zit->current()->isInternet()) {
+        if((*zit)->isInternet()) {
             internetindex = i;
         }
     }
@@ -672,8 +715,8 @@ void GuarddogDoc::writeIPChainsFirewall(QTextStream &stream) {
         "###### ipchains ###############\n"
         "###############################\n"
         "logger -p auth.info -t guarddog Configuring ipchains firewall now.\n"
-        "[ $GUARDDOG_VERBOSE -eq 1 ] && echo \""<<i18n("Using ipchains.")<<"\"\n"
-        "[ $GUARDDOG_VERBOSE -eq 1 ] && echo \""<<i18n("Resetting firewall rules.")<<"\"\n"
+        "[ $GUARDDOG_VERBOSE -eq 1 ] && echo \""<<("Using ipchains.")<<"\"\n"
+        "[ $GUARDDOG_VERBOSE -eq 1 ] && echo \""<<("Resetting firewall rules.")<<"\"\n"
         "# Shut down all traffic\n"
         "ipchains -P forward DENY\n"
         "ipchains -P input DENY\n"
@@ -683,7 +726,7 @@ void GuarddogDoc::writeIPChainsFirewall(QTextStream &stream) {
         "ipchains -F\n"
         "ipchains -X\n"
         "\n"
-        "[ $GUARDDOG_VERBOSE -eq 1 ] && echo \""<<i18n("Setting kernel parameters.")<<"\"\n"
+        "[ $GUARDDOG_VERBOSE -eq 1 ] && echo \""<<("Setting kernel parameters.")<<"\"\n"
         "# Turn on kernel IP spoof protection\n"
         "echo 1 > /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts 2> /dev/null\n"
         "# Set the up TCP timestamps config\n"
@@ -734,13 +777,13 @@ void GuarddogDoc::writeIPChainsFirewall(QTextStream &stream) {
         
         "echo \""<<localPortRangeStart<<" "<<localPortRangeEnd<<"\" > /proc/sys/net/ipv4/ip_local_port_range 2> /dev/null\n"
         "\n"
-        "[ $GUARDDOG_VERBOSE -eq 1 ] && echo \""<<i18n("Configuring firewall rules.")<<"\"\n"
+        "[ $GUARDDOG_VERBOSE -eq 1 ] && echo \""<<("Configuring firewall rules.")<<"\"\n"
         "# Allow loopback traffic.\n"
         "ipchains -A input -i lo -j ACCEPT\n"
         "ipchains -A output -i lo -j ACCEPT\n";
     
     if(dhcpcenabled) {
-        QStringList dhcpclientinterfaces = QStringList::split(QString(","),dhcpcinterfacename);
+        QStringList dhcpclientinterfaces = dhcpdinterfacename.split(",");
         QStringList::Iterator it;
         stream<<"\n"
             "# Allow DHCP clients.\n";
@@ -752,7 +795,7 @@ void GuarddogDoc::writeIPChainsFirewall(QTextStream &stream) {
     }
 
     if(dhcpdenabled) {
-        QStringList dhcpserverinterfaces = QStringList::split(QString(","),dhcpdinterfacename);
+        QStringList dhcpserverinterfaces = dhcpdinterfacename.split(",");
         QStringList::Iterator it;
         stream<<"\n"
             "# Allow DHCP servers.\n";
@@ -856,12 +899,14 @@ void GuarddogDoc::writeIPChainsFirewall(QTextStream &stream) {
         // Create the filter chains.
     stream<<"\n# Create the filter chains\n";
         // 'From' zone loop
-    for(zit->toFirst(),i=0; zit->current(); ++(*zit),i++) {
+    BOOST_FOREACH( Zone * zit, zones ) {
+//    for(zit->toFirst(),i=0; zit->current(); ++(*zit),i++) {
             // 'To' zone loop
-        for(zit2->toFirst(),j=0; zit2->current(); ++(*zit2),j++) {
-            if(zit->current()!=zit2->current()) {
+        BOOST_FOREACH( Zone * zit2, zones ) {
+//        for(zit2->toFirst(),j=0; zit2->current(); ++(*zit2),j++) {
+            if(zit !=zit2 ) {
                     // Create the fitler chain for this combinatin of source and dest zone.
-                stream<<"# Create chain to filter traffic going from '"<<(zit->current()->name)<<"' to '"<<(zit2->current()->name)<<"'\n";
+                stream<<"# Create chain to filter traffic going from '"<<(zit->name)<<"' to '"<<(zit2->name)<<"'\n";
                 stream<<"ipchains -N f"<<i<<"to"<<j<<"\n";
             }
         }
@@ -875,17 +920,19 @@ void GuarddogDoc::writeIPChainsFirewall(QTextStream &stream) {
         // Now we add the rules to the filter chains.
     stream<<"# Add rules to the filter chains\n";
         // 'From' zone loop
-    for(zit->toFirst(),i=0; zit->current(); ++(*zit),i++) {
+    BOOST_FOREACH( Zone * zit, zones ) {
+//    for(zit->toFirst(),i=0; zit->current(); ++(*zit),i++) {
             // 'To' zone loop
-        for(zit2->toFirst(),j=0; zit2->current(); ++(*zit2),j++) {
-            if(zit->current()!=zit2->current()) {
+        BOOST_FOREACH( Zone * zit2, zones ) {
+//        for(zit2->toFirst(),j=0; zit2->current(); ++(*zit2),j++) {
+            if(zit != zit2) {
                     // Detect and accept permitted protocols.
-                protodictit = zit2->current()->newPermitProtocolZoneIterator(zit->current());
-                stream<<"\n# Traffic from '"<<(zit->current()->name)<<"' to '"<<(zit2->current()->name)<<"'\n";
+                protodictit = zit2->newPermitProtocolZoneIterator(zit);
+                stream<<"\n# Traffic from '"<<(zit->name)<<"' to '"<<(zit2->name)<<"'\n";
                 if(protodictit!=0) {
                     for(;protodictit->current(); ++(*protodictit)) {
                         stream<<"# Allow '"<<(protodictit->current()->name)<<"'\n";
-                        for(netuse=protodictit->current()->networkuse.first(); netuse!=0; netuse=protodictit->current()->networkuse.next()) {
+                        for(netuse=protodictit->networkuse.first(); netuse!=0; netuse=protodictit->networkuse.next()) {
 
                             if(netuse->description.length()!=0) {
                                 stream<<"# "<<(netuse->description.simplifyWhiteSpace())<<"\n";
@@ -1062,17 +1109,18 @@ void GuarddogDoc::writeIPChainsFirewall(QTextStream &stream) {
         "ipchains -A forward -j srcfilt &> /dev/null\n"
         "\n"
         "logger -p auth.info -t guarddog Finished configuring firewall\n"
-        "[ $GUARDDOG_VERBOSE -eq 1 ] && echo \""<<i18n("Finished.")<<"\"\n";
+        "[ $GUARDDOG_VERBOSE -eq 1 ] && echo \""<<("Finished.")<<"\"\n";
 
-    delete zit;
-    delete zit2;
+//    delete zit;
+//    delete zit2;
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
-void GuarddogDoc::expandIPChainsFilterRule(QTextStream &stream,
+void expandIPChainsFilterRule(QTextStream &stream,
         int fromzone,ProtocolDB::PortRangeInfo *fromzonePRI,int tozone,ProtocolDB::PortRangeInfo *tozonePRI,
-        ProtocolDB::ProtocolNetUse &netuse, bool permit, bool log) {
-
+        ProtocolDB::ProtocolNetUse &netuse, bool permit = true, bool log = false ) {
+#if 0
     ProtocolDB::ProtocolNetUseDetail *detailptr,*detailptr2;
 
         // Source and dest ports specified. Each source port spec <-> dest port
@@ -1140,7 +1188,7 @@ void GuarddogDoc::expandIPChainsFilterRule(QTextStream &stream,
             break;
 
         case IPPROTO_ICMP:
-            ASSERT(netuse.sourcedetaillist.count()!=0 && netuse.destdetaillist.count()==0);
+            ASSERT(netuse.sourcedetaillist.size()!=0 && netuse.destdetaillist.size()==0);
             for(detailptr=netuse.sourcedetaillist.first(); detailptr!=0; detailptr=netuse.sourcedetaillist.next()) {
                 stream<<"ipchains -A f"<<fromzone<<"to"<<tozone<<" -p icmp --sport "<<(detailptr->type);
                 if(detailptr->code!=-1) {
@@ -1169,11 +1217,13 @@ void GuarddogDoc::expandIPChainsFilterRule(QTextStream &stream,
             }
             break;
     }
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
-void GuarddogDoc::writeIPTablesFirewall(QTextStream &stream) {
-    QListIterator<Zone> *zit,*zit2;
+void writeIPTablesFirewall(std::ostream &stream) {
+#if 0
+    QList<Zone*>::iterator zit,zit2;
     ProtocolDB::PortRangeInfo localPRI;
     uint localindex, internetindex;
     QPtrDictIterator<ProtocolDB::ProtocolEntry> *protodictit;
@@ -1189,8 +1239,8 @@ void GuarddogDoc::writeIPTablesFirewall(QTextStream &stream) {
     QStringList modules;
     bool gotmodule;
     const char *rateunits[] = {"second", "minute", "hour", "day" };
-    zit = newZonesIterator();
-    zit2 = newZonesIterator();
+    zit = zones.begin();
+    zit2 = zones.begin();
 
     localindex = 0;
     internetindex = 0;
@@ -1209,8 +1259,8 @@ void GuarddogDoc::writeIPTablesFirewall(QTextStream &stream) {
         "###### iptables firewall ######\n"
         "###############################\n"
         "logger -p auth.info -t guarddog Configuring iptables firewall now.\n"
-        "[ $GUARDDOG_VERBOSE -eq 1 ] && echo \""<<i18n("Using iptables.")<<"\"\n"
-        "[ $GUARDDOG_VERBOSE -eq 1 ] && echo \""<<i18n("Resetting firewall rules.")<<"\"\n"
+        "[ $GUARDDOG_VERBOSE -eq 1 ] && echo \""<<("Using iptables.")<<"\"\n"
+        "[ $GUARDDOG_VERBOSE -eq 1 ] && echo \""<<("Resetting firewall rules.")<<"\"\n"
         "# Shut down all traffic\n"
         "iptables -P FORWARD DROP\n"
         "iptables -P INPUT DROP\n"
@@ -1221,7 +1271,7 @@ void GuarddogDoc::writeIPTablesFirewall(QTextStream &stream) {
         "iptables -X\n"
         "\n"
         "# Load any special kernel modules.\n"
-        "[ $GUARDDOG_VERBOSE -eq 1 ] && echo \""<<i18n("Loading kernel modules.")<<"\"\n";
+        "[ $GUARDDOG_VERBOSE -eq 1 ] && echo \""<<("Loading kernel modules.")<<"\"\n";
 
         // Examine all of the allowed protocols in all the zones etc and look for
         // guarddog pragmas that indicate extra kernel modules that should be loaded.
@@ -1265,7 +1315,7 @@ void GuarddogDoc::writeIPTablesFirewall(QTextStream &stream) {
     }
 
     stream<<"\n"
-        "[ $GUARDDOG_VERBOSE -eq 1 ] && echo \""<<i18n("Setting kernel parameters.")<<"\"\n"
+        "[ $GUARDDOG_VERBOSE -eq 1 ] && echo \""<<("Setting kernel parameters.")<<"\"\n"
         "# Turn on kernel IP spoof protection\n"
         "echo 1 > /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts 2> /dev/null\n"
         "# Set the TCP timestamps config\n"
@@ -1318,7 +1368,7 @@ void GuarddogDoc::writeIPTablesFirewall(QTextStream &stream) {
         "echo 1 > /proc/sys/net/ipv4/conf/default/rp_filter 2> /dev/null\n"
         "echo \""<<localPortRangeStart<<" "<<localPortRangeEnd<<"\" > /proc/sys/net/ipv4/ip_local_port_range 2> /dev/null\n"
         "\n"
-        "[ $GUARDDOG_VERBOSE -eq 1 ] && echo \""<<i18n("Configuring firewall rules.")<<"\"\n"
+        "[ $GUARDDOG_VERBOSE -eq 1 ] && echo \""<<("Configuring firewall rules.")<<"\"\n"
         "# Set up our logging and packet 'executing' chains\n";
 
         // Rate limited logging rules.
@@ -1415,7 +1465,7 @@ void GuarddogDoc::writeIPTablesFirewall(QTextStream &stream) {
         "iptables -A OUTPUT -o lo -j ACCEPT\n";
 
     if(dhcpcenabled) {
-        QStringList dhcpclientinterfaces = QStringList::split(QString(","),dhcpcinterfacename);
+        QStringList dhcpclientinterfaces = QStringList::split(std::string(","),dhcpcinterfacename);
         QStringList::Iterator it;
         stream<<"\n"
             "# Allow DHCP clients.\n";
@@ -1426,7 +1476,7 @@ void GuarddogDoc::writeIPTablesFirewall(QTextStream &stream) {
     }
 
     if(dhcpdenabled) {
-        QStringList dhcpserverinterfaces = QStringList::split(QString(","),dhcpdinterfacename);
+        QStringList dhcpserverinterfaces = QStringList::split(std::string(","),dhcpdinterfacename);
         QStringList::Iterator it;
         stream<<"\n"
             "# Allow DHCP servers.\n";
@@ -1768,20 +1818,21 @@ void GuarddogDoc::writeIPTablesFirewall(QTextStream &stream) {
         "iptables -A FORWARD -j srcfilt &> /dev/null\n"
         "\n"
         "logger -p auth.info -t guarddog Finished configuring firewall\n"
-        "[ $GUARDDOG_VERBOSE -eq 1 ] && echo \""<<i18n("Finished.")<<"\"\n";
+        "[ $GUARDDOG_VERBOSE -eq 1 ] && echo \""<<("Finished.")<<"\"\n";
 
     delete zit;
     delete zit2;
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
 //
 // permit==true && log==true is not supported.
 //
-void GuarddogDoc::expandIPTablesFilterRule(QTextStream &stream,
+void expandIPTablesFilterRule(QTextStream &stream,
         int fromzone,ProtocolDB::PortRangeInfo *fromzonePRI,int tozone,ProtocolDB::PortRangeInfo *tozonePRI,
-        ProtocolDB::ProtocolNetUse &netuse, bool permit, bool log) {
-    
+        ProtocolDB::ProtocolNetUse &netuse, bool permit = true, bool log = false) {
+#if 0    
     ProtocolDB::ProtocolNetUseDetail *detailptr,*detailptr2;
     const char *icmpname;
 
@@ -1854,7 +1905,7 @@ void GuarddogDoc::expandIPTablesFilterRule(QTextStream &stream,
             break;
             
         case IPPROTO_ICMP:
-            ASSERT(netuse.sourcedetaillist.count()!=0 && netuse.destdetaillist.count()==0);
+            ASSERT(netuse.sourcedetaillist.size()!=0 && netuse.destdetaillist.size()==0);
             for(detailptr=netuse.sourcedetaillist.first(); detailptr!=0; detailptr=netuse.sourcedetaillist.next()) {
                     // Map the type/code into a name that iptables can understand.
                     // Actuall this isn't strictly neccessary, but it does make the
@@ -1975,14 +2026,15 @@ void GuarddogDoc::expandIPTablesFilterRule(QTextStream &stream,
             }
             break;        
     }
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////
-bool GuarddogDoc::readFirewall(QTextStream &stream,QString &errorstring) {
-    QString s;
-    QString *tmpstring;
-    Zone *newzone;
-    QListIterator<Zone> *zit,*zit2;
+bool readFirewall(std::istream & stream,std::string &errorstring) {
+std::cout << "readFirewall" << std::endl;
+    std::string s;
+    std::vector<Zone>::iterator zit;
+    std::vector<Zone>::const_iterator zit2;
     int state;
 #define READSTATE_FIRSTLINE 0
 #define READSTATE_SECONDLINE 1
@@ -1992,15 +2044,13 @@ bool GuarddogDoc::readFirewall(QTextStream &stream,QString &errorstring) {
 #define READSTATE_ZONECONFIG    5
 #define READSTATE_USERDEFINEDPROTOCOL 6
 #define READSTATE_PROTOCOLCONFIG    7
-    ProtocolDB::ProtocolEntry *proto;
-    bool ok;
+//    bool ok;
     uint udpid;
     uchar udptype;
     uint udpstartport;
     uint udpendport;
     bool udpbidirectional;
-    UserDefinedProtocol *udp;
-    const char *parameterlist[] = {
+    std::string parameterlist[] = {
         "# LOCALPORTRANGESTART=",
         "# LOCALPORTRANGEEND=",
         "# DISABLED=",
@@ -2023,38 +2073,39 @@ bool GuarddogDoc::readFirewall(QTextStream &stream,QString &errorstring) {
         "# DHCPD=",
         "# DHCPDINTERFACENAME=",
         "# ALLOWTCPTIMESTAMPS=",
-        0};
+        };
     uint i;
-    QString rightpart;
+    std::string rightpart;
     bool addcr;
 
-    errorstring = (const char *)0;
+//    errorstring = (const char *)0;
     state = READSTATE_FIRSTLINE;
-    zit = 0;
-    zit2 = 0;
     
-    stream.setEncoding(QTextStream::Latin1);
+//    stream.setEncoding(QTextStream::Latin1);
             
-    s = stream.readLine();
-    if(s.isNull()) goto error;
+//    s = stream.readLine();
+    std::getline( stream, s );
+    if(s.empty()) goto error;
 
     state = READSTATE_SECONDLINE;
-    s = stream.readLine();
-    if(s.isNull()) goto error;
+//    s = stream.readLine();
+    std::getline( stream, s );
+    if(s.empty()) goto error;
     
     if(s=="## [GuardDog]") {
-        errorstring = i18n("Sorry, old Guarddog firewall files can not be read.");
+        errorstring = "Sorry, old Guarddog firewall files can not be read.";
         goto error;
     } else if(s!="# [Guarddog2]") {
-        errorstring = i18n("Error reading firewall file. This does not appear to be a Guarddog firewall file.");
+        errorstring = ("Error reading firewall file. This does not appear to be a Guarddog firewall file.");
         goto error;
     }    
 
         // Read past the boring human readable copperplate stuff.
     state = READSTATE_COPPERPLATE;
     while(true) {
-        s = stream.readLine();
-        if(s.isNull()) goto error;
+//        s = stream.readLine();
+    std::getline( stream, s );
+        if(s.empty()) goto error;
         if(s=="# [Config]") {   // Config is starting, goodie, lets break this.
             state = READSTATE_CONFIG;
             break;
@@ -2070,8 +2121,9 @@ bool GuarddogDoc::readFirewall(QTextStream &stream,QString &errorstring) {
     addcr = false;
     if(state==READSTATE_DESCRIPTION) {
         while(true) {
-            s = stream.readLine();
-            if(s.isNull()) goto error;
+//            s = stream.readLine();
+    std::getline( stream, s );
+            if(s.empty()) goto error;
             if(s=="# [Config]") {
                 state = READSTATE_CONFIG;
                 break;
@@ -2080,46 +2132,48 @@ bool GuarddogDoc::readFirewall(QTextStream &stream,QString &errorstring) {
                 description.append("\n");
             }
             addcr = true;
-            description.append(s.right(s.length()-3));
+            description += (s.substr(3));
         }
     }
 
     state = READSTATE_CONFIG;
     while(true) {
-        s = stream.readLine();
-        if(s.isNull()) goto error;
-        if(s.startsWith("# [")) {
+//        s = stream.readLine();
+    std::getline( stream, s );
+        if(s.empty()) goto error;
+        if(s.substr(0,3) == ("# [")) {
             break;  // We've got to the end of this part of the show.
         }
             // Try to identify the line we are looking at.
-        for(i=0; parameterlist[i]!=0; i++) {
-            if(s.startsWith(parameterlist[i])) {
+//BTS
+        for(i=0; i < 22 /*parameterlist.size()*/; i++) {
+            if(s.substr(0, parameterlist[i].size() ) == (parameterlist[i])) {
                 break;
             }
         }
-        if(parameterlist[i]!=0) {
-            rightpart = s.right(s.length()-strlen(parameterlist[i]));
-        }
+        if(i < 22 /*parameterlist.size()*/ ) {
+            rightpart = s.substr(parameterlist[i].size());
         switch(i) {
             case 0:     // # LOCALPORTRANGESTART=
-                localPortRangeStart = rightpart.toUInt(&ok);
-                if(ok==false) {
-                    errorstring = i18n("Error parsing the value in the LOCALPORTRANGESTART section.");
-                    goto error;
-                }
+                std::cout << "i = " << i << " rightpart = " << rightpart << " s = " << s << std::endl;
+                localPortRangeStart = boost::lexical_cast<uint>( rightpart ); //.toUInt(&ok);
+//                if(ok==false) {
+//                    errorstring = ("Error parsing the value in the LOCALPORTRANGESTART section.");
+//                    goto error;
+//                }
                 if(localPortRangeStart<1024) {
-                    errorstring = i18n("Value in LOCALPORTRANGESTART section was less then 1024.");
+                    errorstring = ("Value in LOCALPORTRANGESTART section was less then 1024.");
                     goto error;
                 }
                 break;
             case 1:     // # LOCALPORTRANGEEND=
-                localPortRangeEnd = rightpart.toUInt(&ok);
-                if(ok==false) {
-                    errorstring = i18n("Error parsing the value in the LOCALPORTRANGEEND section.");
-                    goto error;
-                }
+                localPortRangeEnd = boost::lexical_cast<uint>( rightpart ); //rightpart.toUInt(&ok);
+//                if(ok==false) {
+//                    errorstring = ("Error parsing the value in the LOCALPORTRANGEEND section.");
+//                    goto error;
+//                }
                 if(localPortRangeEnd>65535) {
-                    errorstring = i18n("Value in LOCALPORTRANGEEND is greater than 65535.");
+                    errorstring = ("Value in LOCALPORTRANGEEND is greater than 65535.");
                     goto error;
                 }
                 break;
@@ -2145,13 +2199,13 @@ bool GuarddogDoc::readFirewall(QTextStream &stream,QString &errorstring) {
                 logtcpsequence = rightpart=="1";
                 break;
             case 9:     // # LOGLEVEL=",
-                loglevel = rightpart.toUInt(&ok);
-                if(ok==false) {
-                    errorstring = i18n("Error parsing the value in the LOGLEVEL section.");
-                    goto error;
-                }
+                loglevel = boost::lexical_cast<uint>( rightpart ); //rightpart.toUInt(&ok);
+//                if(ok==false) {
+//                    errorstring = ("Error parsing the value in the LOGLEVEL section.");
+//                    goto error;
+//                }
                 if(loglevel>7) {
-                    errorstring = i18n("Error, the value in the LOGLEVEL section is too big.");
+                    errorstring = ("Error, the value in the LOGLEVEL section is too big.");
                     goto error;
                 }
                 break;
@@ -2159,35 +2213,35 @@ bool GuarddogDoc::readFirewall(QTextStream &stream,QString &errorstring) {
                 logratelimit = rightpart=="1";
                 break;
             case 11:    // # LOGRATE=
-                lograte = rightpart.toUInt(&ok);
-                if(ok==false) {
-                    errorstring = i18n("Error parsing the value in the LOGRATE section.");
-                    goto error;
-                }
+                lograte = boost::lexical_cast<uint>( rightpart ); //rightpart.toUInt(&ok);
+//                if(ok==false) {
+//                    errorstring = ("Error parsing the value in the LOGRATE section.");
+//                    goto error;
+//                }
                 if(lograte>65535) {
-                    errorstring = i18n("Error, the value in the LOGRATE section is too big (>65535).");
+                    errorstring = ("Error, the value in the LOGRATE section is too big (>65535).");
                     goto error;
                 }
                 break;
             case 12:    // # LOGRATEUNIT=
-                lograteunit = (LogRateUnit)rightpart.toUInt(&ok);
-                if(ok==false) {
-                    errorstring = i18n("Error parsing the value in the LOGRATEUNIT section.");
-                    goto error;
-                }
+                lograteunit = (LogRateUnit)boost::lexical_cast<uint>( rightpart ); //rightpart.toUInt(&ok);
+//                if(ok==false) {
+//                    errorstring = ("Error parsing the value in the LOGRATEUNIT section.");
+//                    goto error;
+//                }
                 if(lograteunit>3) {
-                    errorstring = i18n("Error the value in the LOGRATEUNIT section is out of range.");
+                    errorstring = ("Error the value in the LOGRATEUNIT section is out of range.");
                     goto error;
                 }
                 break;
             case 13:    // # LOGRATEBURST=
-                lograteburst = rightpart.toUInt(&ok);
-                if(ok==false) {
-                    errorstring = i18n("Error parsing the value in the LOGRATEBURST section.");
-                    goto error;
-                }
+                lograteburst = boost::lexical_cast<uint>( rightpart ); //rightpart.toUInt(&ok);
+//                if(ok==false) {
+//                    errorstring = ("Error parsing the value in the LOGRATEBURST section.");
+//                    goto error;
+//                }
                 if(lograteburst > 65535) {
-                    errorstring = i18n("Error, the value in the LOGRATEBURST section is too big.");
+                    errorstring = ("Error, the value in the LOGRATEBURST section is too big.");
                     goto error;
                 }
                 break;
@@ -2195,24 +2249,24 @@ bool GuarddogDoc::readFirewall(QTextStream &stream,QString &errorstring) {
                 logwarnlimit = rightpart=="1";
                 break;
             case 15:    // # LOGWARNRATE=
-                logwarnrate = rightpart.toUInt(&ok);
-                if(ok==false) {
-                    errorstring = i18n("Error parsing the value in the LOGWARNRATE section.");
-                    goto error;
-                }
+                logwarnrate = boost::lexical_cast<uint>( rightpart ); //rightpart.toUInt(&ok);
+//                if(ok==false) {
+//                    errorstring = ("Error parsing the value in the LOGWARNRATE section.");
+//                    goto error;
+//                }
                 if(logwarnrate > 65535) {
-                    errorstring = i18n("Error, the value in the LOGWARNRATE section is too big (>65535).");
+                    errorstring = ("Error, the value in the LOGWARNRATE section is too big (>65535).");
                     goto error;
                 }
                 break;
             case 16:    // # LOGWARNRATEUNIT=
-                logwarnrateunit = (LogRateUnit)rightpart.toUInt(&ok);
-                if(ok==false) {
-                    errorstring = i18n("Error parsing the value in the LOGWARNRATEUNIT section.");
-                    goto error;
-                }
+                logwarnrateunit = (LogRateUnit)boost::lexical_cast<uint>( rightpart ); //rightpart.toUInt(&ok);
+//                if(ok==false) {
+//                    errorstring = ("Error parsing the value in the LOGWARNRATEUNIT section.");
+//                    goto error;
+//                }
                 if(logwarnrateunit>3) {
-                    errorstring = i18n("Error the value in the LOGWARNRATEUNIT section is out of range.");
+                    errorstring = ("Error the value in the LOGWARNRATEUNIT section is out of range.");
                     goto error;
                 }
                 break;
@@ -2237,45 +2291,53 @@ bool GuarddogDoc::readFirewall(QTextStream &stream,QString &errorstring) {
                 break;
         }
     }
+        }
 
         // Sanity check these values.
     if(localPortRangeEnd<localPortRangeStart) {
-        errorstring = i18n("Value for LOCALPORTRANGEEND is less than the one in LOCALPORTRANGESTART");
+        errorstring = ("Value for LOCALPORTRANGEEND is less than the one in LOCALPORTRANGESTART");
         goto error;
     }
 
     state = READSTATE_ZONECONFIG;
 
         // Parse a Zone record.
-    while(s=="# [Zone]") {
-        newzone = new Zone(UserZone);
-                
-            // Parse the Zone name.
-        s = stream.readLine();
-        if(s.isNull()) goto error;
-        if(s.startsWith("# NAME=")==false) {
-            errorstring = i18n("Error parsing firewall [Zone] section. Expected '# NAME='");
+    while(s=="# [Zone]") 
+    {
+        Zone newzone(Zone::UserZone);
+
+        // Parse the Zone name.
+        //        s = stream.readLine();
+        std::getline( stream, s );
+        if(s.empty()) goto error;
+        if(s.substr( 0, 7) != ("# NAME=")) {
+            errorstring = ("Error parsing firewall [Zone] section. Expected '# NAME='");
             goto error;
         }
-        newzone->name = s.right(s.length()-7);  // strlen("# NAME=")==7
+        newzone.setName( s.substr(7) );  // strlen("# NAME=")==7
 
-            // Parse the Zone comment.
-        s = stream.readLine();
-        if(s.isNull()) goto error;
-        if(s.startsWith("# COMMENT=")==false) {
-            errorstring = i18n("Error parsing firewall [Zone] section. Expected '# COMMENT='");
+        // Parse the Zone comment.
+        //        s = stream.readLine();
+        std::getline( stream, s );
+        if(s.empty()) goto error;
+        if(s.substr(0,10) != ("# COMMENT=")) {
+            errorstring = ("Error parsing firewall [Zone] section. Expected '# COMMENT='");
             goto error;
         }
-        newzone->comment = s.right(s.length()-10);  // strlen("# COMMENT=") == 10
+        newzone.setComment( s.substr(10) );  // strlen("# COMMENT=") == 10
 
-            // Parse the Zone addresses.
+        // Parse the Zone addresses.
         while(true) {
-            s = stream.readLine();
-            if(s.isNull()) goto error;
-            if(s.startsWith("# ADDRESS=")) {
-                newzone->membermachine.append(new IPRange(s.right(s.length()-10))); // strlen("# ADDRESS=") == 10
-            } else {
-                zones.append(newzone);
+            //            s = stream.readLine();
+            std::getline( stream, s );
+            if(s.empty()) goto error;
+            if(s.substr(0,10) == ("# ADDRESS=")) 
+            {
+                newzone.addMemberMachine(IPRange(s.substr(10))); // strlen("# ADDRESS=") == 10
+            } 
+            else 
+            {
+                zones.push_back(newzone);
                 break;
             }
         }
@@ -2285,43 +2347,47 @@ bool GuarddogDoc::readFirewall(QTextStream &stream,QString &errorstring) {
     state = READSTATE_USERDEFINEDPROTOCOL;
     while(s=="# [UserDefinedProtocol]") {
             // Snarf the ID.
-        s = stream.readLine();
-        if(s.isNull()) goto error;
-        if(s.startsWith("# ID=")==false) {
-            errorstring = i18n("Error parsing firewall [UserDefinedProtocol] section. Expected '# ID='");
+//        s = stream.readLine();
+    std::getline( stream, s );
+        if(s.empty()) goto error;
+        if(s.substr(0,5) != ("# ID=")) {
+            errorstring = ("Error parsing firewall [UserDefinedProtocol] section. Expected '# ID='");
             goto error;
         }
-        udpid = (s.right(s.length()-5)).toUInt(); // strlen("# ID=") == 5
+        std::cout << "S = " << s << std::endl;
+        udpid = boost::lexical_cast<uint>( s.substr(5)); //.toUInt(); // strlen("# ID=") == 5
 
             // Snarf the NAME
-        s = stream.readLine();
-        if(s.isNull()) goto error;
-        if(s.startsWith("# NAME=")==false) {
-            errorstring = i18n("Error parsing firewall [UserDefinedProtocol] section. Expected '# NAME='");
+//        s = stream.readLine();
+    std::getline( stream, s );
+        if(s.empty()) goto error;
+        if(s.substr(0,7) != ("# NAME=")) {
+            errorstring = ("Error parsing firewall [UserDefinedProtocol] section. Expected '# NAME='");
             goto error;
         }
-        tmpstring = new QString();
-        *tmpstring = s.right(s.length()-7); // strlen("# NAME=") == 7
+        std::string tmpstring = s.substr(7); // strlen("# NAME=") == 7
 
             // Snarf the protocol type.
-        s = stream.readLine();
-        if(s.isNull()) goto error;
+        //s = stream.readLine();
+    std::getline( stream, s );
+        if(s.empty()) goto error;
         if(s=="# TYPE=TCP") {
             udptype = IPPROTO_TCP;
         } else {
             if(s=="# TYPE=UDP") {
                 udptype = IPPROTO_UDP;
             } else {
-                errorstring = i18n("Error parsing firewall [UserDefinedProtocol] section. Expected '# TYPE=TCP' or '# TYPE=UDP'");
+                errorstring = ("Error parsing firewall [UserDefinedProtocol] section. Expected '# TYPE=TCP' or '# TYPE=UDP'");
                 goto error;
             }
         }
 
             // Snarf the PORT now.
-        s = stream.readLine();
-        if(s.isNull()) goto error;
-        if(s.startsWith("# PORT=")==false) {
-            errorstring = i18n("Error parsing firewall [UserDefinedProtocol] section. Expected '# PORT='");
+        //s = stream.readLine();
+    std::getline( stream, s );
+        if(s.empty()) goto error;
+        if(s.substr(0,7) != ("# PORT=")) {
+            errorstring = ("Error parsing firewall [UserDefinedProtocol] section. Expected '# PORT='");
             goto error;
         }
 
@@ -2330,79 +2396,92 @@ bool GuarddogDoc::readFirewall(QTextStream &stream,QString &errorstring) {
           // # PORT=xxx
           //
           // if the colon is missing, it's file from an older version
-        if (s.find(":") < 0) {
-            udpstartport = udpendport = (s.right(s.length() - 7)).toUInt();
-        } else {
-            udpstartport = (s.mid(7, s.find(":") - 7)).toUInt(); // strlen("# PORT=") == 7
-            udpendport = (s.right(s.length() - s.find(":") - 1)).toUInt();
+        if (s.find(":") == std::string::npos) 
+        {
+            udpstartport = udpendport = boost::lexical_cast<uint>(s.substr(7)); //.toUInt();
+        } 
+        else 
+        {
+            std::cout << " s: " << s << std::endl;
+            std::cout << "s1: " << s.substr( 7, s.find(":")-7 ) << std::endl;
+            std::cout << "s2: " << s.substr( s.find(":")+1 ) << std::endl;
+            udpstartport = boost::lexical_cast<uint>(s.substr(7, s.find(":")-7)); //.toUInt(); // strlen("# PORT=") == 7
+            udpendport = boost::lexical_cast<uint>(s.substr(s.find(":")+1));//.toUInt();
         }
 
             // Bidirectional or not?
-        s = stream.readLine();
-        if(s.isNull()) goto error;
+        //s = stream.readLine();
+    std::getline( stream, s );
+        if(s.empty()) goto error;
         if(s=="# BIDIRECTIONAL=0") {
             udpbidirectional = false;
         } else {
             if(s=="# BIDIRECTIONAL=1") {
                 udpbidirectional = true;
             } else {
-                errorstring = i18n("Error parsing firewall [UserDefinedProtocol] section. Expected '# BIDIRECTIONAL=0' or '# BIDIRECTIONAL=1'");
+                errorstring = ("Error parsing firewall [UserDefinedProtocol] section. Expected '# BIDIRECTIONAL=0' or '# BIDIRECTIONAL=1'");
                 goto error;
             }
         }
 
             // Create and fill in the new User Defined Protocol object.
-        udp = newUserDefinedProtocol();
-        udp->setID(udpid);
-        udp->setName(*tmpstring);
-        delete tmpstring;
-        tmpstring = 0;
-        udp->setType((uchar)udptype);
-        udp->setStartPort(udpstartport);
-        udp->setEndPort(udpendport);
-        udp->setBidirectional(udpbidirectional);
+        UserDefinedProtocol udp(udpid);
+        udp.setName(tmpstring);
+        udp.setType((uchar)udptype);
+        udp.setStartPort(udpstartport);
+        udp.setEndPort(udpendport);
+        udp.setBidirectional(udpbidirectional);
 
-        s = stream.readLine();
-        if(s.isNull()) goto error;
+        userdefinedprotocols.push_back( udp );
+
+        //s = stream.readLine();
+    std::getline( stream, s );
+        if(s.empty()) goto error;
     }
 
     state = READSTATE_PROTOCOLCONFIG;
 
-    zit = newZonesIterator();
-    zit2 = newZonesIterator();
+    zit = zones.begin();
+    zit2 = zones.begin();
         // Parse the protocol info.
     while(true) {
-        if(s.startsWith("# [ServerZone]")) {
-            zit2->toFirst();
+        if(s.substr(0,14) == ("# [ServerZone]")) {
+            zit2 = zones.begin();
 
-            s = stream.readLine();
-            if(s.isNull()) goto error;
+            //s = stream.readLine();
+    std::getline( stream, s );
+            if(s.empty()) goto error;
 
             while(true) {
-                if(zit2->current()==zit->current()) {
-                    ++(*zit2);
+                if(zit2 == zit ) {
+                    ++zit2;
                 }
-                if(s.startsWith("# [ClientZone]")) {
-                    s = stream.readLine();
-                    if(s.isNull()) goto error;
+                if(s.substr(0,14) == ("# [ClientZone]")) {
+                    //s = stream.readLine();
+    std::getline( stream, s );
+                    if(s.empty()) goto error;
 
-                    if(s.startsWith("# CONNECTED=1")) {
-                        zit->current()->connect(zit2->current());
+                    if(s.substr(0,13) == ("# CONNECTED=1")) {
+                        zit->connect(*zit2);
 
                         while(true) {
-                            s = stream.readLine();
-                            if(s.isNull()) goto error;
+                            //s = stream.readLine();
+    std::getline( stream, s );
+                            if(s.empty()) goto error;
 
-                            if(s.startsWith("# PROTOCOL=")) {
-                                proto = pdb->lookup(s.right(s.length()-11));
-                                if(proto!=0) {
-                                    zit->current()->setProtocolState(zit2->current(),proto,Zone::PERMIT);
+                            if(s.substr(0,11) == ("# PROTOCOL=")) {
+                                std::vector< ProtocolDB::ProtocolEntry >::const_iterator proto = pdb.lookup(s.substr(11));
+                                if (proto != pdb.dbEnd() ) 
+                                {
+                                    std::cout << "...found" << std::endl;
+                                    zit->setProtocolState(*zit2,*proto,Zone::PERMIT);
                                 }
                             } else {
-                                if(s.startsWith("# REJECT=")) {
-                                    proto = pdb->lookup(s.right(s.length()-9));
-                                    if(proto!=0) {
-                                        zit->current()->setProtocolState(zit2->current(),proto,Zone::REJECT);
+                                if(s.substr(0,9) == ("# REJECT=")) {
+                                    std::vector< ProtocolDB::ProtocolEntry >::const_iterator proto = pdb.lookup(s.substr(9));
+                                    if ( proto!= pdb.dbEnd() ) {
+                                    std::cout << "...found" << std::endl;
+                                        zit->setProtocolState(*zit2,*proto,Zone::REJECT);
                                     }
                                 } else {
                                     break;
@@ -2411,120 +2490,118 @@ bool GuarddogDoc::readFirewall(QTextStream &stream,QString &errorstring) {
                         }
                     } else {
                             // This zone is disconnected.
-                        if(s.startsWith("# CONNECTED=0")==false) {
-                            errorstring = i18n("Error parsing firewall [ServerZone] section. Expected '# CONNECTED=0' or '# CONNECTED=1'");
+                        if(s.substr(0,13) != ("# CONNECTED=0")) {
+                            errorstring = ("Error parsing firewall [ServerZone] section. Expected '# CONNECTED=0' or '# CONNECTED=1'");
                             goto error;
                         }
-                        zit->current()->disconnect(zit2->current());
-                        s = stream.readLine();  // take us to the next line.
-                        if(s.isNull()) goto error;
+                        zit->disconnect(*zit2);
+                        //s = stream.readLine();  // take us to the next line.
+    std::getline( stream, s );
+                        if(s.empty()) goto error;
                     }
-                    ++(*zit2);  // Take us to the next client zone in anticipation.
-                } else {
-                    ++(*zit);
+                    ++zit2;  // Take us to the next client zone in anticipation.
+                } 
+                else 
+                {
+                    ++zit;
                     break;
                 }
             }
-        } else if(s.startsWith("# [End]")) {
+        } else if(s.substr(0,7) == ("# [End]")) {
             break;
         } else {
             goto error;
         }
     }
-    delete zit2;
-    delete zit;
-    zit = 0;
-    zit2 = 0;
+//    delete zit2;
+//    delete zit;
+//    zit = 0;
+//    zit2 = 0;
     return true;
 
 error:
-    if(errorstring.isNull()) {
+    if(errorstring.empty()) {
         switch(state) {
             case READSTATE_FIRSTLINE:
-                errorstring = i18n("Error reading first line of firewall.");
+                errorstring = ("Error reading first line of firewall.");
                 break;
 
             case READSTATE_SECONDLINE:
-                errorstring = i18n("Error reading second line of firewall. Expected [Guarddog2]");
+                errorstring = ("Error reading second line of firewall. Expected [Guarddog2]");
                 break;
 
             case READSTATE_COPPERPLATE:
-                errorstring = i18n("Error reading file. (Before [Config] section.)");
+                errorstring = ("Error reading file. (Before [Config] section.)");
                 break;
 
             case READSTATE_CONFIG:
-                errorstring = i18n("Error reading file. ([Config] section.)");
+                errorstring = ("Error reading file. ([Config] section.)");
                 break;
 
 
             case READSTATE_ZONECONFIG:
-                errorstring = i18n("Error reading firewall. (In the Zone config).");
+                errorstring = ("Error reading firewall. (In the Zone config).");
                 break;
 
             case READSTATE_PROTOCOLCONFIG:
-                errorstring = i18n("Error reading firewall. (In the Protocol config).");
+                errorstring = ("Error reading firewall. (In the Protocol config).");
                 break;
 
             default:
-                errorstring = i18n("Unknown error.");
+                errorstring = ("Unknown error.");
                 break;
         }
     }
-    delete zit2;
-    delete zit;
+//    delete zit2;
+//    delete zit;
     
     return false;
 }
 
 ///////////////////////////////////////////////////////////////////////////
-bool GuarddogDoc::openFirewall(const QString &filename,QString &errorstring) {
-    QFile f(filename);
+bool openFirewall(const std::string &filename,std::string &errorstring) {
+std::cout << "openFirewall" << std::endl;
+    std::ifstream in( filename.c_str() );
 
-    if(f.open(IO_ReadOnly)) {
-        QTextStream stream(&f);
-        
-        if(readFirewall(stream, errorstring)) {
-            f.close();
-            return true;
-        } else {
-            f.close();
-            return false;
-        }
-    } else {
-        errorstring = i18n("Unable to open the firewall from reading.");
+    if ( !in )
+    {
+        errorstring = ("Unable to open the firewall from reading.");
         return false;
     }
+    return readFirewall(in, errorstring);
 }
 
 ///////////////////////////////////////////////////////////////////////////
-void GuarddogDoc::clearFirewall() {
-    while(zones.count()!=0) {
-        deleteZone(zoneAt(0));
-    }
+void clearFirewall() {
+    zones.clear();
+//    while(zones.size()!=0) {
+//        deleteZone(zones.at(0));
+//    }
 }
 
 ///////////////////////////////////////////////////////////////////////////
-void GuarddogDoc::factoryDefaults() {
-    Zone *inetzone,*localzone;
+void factoryDefaults() 
+{
+std::cout << "factoryDefaults()" << std::endl;
 
     clearFirewall();
     disabled = false;
     logreject = true;
     
         // Default Internet Zone.
-    inetzone = new Zone(InternetZone);
-    inetzone->name = i18n("Internet");
-    inetzone->comment = i18n("Internet/Default Zone [built in]");
-    zones.append(inetzone);
+    Zone inetzone(Zone::InternetZone);
+    inetzone.setName( "Internet" );
+    inetzone.setComment("Internet/Default Zone [built in]");
+    zones.push_back(inetzone);
         
         // Default Local Machine Zone.
-    localzone = new Zone(LocalZone);
-    localzone->name = i18n("Local");
-    localzone->comment = i18n("Local Machine zone [built in]");
-    zones.append(localzone);
+    Zone localzone(Zone::LocalZone);
+    localzone.setName( "Local" );
+    localzone.setComment("Local Machine zone [built in]");
+    zones.push_back(localzone);
 
-    inetzone->connect(localzone);
-    localzone->connect(inetzone);
+    inetzone.connect(localzone);
+    localzone.connect(inetzone);
 
     localPortRangeStart = 1024;
     localPortRangeEnd = 5999;
@@ -2553,12 +2630,13 @@ void GuarddogDoc::factoryDefaults() {
 }
 
 ///////////////////////////////////////////////////////////////////////////
-bool GuarddogDoc::saveFirewall(const QString &filename, QString &errorstring) {
+bool saveFirewall(const std::string &filename, std::string &errorstring) {
+#if 0
 #ifndef QT_LITE    
     KSaveFile f(filename,0700);     // We want it root executable.
     
     if(f.status()!=0) {
-        errorstring = i18n("An error occurred while writing '%1'. The operating system has this to report about the error: %2")
+        errorstring = ("An error occurred while writing '%1'. The operating system has this to report about the error: %2")
 	    .arg(filename).arg(strerror(f.status()));
         return false;
     }
@@ -2567,13 +2645,13 @@ bool GuarddogDoc::saveFirewall(const QString &filename, QString &errorstring) {
     
     if(writeFirewall(*(f.textStream()), errorstring)) {
         if(f.status()!=0) {
-            errorstring = i18n("An error occurred while writing '%1'. The operating system has this to report about the error: %2")
+            errorstring = ("An error occurred while writing '%1'. The operating system has this to report about the error: %2")
 		    .arg(filename).arg(strerror(f.status()));
 		    return false;
         }
         f.close();
         if(f.status()!=0) {
-            errorstring = i18n("An error occurred while writing '%1'. The operating system has this to report about the error: %2")
+            errorstring = ("An error occurred while writing '%1'. The operating system has this to report about the error: %2")
 		    .arg(filename).arg(strerror(f.status()));
 		    return false;
         }
@@ -2585,16 +2663,8 @@ bool GuarddogDoc::saveFirewall(const QString &filename, QString &errorstring) {
 #else
     return false;
 #endif
-}
-
-///////////////////////////////////////////////////////////////////////////
-void GuarddogDoc::setDisabled(bool on) {
-    disabled = on;
-}
-
-///////////////////////////////////////////////////////////////////////////
-bool GuarddogDoc::isDisabled() {
-    return disabled;
+#endif
+    return false;
 }
 
 /*
@@ -2602,12 +2672,12 @@ bool GuarddogDoc::isDisabled() {
 //
 // The filename must not contain spaces or shell chars.
 //
-bool GuarddogDoc::runFirewall(const QString &filename, QString &errorstring) {
+bool GuardDogFirewall::runFirewall(const std::string &filename, std::string &errorstring) {
 #ifndef QT_LITE
 	KProcess *proc;
 	proc = new KProcess();
-	QString command;
-	QString konsolebin;
+	std::string command;
+	std::string konsolebin;
 
     konsolebin = locate("exe","konsole");
 
@@ -2625,11 +2695,11 @@ bool GuarddogDoc::runFirewall(const QString &filename, QString &errorstring) {
 }
 
 ///////////////////////////////////////////////////////////////////////////
-bool GuarddogDoc::applyFirewall(QString &errorstring) {
+bool GuardDogFirewall::applyFirewall(std::string &errorstring) {
     KTempFile tmpfile(0,0,0700);
     tmpfile.setAutoDelete(true);
     if(tmpfile.status()!=0) {
-        errorstring = i18n("An error occurred while applying the firewall.\nThe operating system has this to report about the error: %1")
+        errorstring = ("An error occurred while applying the firewall.\nThe operating system has this to report about the error: %1")
             .arg(strerror(tmpfile.status()));
         return false;
     }
@@ -2638,7 +2708,7 @@ bool GuarddogDoc::applyFirewall(QString &errorstring) {
         return false;
     }
     if(!tmpfile.close()) {
-        errorstring = i18n("An error occurred while applying the firewall.\nThe operating system has this to report about the error: %1")
+        errorstring = ("An error occurred while applying the firewall.\nThe operating system has this to report about the error: %1")
             .arg(strerror(tmpfile.status()));
         return false;
     }
@@ -2650,11 +2720,11 @@ bool GuarddogDoc::applyFirewall(QString &errorstring) {
 //
 // This simples removes any firewall that maybe current in force on the system.
 //
-bool GuarddogDoc::resetSystemFirewall(QString &errorstring) {
+bool GuardDogFirewall::resetSystemFirewall(std::string &errorstring) {
 #ifndef QT_LITE
     KProcess *proc;
-    QString command;
-	QString konsolebin;
+    std::string command;
+	std::string konsolebin;
 
     proc = new KProcess();
 
@@ -2701,3 +2771,7 @@ qDebug(command);
     return true;
 }
 */
+
+};
+
+
