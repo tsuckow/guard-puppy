@@ -1,0 +1,134 @@
+<!-- A protocol database contains a sequence of protocol descriptions. The -->
+<!-- lines attribute gives the number of lines in the xml source; it need  -->
+<!-- not be accurate. -->
+<!ELEMENT protocoldb (protocol)* >
+<!ATTLIST protocoldb lines CDATA #IMPLIED>
+
+<!-- A protocol element describes a single application-layer protocol, such -->
+<!-- as the FTP file transfer protocol.  The name attribute gives a name -->
+<!-- used by the firewall configuration script to refer to the protocol. -->
+<!ELEMENT protocol
+   (longname+, description*, classification, pragma*, network, security?,
+   reference*) >
+<!ATTLIST protocol name ID #REQUIRED>
+
+<!-- A protocol's longname elements give reader-friendly names for display -->
+<!-- in the GUI's protocol tree.  The lang attribute lets you give -->
+<!-- different long names for different languages. -->
+<!ELEMENT longname (#PCDATA) >
+<!ATTLIST longname lang CDATA "en">
+
+<!-- A protocol or message can have a more verbose description that the GUI -->
+<!-- can display.  The lang attribute lets you give different descriptions -->
+<!-- for different languages. -->
+<!ELEMENT description (#PCDATA) >
+<!ATTLIST description lang CDATA "en">
+
+<!-- A protocol's classification is the node in the GUI's protocol tree -->
+<!-- that the protocol should be displayed under. -->
+<!ELEMENT classification EMPTY >
+<!ATTLIST classification
+    class (unknown | mail | chat | file | game | session | data | media | net)
+        #REQUIRED >
+
+<!-- Pragmas give extra information about elements.  Guarddog honors	-->
+<!-- pragmas whose name attribute is "guarddog":			-->
+<!-- * In a protocol element, the pragma's content is the name of a	-->
+<!--   kernel module to load.						-->
+<!-- * In a tcp, udp, icmp or ip element, a pragma with content RELATED -->
+<!-- marks messages that will be handled automatically by iptables	-->
+<!-- connection tracking.     -->      
+<!ELEMENT pragma (#PCDATA) >
+<!ATTLIST pragma name CDATA #IMPLIED>
+
+<!-- The GUI can also display security-related information about a -->
+<!-- protocol. -->
+<!ELEMENT security EMPTY >
+<!ATTLIST security
+    threat   (unknown | low | medium | high) "unknown"
+    falsepos (unknown | low | medium | high) "unknown">
+
+<!-- A protocol's references give sources for further information about the -->
+<!-- protocol, preferably with URIs.  Currently Guarddog ignores them.    -->
+<!ELEMENT reference (#PCDATA) >
+<!ATTLIST reference href CDATA #IMPLIED>
+
+<!-- A protocol's network element defines the connections that the -->
+<!-- (application layer) protocol might use.  A connection may use TCP, -->
+<!-- UDP, ICMP, or some other IP (transport layer) protocol. -->
+<!ELEMENT network (tcp | udp | icmp | ip)+ >
+<!ATTLIST network>
+
+<!-- An ip element defines a connection that uses an arbitrary IP	 -->
+<!-- protocol.  The protocol attribute gives the protocol number; see    -->
+<!-- /etc/protocols and http://www.iana.org/assignments/protocol-numbers -->
+<!-- for lists. --> 
+<!--   The source attribute states whether the connection is created by   -->
+<!-- the client (the computer that used the application-layer protocol to -->
+<!-- request a service) or the server.  The dest attribute does the same  -->
+<!-- for the other computer. --> 
+<!--   If direction is "both", data flows both ways through the connection. -->
+<!ELEMENT ip (description | pragma)* >
+<!ATTLIST ip
+    protocol  CDATA		#REQUIRED
+    source    (client | server) "client"
+    dest      (client | server) "server"
+    direction (both)		#IMPLIED>
+
+<!-- Similarly, an icmp element defines a connection that uses the Internet -->
+<!-- Control Message Protocol.  Instead of a protocol attribute, it -->
+<!-- contains a type element, which gives the value of the ICMP message's -->
+<!-- TYPE field, and of its CODE field if the message type uses codes. -->
+<!ELEMENT icmp ((description | pragma)*, type, (description | pragma)*) >
+<!ATTLIST icmp
+    source (client | server) "client"
+    dest   (client | server) "server">
+<!ELEMENT type EMPTY>
+<!-- value and code must be integers in 0..255. -->
+<!ATTLIST type
+    value CDATA #REQUIRED
+    code  CDATA #IMPLIED>
+
+<!-- Finally, the tcp and udp elements define connections that use the TCP -->
+<!-- or UDP protocols.  They contain source and dest elements to define    --> 
+<!-- which ports the connections use.  If no source child is present, then -->
+<!-- any port may be the source, and if no dest child is present, any port -->
+<!-- may be the destination. -->
+<!ELEMENT tcp (source | dest | description | pragma)* >
+<!ATTLIST tcp
+    source (client | server) "client"
+    dest   (client | server) "server">
+
+<!ELEMENT udp (source | dest | description | pragma)* >
+<!ATTLIST udp
+    source (client | server) "client"
+    dest   (client | server) "server"
+    direction (both) #IMPLIED>
+	      
+<!ELEMENT source (port | portrange)* >
+<!ATTLIST source>
+
+<!ELEMENT dest (port | portrange)* >
+<!ATTLIST dest>
+
+<!-- A port's portnum attribute can be	-->
+<!-- * an integer in 0..65535;		-->
+<!-- * "any": any port is allowed;	-->
+<!-- * "privileged": any port in 0..1023 (typically used by privileged -->
+<!--   server processes); -->
+<!-- * "non-privileged": any port in 1024..65535; -->
+<!-- * "dynamic": a port in 1024..65535, dynamically assigned to a client -->
+<!--   process. -->
+<!-- The stance attribute is ignored. -->
+<!ELEMENT port EMPTY>
+<!ATTLIST port
+    portnum CDATA       #REQUIRED
+    stance  (alternate) #IMPLIED>
+
+<!-- A portrange's start and end attributes are integers in 0..65535, with -->
+<!-- start <= end. -->
+<!ELEMENT portrange EMPTY>
+<!ATTLIST portrange
+    start   CDATA       #REQUIRED
+    end     CDATA       #REQUIRED
+    stance  (alternate) #IMPLIED>

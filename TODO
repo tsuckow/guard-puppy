@@ -1,0 +1,33 @@
+Bugs:
+
+* Use a 'splitter' in the GUI.?
+  
+Todo:
+
+* Expand the protocol database. Need: mSQL, Oracle, Sybase, Interbase, MSSQL,
+  Solid, DB2, Time Server, Hot Line, FreeNet.  Heaps more games.
+  
+Wishlist:
+
+* Make it possible to disable the "You are about to stuff around with your
+  networking..." warning message that pops up when you Apply the firewall.
+
+* Rate limited other stuff. (iptables)
+
+* Turn off logging of block packets on a protocol by protocol basis.
+
+* Make it possible to execute an external user supplied script each time
+  after the firewall is setup.
+
+* More operating systems.
+
+* Allow remote configuration of a firewall via SSH. (i.e. Guarddog uses
+  SSH to copy, modify and run the firewall on the remote machine).
+
+Test Cases:
+
+* Spoofed packet with source address matching the address of targetted computer NIC.
+
++++ Add rtsp
++++ NFS sucks.
++++ Output the rules in rc.firewall in a consistent (non-random) order.

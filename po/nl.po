@@ -1,0 +1,1142 @@
+# translation of nl.po to Nederlands
+# translation of nl.po to
+# translation of nl.po to
+# Copyright (C) 2003, 2004 Free Software Foundation, Inc.
+# , 2003
+# , 2003
+# , 2003
+# Rinse de Vries <rinse@kde.nl>, 2004.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: nl\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2005-04-09 16:41+0200\n"
+"PO-Revision-Date: 2004-01-04 01:06+0000\n"
+"Last-Translator: Rinse de Vries <rinse@kde.nl>\n"
+"Language-Team: Nederlands <i18n@kde.nl>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 1.3\n"
+"Plural-Forms:  nplurals=2; plural=(n != 1);\n"
+
+#: guarddog.cpp:407
+msgid ""
+"An error occured while reading the protocol database.\n"
+"\n"
+"Details: \"%1\""
+msgstr ""
+"Er deed zich een fout voor tijdens het lezen van de protocoldatabase.\n"
+"\n"
+"Details: \"%1\""
+
+#: guarddog.cpp:418
+msgid "Zone"
+msgstr "Zone"
+
+#: guarddog.cpp:429 guarddog.cpp:533
+msgid "Defined Network Zones:"
+msgstr "Gedefinieerde netwerkzones:"
+
+#: guarddog.cpp:444
+msgid "New Zone"
+msgstr "Nieuwe zone"
+
+#: guarddog.cpp:446
+msgid "Delete Zone"
+msgstr "Zone verwijderen"
+
+#: guarddog.cpp:450 guarddog.cpp:547
+msgid "Zone Properties"
+msgstr "Zone-eigenschappen"
+
+#: guarddog.cpp:462 guarddog.cpp:835
+msgid "Name: "
+msgstr "Naam: "
+
+#: guarddog.cpp:468
+msgid "Comment:"
+msgstr "Toelichting:"
+
+#: guarddog.cpp:475
+msgid "Zone Addresses"
+msgstr "Zone-adressen"
+
+#: guarddog.cpp:486
+msgid "New Address"
+msgstr "Nieuw adres"
+
+#: guarddog.cpp:488
+msgid "Delete Address"
+msgstr "Adres verwijderen"
+
+#: guarddog.cpp:493
+msgid "Address: "
+msgstr "Adres: "
+
+#: guarddog.cpp:509
+msgid "Connection"
+msgstr "Verbinding"
+
+#: guarddog.cpp:512
+msgid ""
+"Addresses can be host names, network names or IP addresses. Masks can be "
+"specified as network masks or a plain number. e.g. 192.168.1.0/255.255.255.0 "
+"or 192.168.1.0/24"
+msgstr ""
+"Adressen kunnen hostnamen, netwerkmaskers of IP-adressen zijn.  Maskers "
+"kunnen worden gespecificeerd als netwerkmaskers of een getal. Bijv. "
+"192.168.1.0/255.255.255.0 of 192.168.1.0/24"
+
+#: guarddog.cpp:518
+msgid "Protocol"
+msgstr "Protocol"
+
+#: guarddog.cpp:542
+msgid ""
+"<qt><p><b>Click on the name of a protocol to view information about it.</b></"
+"p><p>(Advanced information can be turned on using the \"Show advanced "
+"protocol help\" checkbox on the Advanced tab.)</p></qt>"
+msgstr ""
+"<qt><p><b>Klik op de naam van een protocol om de informatie erover te lezen."
+"</b></p>(U kunt geavanceerde informatie activeren door bij tabblad "
+"\"Geavanceerd\" het selectievakje \"Geavanceerde protocolhelp tonen\" te "
+"kiezen.)<p></p>"
+
+#: guarddog.cpp:554
+msgid "Protocols served from zone 'Internet' to clients in zones:"
+msgstr "Protocollen bedient vanuit zone 'Internet' aan cliënten in zones:"
+
+#: guarddog.cpp:565
+msgid "= protocol is blocked."
+msgstr "= protocol is geblokkeerd."
+
+#: guarddog.cpp:571
+msgid "= protocol is permitted."
+msgstr "= protocol is toegestaan."
+
+#: guarddog.cpp:577
+msgid "= protocol is rejected."
+msgstr "= protocol is geweigerd."
+
+#: guarddog.cpp:583
+msgid "Logging"
+msgstr "Loggen"
+
+#: guarddog.cpp:599
+msgid "Log blocked packets"
+msgstr "Geblokkeerde pakketten loggen"
+
+#: guarddog.cpp:602
+msgid "Log rejected packets"
+msgstr "Geweigerde pakketten loggen"
+
+#: guarddog.cpp:605
+msgid "Note: the options below do not apply to Linux kernels <2.4."
+msgstr ""
+"Opmerking: de opties hieronder zijn niet van toepassing op kernels ouder dan "
+"2.4."
+
+#: guarddog.cpp:607
+msgid "Log aborted TCP connections (half open scans)"
+msgstr "Afgebroken TCP-verbindingen (half-open scans) loggen"
+
+#: guarddog.cpp:611
+msgid "Rate Limiting"
+msgstr "Snelheidsbegrenzing"
+
+#: guarddog.cpp:618
+msgid "Rate limit logging"
+msgstr "Logsnelheid begrenzen"
+
+#: guarddog.cpp:625
+msgid "Rate:"
+msgstr "Snelheid:"
+
+#: guarddog.cpp:630
+msgid " packets per "
+msgstr " pakketten per "
+
+#: guarddog.cpp:635 guarddog.cpp:679
+msgid "Second"
+msgstr "seconde"
+
+#: guarddog.cpp:636 guarddog.cpp:680
+msgid "Minute"
+msgstr "minuut"
+
+#: guarddog.cpp:637 guarddog.cpp:681
+msgid "Hour"
+msgstr "uur"
+
+#: guarddog.cpp:638 guarddog.cpp:682
+msgid "Day"
+msgstr "dag"
+
+#: guarddog.cpp:647
+msgid "Burst:"
+msgstr "Piek:"
+
+#: guarddog.cpp:652
+msgid " packets"
+msgstr " pakketten"
+
+#: guarddog.cpp:664
+msgid "Warn when limiting"
+msgstr "Waarschuwen als er begrensd wordt"
+
+#: guarddog.cpp:670
+msgid "Warning Rate:"
+msgstr "Waarschuwingssnelheid:"
+
+#: guarddog.cpp:674
+msgid " per "
+msgstr " per "
+
+#: guarddog.cpp:691
+msgid "Log IP Options"
+msgstr "IP-opties loggen"
+
+#: guarddog.cpp:694
+msgid "Log TCP sequence numbers"
+msgstr "TCP-volgnummers loggen"
+
+#: guarddog.cpp:697
+msgid "Log TCP Options"
+msgstr "TCP-opties loggen"
+
+#: guarddog.cpp:703
+msgid "Logging Priority:"
+msgstr "Prioriteit van loggen:"
+
+#: guarddog.cpp:708
+msgid "Emergency"
+msgstr "Noodgeval"
+
+#: guarddog.cpp:709
+msgid "Alert"
+msgstr "Alarm"
+
+#: guarddog.cpp:710
+msgid "Critical"
+msgstr "Kritiek"
+
+#: guarddog.cpp:713
+msgid "Notice"
+msgstr "Melding"
+
+#: guarddog.cpp:715
+msgid "Debug"
+msgstr "Debug"
+
+#: guarddog.cpp:725
+msgid "Advanced"
+msgstr "Geavanceerd"
+
+#: guarddog.cpp:743
+msgid "Disable firewall"
+msgstr "Firewall uitschakelen"
+
+#: guarddog.cpp:746
+msgid "Show advanced protocol help"
+msgstr "Geavanceerde protocolhelp tonen"
+
+#: guarddog.cpp:749
+msgid "DHCP"
+msgstr "DHCP"
+
+#: guarddog.cpp:753
+msgid "Enable DHCP on interfaces:"
+msgstr "DHCP activeren op interfaces:"
+
+#: guarddog.cpp:768
+msgid "Enable DHCP server on interfaces:"
+msgstr "DHCP-server activeren op interfaces:"
+
+#: guarddog.cpp:784
+msgid "Local Dynamic Port Range: "
+msgstr "Lokaal bereik voor dynamische poorten: "
+
+#: guarddog.cpp:789
+msgid ":"
+msgstr ":"
+
+#: guarddog.cpp:796
+msgid "Allow TCP timestamps"
+msgstr "TCP-tijdsaanduidingen toestaan"
+
+#: guarddog.cpp:810
+msgid "User Defined Protocols"
+msgstr "Gebruikergedefinieerde procotollen"
+
+#: guarddog.cpp:817
+msgid "Name"
+msgstr "Naam"
+
+#: guarddog.cpp:818
+msgid "Type"
+msgstr "Type"
+
+#: guarddog.cpp:819
+msgid "Port"
+msgstr "Poort"
+
+#: guarddog.cpp:827
+msgid "New Protocol"
+msgstr "Nieuw protocol"
+
+#: guarddog.cpp:829
+msgid "Delete Protocol"
+msgstr "Protocol verwijderen"
+
+#: guarddog.cpp:844
+msgid "Type: "
+msgstr "Type: "
+
+#: guarddog.cpp:849 guarddog.cpp:1547 guarddog.cpp:1559 guarddog.cpp:1740
+msgid "TCP"
+msgstr "TCP"
+
+#: guarddog.cpp:850 guarddog.cpp:1547 guarddog.cpp:1559 guarddog.cpp:1745
+msgid "UDP"
+msgstr "UDP"
+
+#: guarddog.cpp:855
+msgid "Ports: "
+msgstr "Poorten: "
+
+#: guarddog.cpp:860
+msgid "-"
+msgstr "-"
+
+#: guarddog.cpp:866
+msgid "Bidirectional"
+msgstr "Bidirectioneel"
+
+#: guarddog.cpp:878
+msgid "Import/Export"
+msgstr "Importeren/exporteren"
+
+#: guarddog.cpp:881 guarddog.cpp:2073
+msgid "Description:"
+msgstr "Beschrijving:"
+
+#: guarddog.cpp:887
+msgid "Import..."
+msgstr "Importeren..."
+
+#: guarddog.cpp:889
+msgid "Export..."
+msgstr "Exporteren..."
+
+#: guarddog.cpp:892
+msgid "Restore to factory defaults..."
+msgstr "Terug naar fabrieksinstellingen..."
+
+#: guarddog.cpp:1079 guarddog.cpp:1984
+msgid "Protocols served from zone '%1' to clients in zones:"
+msgstr "Protocollen bedient vanuit zone '%1' aan cliënten in zones:"
+
+#: guarddog.cpp:1186
+msgid "new.address"
+msgstr "Nieuw adres"
+
+#: guarddog.cpp:1813
+msgid "Import firewall"
+msgstr "Firewall importeren"
+
+#: guarddog.cpp:1822
+msgid ""
+"Guarddog was unable to read the file at %1 as being a Guarddog firewall.\n"
+"This probably means that this file in not actually a Guarddog firewall.\n"
+"\n"
+"(Detailed message \"%2\")"
+msgstr ""
+"Guarddog herkende het bestand %1 niet als een Guarddog-firewall.\n"
+"Dit betekent waarschijnlijk dat het geen firewall van Guarddog is.\n"
+"\n"
+"(Gedetailleerde melding: \"%2\")"
+
+#: guarddog.cpp:1846
+msgid "Export firewall"
+msgstr "Firewall exporteren"
+
+#: guarddog.cpp:1851
+msgid ""
+"An error occurred while writing the firewall script to %1.\n"
+"\n"
+"(Detailed message: \"%2\")"
+msgstr ""
+"Er deed zich een fout voor tijdens het opslaan van het firewall-script naar %"
+"1.\n"
+"\n"
+"(Gedetailleerde melding: \"%2\")"
+
+#: guarddog.cpp:1862
+msgid ""
+"You are sure you want to reset your firewall\n"
+"configuration to the factory default?\n"
+"This will replace your current configuration.\n"
+"Do you wish to continue?"
+msgstr ""
+"Wilt u werkelijk uw firewall-configuratie\n"
+"terugzetten naar de fabrieksinstellingen?\n"
+"Dit zal uw huidige configuratie vervangen.\n"
+"Wilt u doorgaan?"
+
+#: guarddog.cpp:1898
+msgid "Network Protocol"
+msgstr "Netwerkprotocol"
+
+#: guarddog.cpp:1911
+msgid "Chat"
+msgstr "Chatten"
+
+#: guarddog.cpp:1912
+msgid "Data Serve"
+msgstr "Datadiensten"
+
+#: guarddog.cpp:1913
+msgid "File Transfer"
+msgstr "Bestandsoverdracht"
+
+#: guarddog.cpp:1914
+msgid "Game"
+msgstr "Games"
+
+#: guarddog.cpp:1915
+msgid "Mail"
+msgstr "E-mail"
+
+#: guarddog.cpp:1916
+msgid "Media"
+msgstr "Media"
+
+#: guarddog.cpp:1917
+msgid "Network"
+msgstr "Netwerk"
+
+#: guarddog.cpp:1918
+msgid "Interactive Session"
+msgstr "Interactieve sessie"
+
+#: guarddog.cpp:1920
+msgid "User Defined"
+msgstr "Gebruikersgedefinieerd"
+
+#: guarddog.cpp:2032 guarddog.cpp:2141
+msgid "Name:"
+msgstr "Naam:"
+
+#: guarddog.cpp:2038
+msgid "Description:<br/>"
+msgstr "Beschrijving:<br/>"
+
+#: guarddog.cpp:2046
+msgid "Security Risk:"
+msgstr "Beveiligingsrisico:"
+
+#: guarddog.cpp:2050
+msgid "Low"
+msgstr "Laag"
+
+#: guarddog.cpp:2053
+msgid "Medium"
+msgstr "Gemiddeld"
+
+#: guarddog.cpp:2056
+msgid "High"
+msgstr "Hoog"
+
+#: guarddog.cpp:2068
+msgid "Network Usage:"
+msgstr "Netwerkgebruik:"
+
+#: guarddog.cpp:2091 guarddog.cpp:2102
+msgid "server"
+msgstr "server"
+
+#: guarddog.cpp:2094 guarddog.cpp:2105
+msgid "client"
+msgstr "cliënt"
+
+#: guarddog.cpp:2115
+msgid "%1 %2 connection from %3 to %4."
+msgstr "%1 %2-verbinding van %3 naar %4."
+
+#: guarddog.cpp:2116 guarddog.cpp:2130
+msgid "Bidirectional "
+msgstr "Bidirectionele "
+
+#: guarddog.cpp:2122
+msgid "%1 packet from %2 to %3."
+msgstr "%1 pakket van %2 naar %3."
+
+#: guarddog.cpp:2129
+msgid "%1IP protocol %2 packet from %3 to %4."
+msgstr "%1 IP-protocol %2 pakket van %3 naar %4."
+
+#: guarddog.cpp:2143
+msgid " %1"
+msgstr " %1"
+
+#: guarddog.cpp:2152
+msgid "Source Port:"
+msgstr "Bronpoort:"
+
+#: guarddog.cpp:2158 guarddog.cpp:2197 guarddog.cpp:2223
+msgid ", "
+msgstr ", "
+
+#: guarddog.cpp:2163 guarddog.cpp:2203 guarddog.cpp:2228
+msgid "%1"
+msgstr "%1"
+
+#: guarddog.cpp:2165 guarddog.cpp:2230
+msgid "%1-%2"
+msgstr "%1-%2"
+
+#: guarddog.cpp:2169 guarddog.cpp:2234
+msgid "any"
+msgstr "elke"
+
+#: guarddog.cpp:2172 guarddog.cpp:2237
+msgid "privileged"
+msgstr "met privileges"
+
+#: guarddog.cpp:2175 guarddog.cpp:2240
+msgid "nonprivileged"
+msgstr "zonder privileges"
+
+#: guarddog.cpp:2178 guarddog.cpp:2243
+msgid "dynamic"
+msgstr "dynamisch"
+
+#: guarddog.cpp:2191
+msgid "Type/Code:"
+msgstr "Type/code:"
+
+#: guarddog.cpp:2199
+msgid "%1/"
+msgstr "%1/"
+
+#: guarddog.cpp:2201
+msgid "*"
+msgstr "*"
+
+#: guarddog.cpp:2217
+msgid "Destination Port:"
+msgstr "Bestemmingspoort:"
+
+#: guarddog.cpp:2291
+msgid "<< IP addresses on the local machine >>"
+msgstr "<< IP-adressen op de lokale machine >>"
+
+#: guarddog.cpp:2295
+msgid "<< IP addresses not matching any zone >>"
+msgstr "<< IP-adressen die met geen enkele zone overeenkomen >>"
+
+#: guarddog.cpp:2581
+msgid ""
+"Guarddog was unable to find a Guarddog firewall at %1.\n"
+"This is probably ok, it just means that this is the first time Guarddog has "
+"been run on this system.\n"
+"But please be aware that the firewall settings shown may not represent the "
+"system's current firewalling configuration.\n"
+"Your Guarddog firewall will take effect once you use the 'Apply' button or "
+"exit Guarddog using 'Ok'."
+msgstr ""
+"Guarddog kon geen Guarddog-firewall vinden op %1.\n"
+"Dit is correct als dit de eerste keer is dat u Guarddog op dit systeem "
+"gebruikt.\n"
+"Maar denk er wel aan dat de firewall-instellingen die worden getoond "
+"mogelijk niet de huidige configuratie van uw firewall representeren.\n"
+"Uw Guarddog-firewall is actief zodra u op de knop \"Toepassen\" klikt, of "
+"Guarddog afsluit via de knop \"Ok\"."
+
+#: guarddog.cpp:2589
+msgid ""
+"Guarddog was unable to read the file at %1 as being a Guarddog firewall.\n"
+"This probably means that this file in not actually a Guarddog firewall.\n"
+"This is not a problem, but please note that if you exit Guarddog via the "
+"'Ok' button this file will be overwritten.\n"
+"If you do not want this to happen, then after closing this message, "
+"immediately quit Guarddog using the 'Cancel' button.\n"
+"Also please be aware that the firewall settings shown may not represent the "
+"system's current firewalling configuration.\n"
+"\n"
+"(Detailed message \"%2\")"
+msgstr ""
+"Guarddog herkende het bestand op %1 niet als een Guarddog-firewall.\n"
+"Dit betekent waarschijnlijk dat het bestand geen Guarddog-firewall is.\n"
+"Dit is geen probleem, maar onthoud dat wanneer u Guarddog afsluit via de "
+"knop 'OK', Guarddog het bestand zal overschrijven.\n"
+"Als u niet wilt dat dat gebeurt, Sluit dan na deze melding Guarddog "
+"onmiddelijk af via de knop \"Annuleren\".\n"
+"Onthoud tevens dat de firewall-instellingen die worden getoond mogelijk niet "
+"uw huidige firewall-configuratie representeren.\n"
+"\n"
+"(Gedetailleerde melding: \"%2\")"
+
+#: guarddog.cpp:2643 guarddog.cpp:2664
+msgid ""
+"An error occurred while writing the firewall script to disk.\n"
+"\n"
+"(Detailed message: \"%1\")"
+msgstr ""
+"Er deed zich een fout voor tijdens het opslaan van het firewall-script.\n"
+"\n"
+"(Gedetailleerde melding: \"%1\")"
+
+#: guarddog.cpp:2684
+msgid ""
+"You are about to modify the system's firewall configuration.\n"
+"These changes may disrupt current network connections.\n"
+"\n"
+"Do you wish to continue?"
+msgstr ""
+"U staat op het punt de firewall-instellingen van uw systeem te wijzigen.\n"
+"Deze wijzigingen kunnen uw huidige netwerkverbindingen verstoren.\n"
+"\n"
+"Wilt u verdergaan?"
+
+#: guarddog.cpp:2690
+msgid ""
+"An error occurred while trying to modify system's firewall configuration.\n"
+"The operating system has this to report about the error: %1"
+msgstr ""
+"Er deed zich een fout voor tijdens het wijzigen van de firewall-configuratie "
+"van uw computer.\n"
+"Het besturingssysteem gaf deze informatie over de fout: %1"
+
+#: guarddog.cpp:2700
+msgid ""
+"An error occurred while applying the firewall.\n"
+"The operating system has this to report about the error: %1"
+msgstr ""
+"Er deed zich een fout voor tijdens het toepassen van de firewall.\n"
+"Het besturingssysteem gaf deze informatie over de fout: %1"
+
+#: guarddog.cpp:2709
+msgid "Starting firewall"
+msgstr "Firewall wordt gestart"
+
+#: guarddog.cpp:2710
+msgid ""
+"Starting firewall...\n"
+"\n"
+"Output:"
+msgstr ""
+"Firewall wordt gestart...\n"
+"\n"
+"Uitvoer:"
+
+#: guarddog.cpp:2722
+msgid ""
+"You are about to disable the system's firewall.\n"
+"This will allow all network traffic and potentially leave your system "
+"vulnerable to attack.\n"
+"Unless you are an advanced user and know what you are doing I recommend that "
+"you cancel this action.\n"
+"These changes may also disrupt current network connections.\n"
+"\n"
+"Do you wish to continue?"
+msgstr ""
+"U staat op het punt om de firewall van uw computer uit te schakelen.\n"
+"Hiermee staat u alle netwerkverkeer toe en maakt u uw systeem in principe "
+"kwetsbaar voor een aanval van buitenaf.\n"
+"Tenzij u een ervaren gebruiker bent en weet wat u doet, adviseer ik u om "
+"deze handeling te annuleren.\n"
+"Deze wijzigingen kunnen ook uw huidige netwerkverbindingen verstoren.\n"
+"\n"
+"Wilt u verdergaan?"
+
+#: guarddog.cpp:2747
+msgid "Resetting firewall"
+msgstr "Firewal wordt opnieuw ingesteld"
+
+#: guarddog.cpp:2748
+msgid ""
+"Resetting firewall...\n"
+"\n"
+"Output:"
+msgstr ""
+"Firewall wordt opnieuw ingesteld...\n"
+"\n"
+"Uitvoer:"
+
+#: guarddog.cpp:2807 guarddogdoc.cpp:626
+msgid ""
+"ERROR Can't determine the firewall command! (Is ipchains or iptables "
+"installed?)"
+msgstr ""
+"Fout: het firewall-commando kon niet worden bepaald (is ipchains of iptables "
+"wel geïnstalleerd?)"
+
+#: guarddog.cpp:2808 guarddogdoc.cpp:675
+msgid "Using ipchains."
+msgstr "Ipchains wordt gebruikt."
+
+#: guarddog.cpp:2809 guarddog.cpp:2811 guarddogdoc.cpp:676
+#: guarddogdoc.cpp:1213
+msgid "Resetting firewall rules."
+msgstr "Firewall-regels worden teruggezet."
+
+#: guarddog.cpp:2810 guarddogdoc.cpp:1212
+msgid "Using iptables."
+msgstr "Ipchains wordt gebruikt."
+
+#: guarddog.cpp:2812 guarddogdoc.cpp:1065 guarddogdoc.cpp:1771
+msgid "Finished."
+msgstr "Voltooid."
+
+#: guarddog.cpp:2829
+msgid ""
+"The system's firewall settings have been modified.\n"
+"\n"
+"Shall I restore them to the previous settings?\n"
+"\n"
+"These changes may disrupt current network connections."
+msgstr ""
+"De instellingen van de firewall op uw computer zijn gewijzigd.\n"
+"\n"
+"Wilt u deze terugzetten naar de vorige instellingen?\n"
+"\n"
+"Deze wijzigingen kunnen uw huidige netwerkverbindingen verstoren."
+
+#: guarddogdoc.cpp:328
+msgid "new zone"
+msgstr "nieuwe zone"
+
+#: guarddogdoc.cpp:453
+msgid "new"
+msgstr "nieuw"
+
+#: guarddogdoc.cpp:686 guarddogdoc.cpp:1268
+msgid "Setting kernel parameters."
+msgstr "Kernel-parameters worden ingesteld."
+
+#: guarddogdoc.cpp:737 guarddogdoc.cpp:1321
+msgid "Configuring firewall rules."
+msgstr "Firewall-regels worden geconfigureerd."
+
+#: guarddogdoc.cpp:1224
+msgid "Loading kernel modules."
+msgstr "Kernel-modules worden geladen."
+
+#: guarddogdoc.cpp:2046
+msgid "Sorry, old Guarddog firewall files can not be read."
+msgstr ""
+"Helaas, firewall-bestanden van oude Guarddog-versies kunnen niet worden "
+"gelezen."
+
+#: guarddogdoc.cpp:2049
+msgid ""
+"Error reading firewall file. This does not appear to be a Guarddog firewall "
+"file."
+msgstr ""
+"Fout bij het lezen van firewall-regel. Dit blijkt geen firewall-bestand van "
+"Guarddog te zijn."
+
+#: guarddogdoc.cpp:2107
+msgid "Error parsing the value in the LOCALPORTRANGESTART section."
+msgstr "Fout bij het ontleden van de waarde in de sectie LOCALPORTRANGESTART"
+
+#: guarddogdoc.cpp:2111
+msgid "Value in LOCALPORTRANGESTART section was less then 1024."
+msgstr "Waarde in sectie LOCALPORTRANGESTART was minder dan 1024."
+
+#: guarddogdoc.cpp:2118
+msgid "Error parsing the value in the LOCALPORTRANGEEND section."
+msgstr "Fout bij het ontleden van de waarde in de sectie LOCALPORTRANGEEND."
+
+#: guarddogdoc.cpp:2122
+msgid "Value in LOCALPORTRANGEEND is greater than 65535."
+msgstr "Waarde in LOCALPORTRANGEEND is groter dan  65535."
+
+#: guarddogdoc.cpp:2150
+msgid "Error parsing the value in the LOGLEVEL section."
+msgstr "Fout bij het ontleden van de waarde in de sectie LOGLEVEL."
+
+#: guarddogdoc.cpp:2154
+msgid "Error, the value in the LOGLEVEL section is too big."
+msgstr "Fout, de waarde in de sectie LOGLEVEL is te groot."
+
+#: guarddogdoc.cpp:2164
+msgid "Error parsing the value in the LOGRATE section."
+msgstr "Fout bij het ontleden van de waarde in de sectie LOGRATE."
+
+#: guarddogdoc.cpp:2168
+msgid "Error, the value in the LOGRATE section is too big (>65535)."
+msgstr "Fout, de waarde in de sectie LOGRATE is te groot (>65535)."
+
+#: guarddogdoc.cpp:2175
+msgid "Error parsing the value in the LOGRATEUNIT section."
+msgstr "Fout bij het ontleden van de waarde in de sectie LOGRATEUNIT."
+
+#: guarddogdoc.cpp:2179
+msgid "Error the value in the LOGRATEUNIT section is out of range."
+msgstr ""
+"Fout, de waarde in de sectie LOGRATEUNIT bevindt zich buiten het bereik."
+
+#: guarddogdoc.cpp:2186
+msgid "Error parsing the value in the LOGRATEBURST section."
+msgstr "Fout bij het ontleden van de waarde in de sectie LOGRATEBURST."
+
+#: guarddogdoc.cpp:2190
+msgid "Error, the value in the LOGRATEBURST section is too big."
+msgstr "Fout, de waarde in de sectie LOGRATEBURST is te groot."
+
+#: guarddogdoc.cpp:2200
+msgid "Error parsing the value in the LOGWARNRATE section."
+msgstr "Fout bij het ontleden van de waarde in de sectie LOGWARNRATE."
+
+#: guarddogdoc.cpp:2204
+msgid "Error, the value in the LOGWARNRATE section is too big (>65535)."
+msgstr "Fout, de waarde in de sectie LOGWARNRATE is te groot (>65535)."
+
+#: guarddogdoc.cpp:2211
+msgid "Error parsing the value in the LOGWARNRATEUNIT section."
+msgstr "Fout bij het ontleden van de waarde in de sectie LOGWARNRATEUNIT."
+
+#: guarddogdoc.cpp:2215
+msgid "Error the value in the LOGWARNRATEUNIT section is out of range."
+msgstr ""
+"Fout, de waarde in de sectie LOGWARNRATEUNIT bevindt zich buiten het bereik."
+
+#: guarddogdoc.cpp:2243
+msgid "Value for LOCALPORTRANGEEND is less than the one in LOCALPORTRANGESTART"
+msgstr ""
+"De waarde voor LOCALPORTRANGEEND is kleiner dan de waarde in "
+"LOCALPORTRANGESTART"
+
+#: guarddogdoc.cpp:2257
+msgid "Error parsing firewall [Zone] section. Expected '# NAME='"
+msgstr ""
+"Fout bij het ontleden van de firewall-sectie [Zone]. '# NAME=' werd verwacht."
+
+#: guarddogdoc.cpp:2266
+msgid "Error parsing firewall [Zone] section. Expected '# COMMENT='"
+msgstr ""
+"Fout bij het ontleden van de firewall-sectie [Zone]. '# COMMENT=' werd "
+"verwacht."
+
+#: guarddogdoc.cpp:2291
+msgid "Error parsing firewall [UserDefinedProtocol] section. Expected '# ID='"
+msgstr ""
+"Fout bij het ontleden van de firewall-sectie [UserDefinedProtocol]. '# ID=' "
+"werd verwacht."
+
+#: guarddogdoc.cpp:2300
+msgid ""
+"Error parsing firewall [UserDefinedProtocol] section. Expected '# NAME='"
+msgstr ""
+"Fout bij het ontleden van de firewall-sectie [UserDefinedProtocol]. '# "
+"NAME=' werd verwacht."
+
+#: guarddogdoc.cpp:2315
+msgid ""
+"Error parsing firewall [UserDefinedProtocol] section. Expected '# TYPE=TCP' "
+"or '# TYPE=UDP'"
+msgstr ""
+"Fout bij het ontleden van de firewall-sectie [UserDefinedProtocol]. '# "
+"TYPE=TCP' werd verwacht."
+
+#: guarddogdoc.cpp:2324
+msgid ""
+"Error parsing firewall [UserDefinedProtocol] section. Expected '# PORT='"
+msgstr ""
+"Fout bij het ontleden van de firewall-sectie [UserDefinedProtocol]. '# "
+"PORT=' werd verwacht."
+
+#: guarddogdoc.cpp:2349
+msgid ""
+"Error parsing firewall [UserDefinedProtocol] section. Expected '# "
+"BIDIRECTIONAL=0' or '# BIDIRECTIONAL=1'"
+msgstr ""
+"Fout bij het ontleden van de firewall-sectie [UserDefinedProtocol]. "
+"BIDIRECTIONAL=0' of '# BIDIRECTIONAL=1' werd verwacht."
+
+#: guarddogdoc.cpp:2415
+msgid ""
+"Error parsing firewall [ServerZone] section. Expected '# CONNECTED=0' or '# "
+"CONNECTED=1'"
+msgstr ""
+"Fout bij het ontleden van de firewall-sectie [ServerZone]. '# CONNECTED=0' "
+"of '# CONNECTED=1' werd verwacht."
+
+#: guarddogdoc.cpp:2444
+msgid "Error reading first line of firewall."
+msgstr "Fout bij het lezen van de eerste firewall-regel."
+
+#: guarddogdoc.cpp:2448
+msgid "Error reading second line of firewall. Expected [Guarddog2]"
+msgstr ""
+"Fout bij het lezen van de tweede firewall-regel. [Guarddog2] werd verwacht."
+
+#: guarddogdoc.cpp:2452
+msgid "Error reading file. (Before [Config] section.)"
+msgstr "Fout bij het lezen van het bestand. (voor de sectie [Config].)"
+
+#: guarddogdoc.cpp:2456
+msgid "Error reading file. ([Config] section.)"
+msgstr "Fout bij het lezen van het bestand (sectie [Config].)"
+
+#: guarddogdoc.cpp:2461
+msgid "Error reading firewall. (In the Zone config)."
+msgstr "Fout bij het lezen van de firewall (in de Zone-configuratie)."
+
+#: guarddogdoc.cpp:2465
+msgid "Error reading firewall. (In the Protocol config)."
+msgstr "Fout bij het lezen van de firewall (in de Protocol-configuratie)."
+
+#: guarddogdoc.cpp:2469
+msgid "Unknown error."
+msgstr "Onbekende fout."
+
+#: guarddogdoc.cpp:2494
+msgid "Unable to open the firewall from reading."
+msgstr "De firewall kon niet worden geopend om te lezen."
+
+#: guarddogdoc.cpp:2516
+msgid "Internet"
+msgstr "Internet"
+
+#: guarddogdoc.cpp:2517
+msgid "Internet/Default Zone [built in]"
+msgstr "Internet/standaardzone [ingebouwd]"
+
+#: guarddogdoc.cpp:2522
+msgid "Local"
+msgstr "Lokaal"
+
+#: guarddogdoc.cpp:2523
+msgid "Local Machine zone [built in]"
+msgstr "Lokale-machine-zone [ingebouwd]"
+
+#: guarddogdoc.cpp:2561 guarddogdoc.cpp:2570 guarddogdoc.cpp:2576
+msgid ""
+"An error occurred while writing '%1'. The operating system has this to "
+"report about the error: %2"
+msgstr ""
+"Er deed zich een fout voor tijdens het schrijven van '%1'. Het "
+"besturingssysteem meldt dit over de fout: %2"
+
+#: main.cpp:29
+msgid "Guarddog"
+msgstr "Guarddog"
+
+#: main.cpp:30
+msgid "Firewall utility"
+msgstr "Firewall-hulpprogramma"
+
+#: main.cpp:32
+msgid "Utility for easily creating and configuring a firewall."
+msgstr ""
+"Hulpprogramma voor het op een eenvoudige manier aanmaken en instellen van "
+"een firewall."
+
+#: main.cpp:35
+msgid "Developer"
+msgstr "Ontwikkelaar"
+
+#: main.cpp:36
+msgid "Help with a little bit of network code."
+msgstr "Hulp met een klein beetje netwerkcode."
+
+#: main.cpp:37
+msgid "Help with sorting out what /dev interface ISDN uses."
+msgstr "Hulp bij het uitzoeken wat de /dev-interface ISDN gebruikt."
+
+#: main.cpp:38
+msgid "Bug fixes, DHCP help."
+msgstr "Bugreparaties, hulp bij DHCP."
+
+#: main.cpp:39
+msgid "Feedback, protocol info."
+msgstr "Feedback, protocolinformatie."
+
+#: main.cpp:40
+msgid "Feedback, help with KDE3"
+msgstr "Feedback, hulp met KDE3"
+
+#: main.cpp:41
+msgid "Danish translation"
+msgstr "Deens vertaling"
+
+#: main.cpp:42 main.cpp:45
+msgid "Italian translation"
+msgstr "Italiaans vertaling"
+
+#: main.cpp:43
+msgid "German translation"
+msgstr "Duits vertaling"
+
+#: main.cpp:44
+msgid "French translation"
+msgstr "Frans vertaling"
+
+#: main.cpp:46
+msgid "Code Contribution"
+msgstr ""
+
+#: main.cpp:56
+msgid ""
+"Since you do not have superuser privileges, Guarddog is running with\n"
+"reduced functionality. Firewall scripts may be Imported/Exported, but\n"
+"the system's firewall settings may not be changed.\n"
+msgstr ""
+"Omdat u geen privileges van de systeembeheerder hebt, draait Guarddog met "
+"verminderde functionaliteit.\n"
+"U kunt wel firewall-scripts importeren/exporteren, maar de instellingen van "
+"de firewall op uw computer kunnen niet worden gewijzigd.\n"
+
+#: protocoldb.cpp:328
+msgid "Reading network protocol database"
+msgstr "Netwerkprotocoldatabase wordt gelezen"
+
+#: protocoldb.cpp:1196
+msgid "No error (You should not see this)."
+msgstr "Geen fout (dit hoort u niet te zien)."
+
+#: protocoldb.cpp:1198
+msgid "Unable to open the network protocol database XML file."
+msgstr ""
+"Het XML-bestand met de netwerkprotocoldatabase kon niet worden geopend."
+
+#: protocoldb.cpp:1200
+msgid ""
+"XML Parse error:\n"
+"%1"
+msgstr ""
+"XML-ontleedfout:\n"
+"%1"
+
+#: protocoldb.cpp:1202
+msgid "'protocol' tag requires a 'name' attribute, but none was found."
+msgstr ""
+"De tag 'protocol' vereist het attribuut 'name'. Deze werd niet gevonden."
+
+#: protocoldb.cpp:1204
+msgid "'threat' attribute has an unrecognised value."
+msgstr "Het attribuut 'threat' heeft een niet-herkende waarde."
+
+#: protocoldb.cpp:1206
+msgid "'falsepos' attribute has an unrecognised value."
+msgstr "Het attribuut 'falsepos' heeft een niet-herkende waarde."
+
+#: protocoldb.cpp:1208
+msgid "'port' element requires a 'portnum' attribute, but none was found."
+msgstr ""
+"Het element 'port' vereist het attribuut 'portnum'. Deze werd niet gevonden."
+
+#: protocoldb.cpp:1210
+msgid "'portnum' attribute is not a valid unsigned integer."
+msgstr "Het attribuut 'portnum' is geen geldig ongetekend heel getal."
+
+#: protocoldb.cpp:1212
+msgid "'portrange' element requires a 'start' attribute, but none was found."
+msgstr ""
+"Het element 'portrange' vereist het attribuut 'start'. Deze werd niet "
+"gevonden."
+
+#: protocoldb.cpp:1214
+msgid "'start' attribute is not a valid unsigned integer."
+msgstr "Het attribuut 'start' is geen geldig ongetekend heel getal."
+
+#: protocoldb.cpp:1216
+msgid "'portrange' element requires a 'end' attribute, but none was found."
+msgstr ""
+"Het element 'portrange' vereist het attribuut 'end'. Deze werd niet gevonden."
+
+#: protocoldb.cpp:1218
+msgid "'end' attribute is not a valid unsigned integer."
+msgstr "Het attribuut 'end' is geen geldig ongetekend heel getal."
+
+#: protocoldb.cpp:1220
+msgid "'start' attribute must be greater than 'end' attribute."
+msgstr "Het attribuut 'start' hoort groter te zijn dan het attribuut 'end'."
+
+#: protocoldb.cpp:1225
+msgid "'source' attribute must be one of 'client', 'server' or 'host'."
+msgstr ""
+"Het attribuut 'source' hoort een te zijn van 'client', 'server', of 'host'."
+
+#: protocoldb.cpp:1230
+msgid "'dest' attribute must be one of 'client', 'server' or 'host'."
+msgstr ""
+"Het attribuut 'dest' hoort een te zijn van 'client', 'server' of 'host'."
+
+#: protocoldb.cpp:1232
+msgid "'type' element requires a 'value' attribute, but none was found."
+msgstr ""
+"Het element 'type' vereist het attribuut ' value'. Deze werd niet gevonden."
+
+#: protocoldb.cpp:1234
+msgid "'value' attribute is not a valid unsigned integer."
+msgstr "Het attribuut 'value' is geen geldig ongetekend heel getal."
+
+#: protocoldb.cpp:1236
+msgid "'code' attribute is not a valid unsigned integer."
+msgstr "Het attribuut 'code' is geen geldig ongetekend heel getal."
+
+#: protocoldb.cpp:1238
+msgid "'class' attribute has an unrecognised value."
+msgstr "Het attribuut 'class' heeft een niet-herkende waarde."
+
+#: protocoldb.cpp:1240
+msgid "'ip' element requires a 'protocol' attribute, but none was found."
+msgstr ""
+"Het element 'ip' vereist het attribuut 'protocol'. Deze werd niet gevonden."
+
+#: protocoldb.cpp:1242
+msgid "'protocol' attribute is not a valid unsigned integer."
+msgstr "Het attribuut 'protocol' is geen geldig ongetekend heel getal."
+
+#: protocoldb.cpp:1244
+msgid "'protocol' attribute is out of range. (Must be 8 bit)."
+msgstr ""
+"het attribuut 'protocol' bevindt zich buiten het bereik (hoort 8 bits te "
+"zijn)."
+
+#: protocoldb.cpp:1247
+msgid "Unknown error. (You should never see this)."
+msgstr "Onbekende fout (dit hoort u nooit te zien)."
+
+#: protocoldb.cpp:1253
+msgid "Line: %1, Column: %2 %3, %4, %5\n"
+msgstr "Regel: %1, kolom:  %2 %3, %4, %5\n"
+
+#: _translatorinfo.cpp:1
+msgid ""
+"_: NAME OF TRANSLATORS\n"
+"Your names"
+msgstr "Rinse de Vries"
+
+#: _translatorinfo.cpp:3
+msgid ""
+"_: EMAIL OF TRANSLATORS\n"
+"Your emails"
+msgstr "rinse@kde.nl"
+
+#~ msgid "CommandRunner"
+#~ msgstr "CommandRunner"
+
+#~ msgid "AddressValidator"
+#~ msgstr "AddressValidator"
+
+#~ msgid "InterfaceNameValidator"
+#~ msgstr "InterfaceNameValidator"
+
+#~ msgid "GuarddogApp"
+#~ msgstr "GuarddogApp"
+
+#~ msgid "</i> "
+#~ msgstr "</i> "
+
+#~ msgid "host"
+#~ msgstr "host"
+
+#~ msgid "Feedback"
+#~ msgstr "Feedback"

@@ -1,0 +1,3304 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE protocoldb
+    PUBLIC "-//Simonzone//DTD protocoldb 1.0//EN"
+    "http://www.simonzone.com/software/protocoldb/1.0/protocoldb.dtd">
+<!-- Network Protocol database                          -->
+<!-- Published under the GNU GPL                        -->
+<!-- http://www.simonzone.com/software/guarddog/        -->
+<!--                                                    -->
+<!-- Author:                                            -->
+<!--   Simon Edwards, simon@simonzone.com               -->
+<!--   Maciej Plewa, (contrib)                          -->
+<!--   Jarl Stefansson,  (contrib)                      -->
+<!--   Martin Ostertag (contrib)                        -->
+<!--   Glen Ditchfield (DTD, XML validation)            -->
+<!--   Steve Horsley (contrib)                          -->
+<!--   Roger Luethi (contrib)                           -->
+<!--   Vassilis Virvilis (contrib)                      -->
+<!--                                                    -->
+<!-- Translation:                                       -->
+<!--   DE -  Stephan Johach, lucardus@onlinehome.de     -->
+<!--         Ralf Hempel, Dominik Stadler               -->
+<!--   NL -  Rinse de Vries, rinse@kde.nl               -->
+<!--   FR -  Pascal Billery Schneider                   -->
+<!--   IT -  Ceoldo Costantino, inverness1ATvirgilio.it -->
+<!--   ES -  Antonio Diaz Cayuela                       -->
+<!--                                                    -->
+<!-- Last Modified: 26/11/2006                          -->
+<!--                                                    -->
+<protocoldb lines="3305">
+<protocol name="ftp">
+  <longname>FTP - File Transfer Protocol</longname>
+  <longname lang="de">FTP - File Transfer Protocol</longname>
+  <longname lang="nl">FTP - File Transfer Protocol</longname>
+  <longname lang="fr">FTP - Protocole de transfert de fichier</longname>
+  <longname lang="it">FTP - Protocollo di trasferimento file</longname>
+  <longname lang="es">FTP - Protocolo de transferencia de ficheros</longname>
+  <description>Very common protocol used to transfer files  on one computer to
+  or from another computer across the network.</description>
+  <description lang="de">Verbreitetes Protokoll zur Übertragung von Dateien zwischen
+  Rechnern in einem Netzwerk.</description>
+  <description lang="nl">Zeer verbreid protocol dat wordt gebruikt voor
+  bestandsoverdrachten tussen twee computers over een netwerk</description>
+  <description lang="fr">Protocole extrêmement usuel pour transférer par le réseau
+  des fichiers d'un ordinateur vers (ou depuis) un autre ordinateur.</description>
+  <description lang="it">Protocollo molto comune usato per trasferire file da un computer
+  ad un altro, attraverso una rete.</description>
+  <description lang="es">Protocolo muy común usado para transferir ficheros de un ordenador 
+  a otro a través de una red.</description>
+  <classification class="file"/>
+  <pragma name="guarddog">ip_conntrack_ftp</pragma>
+  <network>
+    <tcp source="client" dest="server">
+      <description>Control connection</description>
+      <description lang="de">Steuerungsverbindung</description>
+      <description lang="nl">Sturingsverbinding</description>
+      <description lang="fr">Connexion de contrôle</description>
+      <description lang="it">Controllo connessione</description>
+      <description lang="es">Conexión de control</description>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="21"/></dest>
+    </tcp>
+    <tcp source="server" dest="client">
+      <description>Data connection</description>
+      <description lang="de">Datenverbindung</description>
+      <description lang="nl">Dataverbinding</description>
+      <description lang="fr">Connexion de données</description>
+      <description lang="it">Connessione dati</description>
+      <description lang="es">Conexión de datos</description>
+      <source><port portnum="20"/></source>
+      <dest><port portnum="nonprivileged"/></dest>
+      <pragma name="guarddog">RELATED</pragma>
+    </tcp>
+    <tcp source="client" dest="server">
+      <description>Data connection passive mode</description>
+      <description lang="de">Datenverbindung passiver Modus</description>
+      <description lang="nl">Dataverbinding passieve modus</description>
+      <description lang="fr">Connexion de données en mode passif</description>
+      <description lang="it">Modo passivo della connessione dati</description>
+      <description lang="es">Conexión de datos en Modo Pasivo</description>
+      <source><port portnum="nonprivileged"/></source>
+      <dest><port portnum="nonprivileged"/></dest>
+      <pragma name="guarddog">RELATED</pragma>
+    </tcp>
+  </network>
+  <security threat="medium" falsepos="low"/>
+  <reference href="http://www.robertgraham.com/pubs/firewall-seen.html">
+  FAQ: Firewall Forensics (What am I seeing?)</reference>
+</protocol>
+
+<protocol name="ssh">
+  <longname>SSH - Remote Login Protocol</longname>
+  <longname lang="de">SSH - Protokoll für die Anmeldung auf einer entfernten Maschine</longname>
+  <longname lang="nl">SSH - protocol voor het inloggen op computers op afstand</longname>
+  <longname lang="fr">SSH - Ouvrir une session sur une machine distante</longname>
+  <longname lang="it">SSH - Protocollo di accesso remoto</longname>
+  <longname lang="es">SSH - Protocolo de acceso remoto</longname>
+  <description>Secure SHell protocol is used to log into and execute commands
+  on a remote computer.  It is provides encrypted communications and is
+  intended for use accross an insecure network. It replaces the older insecure
+  rlogin, rsh and telnet protocols.</description>
+  <description lang="de">Das Secure SHell Protokoll wird zum Anmelden und Ausführen von
+  Befehlen auf entfernten Rechnern verwendet. Es bietet verschlüsselte Kommunikation
+  und ist für die Anwendung in unsicheren Netzwerken gedacht. Es ersetzt die älteren und
+  unsicheren Protokolle rlogin, rsh und telnet.</description>
+  <description lang="nl">Het Secure SHell-protocol wordt gebruikt voor het inloggen op 
+  een computer op afstand en het uitvoeren van commando's op deze externe computer.
+  Het levert versleutelde communicaties en is bedoeld voor gebruik op 
+  onveilige netwerkverbindingen. Het is de vervanger voor het oudere en minder veilige
+  rlogin, rsh en telnet.</description>
+  <description lang="fr">Le protocole Secure SHell permet d'ouvrir une session
+  interactive sur une machine distante afin d'envoyer des commandes ou des fichiers de
+  façon sécurisée. Les communications sont chiffrées, ce qui permet son utilisation à
+  travers un réseau peu sûr. Il remplace les anciens protocoles non-sécurisés rlogin,
+  rsh et telnet.</description>
+  <description lang="it">Il Secure SHell Protocol è usato per connettersi ed eseguire comandi su   
+  un computer remoto: questo protocollo provvede comunicazioni cifrate ed è inteso per l'uso su 
+  una rete non sicura. Rimpiazza i più vecchi (ed insicuri) protocolli  rlogin, rsh e telnet.</description>
+  <description lang="es">El protocolo Secure SHell es usado para conectarse remotamente a un ordenador y darle
+  órdenes: ofrece comunicación cifrada y está concebido para su uso sobre una red insegura. Reemplaza
+  a los viejos e inseguros protocolos rlogin, rsh y telnet.</description>
+  <classification class="session"/>
+  <network>
+    <tcp>
+  	  <description>Normal connection</description>
+	  <description lang="de">Normale Verbindung</description>
+	  <description lang="nl">Normale verbindingen</description>
+	  <description lang="fr">Connexion Normale</description>
+	  <description lang="it">Connessione normale</description>
+	  <description lang="es">Conexión normal</description>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="22"/></dest>
+    </tcp>
+    <tcp>
+  	  <description>privileged source port (rhosts compat.)</description>
+	  <description lang="de">Privilegierter Quellport (rhosts compat.)</description>
+	  <description lang="nl">Bronpoort met privileges (rhosts compatible.)</description>
+	  <description lang="fr">Port source privilégié (compat. rhosts)</description>
+	  <description lang="it">Porta sorgente privilegiata (rhosts compatibile.)</description>
+	  <description lang="es">Puerto de origen privilegiado (compatibilidad rhosts)</description>
+      <source><port portnum="privileged"/></source>
+      <dest><port portnum="22"/></dest>
+    </tcp>
+  </network>
+  <security threat="medium" falsepos="medium"/>
+  <reference href="http://www.robertgraham.com/pubs/firewall-seen.html">
+  FAQ: Firewall Forensics (What am I seeing?)</reference>
+</protocol>
+
+<protocol name="telnet">
+  <longname>Telnet</longname>
+  <longname lang="de">Telnet</longname>
+  <longname lang="nl">Telnet</longname>
+  <longname lang="fr">Telnet</longname>
+  <longname lang="it">Telnet</longname>
+  <longname lang="es">Telnet</longname>
+  <description>Telnet is used to log into and execute commands on a remote
+  computer.  It is vulnerable to 'sniffing' or 'snooping' and is not
+  considered secure. Secure Shell (SSH) is the secure successor to telnet.</description>
+  <description lang="de">Telnet wird zum Anmelden und Ausführen von
+  Befehlen auf entfernten Rechnern verwendet. Es ist anfällig für "sniffing" und "snooping"
+  und wird als unsicher betrachtet. Secure Shell (SSH) ist der sichere Nachfolger
+  von Telnet. </description>
+  <description lang="nl">Telnet wordt gebruikt voor het inloggen op een
+  computer op afstand en het uitvoeren van commando's op deze externe computer.
+  Telnet is kwetsbaar voor 'sniffing' of 'snooping' en wordt zeker niet als veilig beschouwd.
+  Secure SHell (SSH) is de beter beveiligde opvolger van telnet.
+    </description>
+  <description lang="fr">Telnet permet d'ouvrir une session et d'envoyer des commandes sur
+  un ordinateur distant. Parce que les données circulent en clair, il est vulnérable tant au
+  reniflage de paquets qu'à la surveillance de traffic. Secure SHell (SSH) est son successeur sécurisé.
+  </description>
+  <description lang="it">Telnet è usato per accedere ed eseguire comandi su un computer
+  remoto. Come protocollo è vulnerabile allo 'sniffing' e allo 'snooping' e non viene considerato
+  sicuro. SSH è, invece, il suo successore più sicuro. </description>
+  <description lang="es">Telnet es usado para conectarse a un ordenador remoto y darle
+  órdenes. Es vulnerable a 'sniffing' y 'snooping', por lo que ya no se considera seguro. Su sucesor es SSH, 
+  mucho más seguro.</description>
+  <classification class="session"/>
+  <network>
+    <tcp>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="23"/></dest>
+    </tcp>
+  </network>
+  <security threat="high" falsepos="low"/>
+  <reference href="http://www.robertgraham.com/pubs/firewall-seen.html">
+  FAQ: Firewall Forensics (What am I seeing?)</reference>
+</protocol>
+
+<protocol name="linuxconf">
+  <longname>Linuxconf Linux Web based Administration</longname>
+  <longname lang="de">Linuxconf Linux Web basierte Systemverwaltung</longname>
+  <longname lang="nl">Linuxconf - Linux Web-gebaseerd Systeembeheer</longname>
+  <longname lang="fr">Linuxconf - Administration Linux par le Web</longname>
+  <longname lang="it">Linuxconf - Amministrazione di Linux via web</longname>
+  <longname lang="es">Linuxconf - Administración de Linux por web</longname>
+  <description>Linuxconf is a Linux system administration tool that operates
+  via a web browser.</description>
+  <description lang="de">Linuxconf ist ein Linux Systemverwaltungswerkzeug, das über
+  einen Webbrowser bedient wird.</description>
+  <description lang="nl">Linuxconf is een hulpprogramma voor het beheren van computersystemen
+  welke wordt bediend via een webbrowser.</description>
+  <description lang="fr">Linuxconf est un outil d'administration de système Linux qui opère
+  via un navigateur web.</description>
+  <description lang="it">Linuxconf è uno strumento di amministrazione di sistema per Linux che 
+  opera attraverso un programma di navigazione web.</description>
+  <description lang="es">Linuxconf es una herramienta de administración de sistema para Linux que opera
+  con un sistema de navegación web.</description>
+  <classification class="session"/>
+  <network>
+    <tcp>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="98"/></dest>
+    </tcp>
+  </network>
+  <security threat="high" falsepos="low"/>
+  <reference href="http://www.robertgraham.com/pubs/firewall-seen.html">
+  FAQ: Firewall Forensics (What am I seeing?)</reference>
+</protocol>
+
+<protocol name="corba">
+  <longname>Corba RPC system</longname>
+  <longname lang="de">Corba RPC System</longname>
+  <longname lang="nl">Corba RPC System</longname>
+  <longname lang="fr">Corba - Appel de procédure à distance (RPC)</longname>
+  <longname lang="it">Sistema Corba RPC</longname>
+  <longname lang="es">Sistema Corba RPC</longname>
+  <description>CORBA is an acronym for Common Object Request Broker Architecture.
+  This protocol is used for communication between distributed clients and servers in
+  a platform independent way to facilitate integration and interoperability.</description>
+  <description lang="fr">CORBA est l'acronyme de Common Object Request Broker Architecture.
+  Le protocole IIOP permet la communication entre clients et serveurs d'applications distribuées,
+  indépendants de la  plateforme utilisée, ce qui facilite l'intégration et l'interopérabilité.</description>
+  <description lang="it">CORBA è l'acronimo di Common Object Request Broker Architecture.
+  Questo protocollo permette la comunicazione di applicazioni distribuite tra client e server,
+  indipendentemente dalla piattaforma utilizzata e quindi facilita integrazione ed interoperabilità .</description>
+  <description lang="es">CORBA es un acrónimo de Common Object Request Broker Architecture.
+  Este protocolo permite la comunicación entre clientes y servidores de aplicaciones distribuídas,
+  independientemente de la plataforma usada, hecho que facilita la integración y la
+  interoperabilidad.</description>
+  <classification class="session"/>
+  <network><tcp><dest><port portnum="535"/></dest></tcp>
+  <udp source="client" dest="server"><dest><port portnum="535"/></dest></udp></network>
+  <security threat="low" falsepos="low"/>
+  <reference href="http://www.robertgraham.com/pubs/firewall-seen.html">
+  FAQ: Firewall Forensics (What am I seeing?)</reference>
+</protocol>
+
+<protocol name="smtp">
+  <longname>SMTP - Simple Mail Transfer Protocol</longname>
+  <longname lang="de">SMTP - Simple Mail Transfer Protocol</longname>
+  <longname lang="nl">SMTP - Simple Mail Transfer Protocol</longname>
+  <longname lang="fr">SMTP - Protocole Simple de Transfert de Courrier</longname>
+  <longname lang="it">SMTP - Protocollo semplice per l'invio di posta</longname>
+  <longname lang="es">SMTP - Protocolo simple para transferencia de correo</longname>
+  <description>SMTP is used to transfer and deliver email across the network.
+  It is the standard for transmitting email across the Internet.</description>
+  <description lang="de">SMTP wird für die Übertragung und Verteilung von E-Mail in Netzwerken verwendet.
+  Es ist der Standard für den Versand von E-Mail im Internet.</description>
+  <description lang="nl">SMTP wordt gebruikt voor het verzenden van e-mailberichten
+  over een netwerk. Het is de standaard voor het verzenden van e-mailberichten
+  over het Internet.</description>
+  <description lang="fr">SMTP est le protocole qui permet de transférer le courrier à travers le réseau.
+  C'est le standard pour délivrer les courriels par Internet.</description>
+  <description lang="it">Il protocollo SMTP è usato per trasferire e recapitare posta attraverso una rete. Costituisce lo standard per la trasmissione di posta attraverso Internet.</description>
+  <description lang="es">El protocolo SMTP es usado para transferir correo por una red. Es el estandar de
+  transmisión de correo por Internet.</description>
+  <classification class="mail"/>
+  <network>
+    <tcp>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="25"/></dest>
+    </tcp>
+  </network>
+  <security threat="medium" falsepos="low"/>
+  <reference href="http://www.robertgraham.com/pubs/firewall-seen.html">
+  FAQ: Firewall Forensics (What am I seeing?)</reference>
+</protocol>
+
+<protocol name="domain">
+  <longname>DNS - Domain Name Server</longname>
+  <longname lang="de">DNS - Domain Name Server</longname>
+  <longname lang="nl">DNS - Domain Name Server</longname>
+  <longname lang="fr">DNS - Système de noms de domaine</longname>
+  <longname lang="it">DNS - Server del dominio dei nomi</longname>
+  <longname lang="es">DNS - Servidor de nombres de dominio</longname>
+  <description>Used for looking up host names and converting them into
+  Internet (IPv4) network addresses.  Almost all other network protocols
+  depend on DNS.</description>
+  <description lang="de">Verwendet zur Auflösung von Rechnernamen und deren Umsetzung
+  in Internet ( IPv4) Netzwerkadressen.</description>
+  <description lang="nl">Gebruikt voor het opzoeken van hostnamen die vervolgens
+  worden omgezet in Internet (IPv4) netwerkadressen. Vrijwel alle andere netwerkprotocollen
+  zijn afhankelijk van DNS.</description>
+  <description lang="fr">Etablit la correspondance entre les noms des hôtes d'un réseau
+  et leurs adresses Internet (IPv4). Presque tous les autres protocoles
+  s'appuient sur DNS.</description>
+  <description lang="it">Questo protocollo è usato per ottenere i nomi dei nodi di una rete e per convertirli in indirizzi Internet tipo IPv4: quasi tutti gli altri protocolli di rete dipendono da esso.</description>
+  <description lang="es">Este protocolo se usa para buscar un nombre de dominio dado y obtener su
+  correspondiente dirección IPv4. Casi todos los otros protocolos dependen de DNS.</description>
+  <classification class="net"/>
+  <network>
+    <tcp>
+      <dest><port portnum="53"/></dest>
+    </tcp>
+    <udp source="client" dest="server" direction="both">
+      <dest><port portnum="53"/></dest>
+    </udp>
+  </network>
+  <security threat="medium" falsepos="medium"/>
+  <reference href="http://www.robertgraham.com/pubs/firewall-seen.html">
+  FAQ: Firewall Forensics (What am I seeing?)</reference>
+</protocol>
+
+<protocol name="finger">
+  <longname>Finger</longname>
+  <longname lang="de">Finger</longname>
+  <longname lang="nl">Finger</longname>
+  <longname lang="fr">Finger</longname>
+  <longname lang="it">Finger</longname>
+  <longname lang="es">Finger</longname>
+  <description>Fetches information about a user or all users logged on to a
+  remote machine. Finger servers are considered undesirable and unsafe due to
+  the amount of possibly sensitive information they serve.</description>
+  <description lang="de">Ermittelt Informationen über einen oder alle Benutzer,
+  die auf einer entfernten Maschine angemeldet sind. Finger-Server werden als unerwünscht
+  und unsicher betrachtet, da sie möglicherweise sensible Daten preisgeben.</description>
+  <description lang="nl">Haalt informatie op over een gebruiker of alle gebruikers
+  die zijn ingelogd op een computer op afstand. Finger-servers worden beschouwd als
+  ongewenst en onveilig doordat ze mogelijkerwijs gevoelige gegevens prijsgeven.
+  </description>
+  <description lang="fr">Permet d'accéder à des informations nominatives sur un utilisateur,
+  voire tous les utilisateurs, connectés sur une machine distante. Les serveurs Finger, par
+  ailleurs vulnérables, sont indésirables par la quantité d'informations probablement sensibles
+  qu'ils fournissent.
+  </description>
+  <description lang="it">Il protocollo Finger fornisce informazioni riguardo ad un utente o a tutti gli utenti connessi ad una macchina remota. I server fingers sono considerati indesiderabili e insicuri a causa della quantità di informazioni sensibili che possono fornire.</description>
+  <description lang="es">El protocolo Finger ofrece información de un usuario o varios que estén conectados a una máquina remota. Los servidores finger se consideran inseguros y no son deseables, debido a la cantidad de información potencialmente sensible que pueden dar.</description>
+  <classification class="data"/>
+  <network>
+    <tcp>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="79"/></dest>
+    </tcp>
+    <udp source="client" dest="server">
+      <dest><port portnum="79"/></dest>
+    </udp>
+  </network>
+  <security threat="high" falsepos="low"/>
+  <reference href="http://www.robertgraham.com/pubs/firewall-seen.html">
+  FAQ: Firewall Forensics (What am I seeing?)</reference>
+</protocol>
+
+<protocol name="http">
+  <longname>HTTP - World Wide Web</longname>
+  <longname lang="de">HTTP - World Wide Web</longname>
+  <longname lang="nl">HTTP - World Wide Web</longname>
+  <longname lang="fr">HTTP - Web</longname>
+  <longname lang="it">HTTP - World Wide Web</longname>
+  <longname lang="es">HTTP - World Wide Web</longname>
+  <description>HyperText Transfer Protocol is used on the World Wide Web for
+  transfering HTML and other documents.</description>
+  <description lang="de">Das HyperText Transfer Protokoll wird im World Wide Web für
+  die Übertragung von HTML und anderen Dokumenten verwendet.</description>
+  <description lang="nl">Het HyperText Transfer Protocol wordt gebruikt op het World Wide
+  Web voor de overdracht van HTML en andere documenten.
+  </description>
+  <description lang="fr">Le protocole désigné sous le nom d'HyperText Transfer Protocol
+  permet de transférer des documents HTML ou d'autres types de documents.
+  </description>
+  <description lang="it">Il protocollo di trasferimento di ipertesto (HTTP) è usato sul World Wide Web per trasferire documenti in HTML ed altri formati.</description>
+  <description lang="es">El protocolo de trasferencia de hipertexto (HTTP) se usa en la World Wide Web para transferir documentos HTML o de otros tipos.</description>
+  <classification class="file"/>
+  <network>
+    <tcp>
+      <source><port portnum="dynamic"/></source>
+      <dest>
+        <port portnum="80"/>
+        <port portnum="8080" stance="alternate"/>
+        <port portnum="8008" stance="alternate"/>
+        <port portnum="8000" stance="alternate"/>
+        <port portnum="8888" stance="alternate"/>
+      </dest>
+    </tcp>
+  </network>
+  <security threat="medium" falsepos="low"/>
+  <reference>Well Known Ports</reference>
+</protocol>
+
+<protocol name="https">
+  <longname>HTTPS - World Wide Web over SSL</longname>
+  <longname lang="de">HTTPS - World Wide Web über SSL</longname>
+  <longname lang="nl">HTTPS - World Wide Web over SSL</longname>
+  <longname lang="fr">HTTPS - Web sécurisé par SSL</longname>
+  <longname lang="it">HTTPS - World Wide Web via SSL</longname>
+  <longname lang="es">HTTPS - World Wide Web por SSL</longname>
+  <description>The HyperText Transfer Protocol secured using Secure Socket
+  Layer (SSL) for exchanging HTML and other documents. Unlike normal HTTP,
+  HTTPS is a secure protocol and can not be easily 'sniffed' or 'snooped on'
+  by third parties. It is commonly used for doing secure electronic commerce
+  on the World Wide Web.</description>
+  <description lang="de">Das über Secure Socket Layer (SSL) abgesicherte HyperText Transfer Protocol zur
+  Übertragung von HTML und anderen Dokumenten. Anders als beim normalen HTTP, ist HTTPS ein sicheres 
+  Protokoll und kann nicht so leicht durch Dritte 'gesniffed' oder 'gesnooped' werden. Es wird hauptsächlich zur
+  Abwicklung sicherer elektronischer Geschäfte im World Wide Web verwendet.</description>
+  <description lang="nl">Het met behulp van de Secure Socket Layer (SSL) beveiligde HyperText Transfer Protocol
+  voor het overzenden van HTML en andere documenten. Anders dan gewone HTTP is HTTPS een beveiligd protocol 
+  en is het niet of nauwelijks gevoelig voor 'sniffing' en 'snooping' door derden. Het wordt hoofdzakelijk gebruikt
+  voor het afwikkelen van beveiligde electronische zaken op het World Wide Web.</description>
+  <description lang="fr">Il s'agit du protocole HTTP sécurisé par le procédé de sécurisation SSL
+  (Secure Sockets Layers) permettant d'échanger des documents HTML ou d'autres types de documents.
+  Mais contrairement à HTTP, le protocole HTTPS permet de fournir une sécurisation par chiffrement
+  et empêche davantage le reniflage, par des tiers, de paquets transitant sur le réseau ou la surveillance de traffic.
+  Il est généralement utilisé pour les transactions de commerce électronique par le Web.</description>
+  <description lang="it">Il protocollo di trasferimento di ipertesto è reso sicuro, per lo scambio di documenti in HTML ed altri formati, usando il Secure Socket Layer (SSL). A differenza del normale HTTP, HTTPS è un protocollo sicuro che non può essere facilmente 'sniffed' o 'snooped' da una terza parte. E' comunemente usato per rendere sicuro il commercio elettronico sul web.</description>
+  <description lang="es">El protocolo seguro de trasferencia de hipertexto (HTTP), usado para el intercambio de documentos HTML o de otros tipos usando SSL (Secure Socket Layer). A diferencia del HTTP normal, no puede ser fácilmente 'sniffed' o 'snooped' por un tercero. Se usa comúnmente para la entrega segura de correo por el web.</description>
+  <classification class="file"/>
+  <network>
+    <tcp>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="443"/></dest>
+    </tcp>
+  </network>
+  <security threat="medium" falsepos="low"/>
+  <reference>Well Known Ports</reference>
+</protocol>
+
+<protocol name="nfs">
+  <longname>Network File System - Sun Microsystems</longname>
+  <longname lang="de">Network File System - Sun Microsystems</longname>
+  <longname lang="nl">Network File System - Sun Microsystems</longname>
+  <longname lang="fr">Système de fichiers distribué (NFS) - Sun Microsystems</longname>
+  <longname lang="it">Network File System - Sun Microsystems</longname>
+  <longname lang="es">Network File System - Sun Microsystems</longname>
+  <classification class="file"/>
+  <network>
+  	<tcp>
+  	  <description>RPC port mapper service</description>
+	  <description lang="de">RPC Port Mapper Dienst</description>
+	  <description lang="nl">RPC Port Mapper-service</description>
+	  <description lang="fr">Service RPC port mapper</description>
+	  <description lang="it">Servizio di Port Mapper RPC</description>
+	  <description lang="es">Servicio de Port Mapper RPC</description>
+      <dest><port portnum="111"/></dest>
+      <source><port portnum="any"/></source>
+    </tcp>
+  	<udp direction="both">
+  	  <description>RPC port mapper service</description>
+	  <description lang="de">RPC Port Mapper Dienst</description>
+	  <description lang="nl">RPC Port Mapper-service</description>
+	  <description lang="fr">Service RPC port mapper</description>
+	  <description lang="it">Servizio Port Mapper RPC</description>
+	  <description lang="es">Servicio Port Mapper RPC</description>
+  	  <dest><port portnum="111"/></dest>
+      <source><port portnum="any"/></source>
+  	</udp>
+
+  	<tcp>
+  	  <description>mountd</description>
+	  <description lang="de">mountd</description>
+	  <description lang="nl">mountd</description>
+	  <description lang="fr">Démon serveur NFS</description>
+	  <description lang="it">mountd</description>
+	  <description lang="es">Demonio servidor NFS</description>
+      <dest><port portnum="dynamic"/></dest>
+      <source><port portnum="any"/></source>
+    </tcp>
+  	<udp direction="both">
+  	  <description>mountd</description>
+	  <description lang="de">mountd</description>
+	  <description lang="nl">mountd</description>
+	  <description lang="fr">Démon serveur NFS</description>
+	  <description lang="it">mountd</description>
+	  <description lang="es">Demonio servidor NFS</description>
+  	  <dest><port portnum="any"/></dest>
+      <source><port portnum="any"/></source>
+  	</udp>
+
+    <tcp source="client" dest="server">
+  	  <description>NFS data</description>
+	  <description lang="de">NFS Daten</description>
+	  <description lang="nl">NFS-data</description>
+	  <description lang="fr">Données NFS</description>
+	  <description lang="it">Dati NFS</description>
+	  <description lang="es">Datos NFS</description>
+      <dest><port portnum="2049"/></dest>
+      <source><port portnum="any"/></source>
+    </tcp>
+    <udp source="client" dest="server">
+  	  <description>NFS data</description>
+	  <description lang="de">NFS Daten</description>
+	  <description lang="nl">NFS-data</description>
+	  <description lang="fr">Données NFS</description>
+	  <description lang="it">Dati NFS</description>
+	  <description lang="es">Datos NFS</description>
+      <dest><port portnum="2049"/></dest>
+      <source><port portnum="any"/></source>
+    </udp>
+  </network>
+  <security threat="high" falsepos="low"/>
+  <reference href="http://www.robertgraham.com/pubs/firewall-seen.html">
+  FAQ: Firewall Forensics (What am I seeing?)</reference>
+</protocol>
+
+<protocol name="pop2">
+  <longname>POP2 - Post Office Protocol version 2</longname>
+  <longname lang="de">POP2 - Post Office Protocol Version 2</longname>
+  <longname lang="nl">POP2 - Post Office Protocol Versie 2</longname>
+  <longname lang="fr">POP2 - Protocole de messagerie version 2</longname>
+  <longname lang="it">POP2 - Protocollo Post Office v. 2</longname>
+  <longname lang="es">POP2 - Protocolo de Oficina de Correos v. 2</longname>
+  <description>Used by client machines for retriving email from a mail server.
+  </description>
+  <description lang="de">Wird von Rechnern zum Abholen von E-Mail von einem Mail-Server benutzt.
+  </description>
+  <description lang="nl">Wordt gebruikt op computers voor het ontvangen van e-mailberichten
+  van een mailserver.
+  </description>
+  <description lang="fr">Protocole utilisé par un client pour relever les courriels
+   du serveur de courrier.
+  </description>
+  <description lang="it">Questo protocollo è usato da macchine client per ricevere posta da un server di posta elettronica.</description>
+  <description lang="es">Este protocolo es usado por la máquina cliente para recoger correo de un servidor de correo electrónico.</description>
+  <classification class="mail"/>
+  <network>
+    <tcp>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="109"/></dest>
+    </tcp>
+  </network>
+  <security threat="medium" falsepos="low"/>
+  <reference href="http://www.robertgraham.com/pubs/firewall-seen.html">
+  FAQ: Firewall Forensics (What am I seeing?)</reference>
+</protocol>
+
+<protocol name="pop3">
+  <longname>POP3 - Post Office Protocol version 3</longname>
+  <longname lang="de">POP3 - Post Office Protocol Version 3</longname>
+  <longname lang="nl">POP3 - Post Office Protocol Versie 3</longname>
+  <longname lang="fr">POP3 - Protocole de messagerie version 3</longname>
+  <longname lang="it">POP3 - Protocollo Post Office v. 3</longname>
+  <longname lang="es">POP3 - Protocolo de Oficina de Correos v. 3</longname>
+  <description>Used by client machine for retriving email from a mail server.
+  </description>
+  <description lang="de">Wird von Rechnern zum Abholen von E-Mail von einem Mail-Server benutzt.
+  </description>
+  <description lang="nl">Wordt gebruikt op computers voor het ontvangen van e-mailberichten
+  van een mailserver.
+  </description>
+  <description lang="fr">Protocole utilisé par un client pour relever les courriels
+   du serveur de courrier.
+  </description>
+  <description lang="it">Questo protocollo è usato da macchine client per ricevere posta da un server di posta elettronica.</description>
+  <description lang="es">Este protocolo es usado por la máquina cliente para recoger correo de un servidor de correo electrónico.</description>
+  <classification class="mail"/>
+  <network>
+    <tcp>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="110"/></dest>
+    </tcp>
+  </network>
+  <security threat="medium" falsepos="low"/>
+  <reference href="http://www.robertgraham.com/pubs/firewall-seen.html">
+  FAQ: Firewall Forensics (What am I seeing?)</reference>
+</protocol>
+
+<protocol name="sunrpc">
+  <longname>SUN Remote Procedure Call</longname>
+  <longname lang="de">SUN Remote Procedure Call</longname>
+  <longname lang="nl">SUN Remote Procedure Call</longname>
+  <longname lang="fr">SUN - Appel de procédure à distance (RPC)</longname>
+  <longname lang="it">Procedura di chiamata remota di SUN Microsystems</longname>
+  <longname lang="es">Llamada de procedimiento remoto de SUN Microsystems</longname>
+  <classification class="session"/>
+  <network>
+  	<tcp>
+  	  <dest><port portnum="111"/></dest>
+  	  <source><port portnum="any"/></source>
+  	</tcp>
+  	<udp direction="both">
+  	  <dest><port portnum="111"/></dest>
+  	  <source><port portnum="any"/></source>
+  	</udp>
+  </network>
+  <security threat="high" falsepos="low"/>
+  <reference>Well Known Ports</reference>
+</protocol>
+
+<protocol name="auth">
+  <longname>ident/auth</longname>
+  <longname lang="de">ident/auth</longname>
+  <longname lang="nl">ident/auth</longname>
+  <longname lang="fr">ident / auth</longname>
+  <longname lang="it">ident/auth</longname>
+  <longname lang="es">ident/auth</longname>
+  <description>This is used by to identify the owner of a TCP connection.
+  Many servers (FTP, POP3, etc) query this when logging an incoming
+  connection.</description>
+  <description lang="de">Dieses Protokoll wird zur Identifizierung des Eigentümers einer TCP-Verbindung
+  benutzt. Viele Server (FTP, POP3, etc) führen eine solche Abfrage bei eingehenden
+  Verbindungen durch.</description>
+  <description lang="nl">Dit protocol wordt gebruikt voor het identificeren van de eigenaar
+  van een TCP-verbinding. Veel servers (FTP, POP3, etc.) voeren een dergelijk verzoek
+  uit bij de verbindingsopbouw naar deze servers.</description>
+  <description lang="fr">Protocole servant à authentifier le propriétaire
+  d'une connexion TCP. De nombreux serveurs (FTP, POP3, etc) requièrent cette authentification
+  pour leurs journalisations des connexions entrantes.</description>
+  <description lang="it">Questo protocollo è usato per identificare il possessore di una connessione TCP. Molti server (FTP, POP3 etc) lo interrogano quando ricevono la richiesta di una connessione in arrivo.</description>
+  <description lang="es">Este protocolo se utiliza para conocer al propietario de una conexión TCP. Muchos servidores (FTP, POP3 etc) preguntan esto cuando registran una conexión entrante.</description>
+  <classification class="net"/>
+  <network>
+  	<tcp>
+      <source><port portnum="dynamic"/></source>
+  	  <dest><port portnum="113"/></dest>
+  	</tcp>
+	<udp direction="both"><dest><port portnum="113"/></dest></udp>
+  </network>
+  <security threat="medium" falsepos="high"/>
+  <reference>Well Known Ports</reference>
+</protocol>
+
+<protocol name="nntp">
+  <longname>NNTP - Network News Transfer Protocol</longname>
+  <longname lang="de">NNTP - Network News Transfer Protocol</longname>
+  <longname lang="nl">NNTP - Network News Transfer Protocol</longname>
+  <longname lang="fr">NNTP - Protocole de distribution des nouvelles</longname>
+  <longname lang="it">NNTP - Protocollo di rete per l'invio di notizie</longname>
+  <longname lang="es">NNTP - Protocolo de distribución de noticias por red</longname>
+  <description>Used for transmitting network news groups messages.
+  </description>
+  <description lang="de">Verwendet bei der Übertragung von Newsgruppen Nachrichten.
+  </description>
+  <description lang="nl">Wordt gebruikt bij het overzenden van nieuwsgroepberichten.
+  </description>
+  <description lang="fr">Utilisé pour transmettre les messages des forums de discussion.
+  </description>
+  <description lang="it">Usato per trasmettere in rete messaggi di tipo news group.</description>
+  <description lang="es">Usado para transmitir mensajes de foros de discusión.</description>
+  <classification class="mail"/>
+  <network>
+    <tcp>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="119"/></dest>
+    </tcp>
+  </network>
+  <security threat="medium" falsepos="low"/>
+  <reference href="http://www.robertgraham.com/pubs/firewall-seen.html">
+  FAQ: Firewall Forensics (What am I seeing?)</reference>
+</protocol>
+
+<protocol name="netbios">
+  <longname>Windows Networking (NETBIOS)</longname>
+  <longname lang="de">Windows-Netzwerke (NETBIOS)</longname>
+  <longname lang="nl">Windows-netwerken (NETBIOS)</longname>
+  <longname lang="fr">Réseau Windows (NETBIOS)</longname>
+  <longname lang="it">Windows Networking (NETBIOS)</longname>
+  <longname lang="es">Windows Networking (NETBIOS)</longname>
+  <description>Using by Windows based networks to share files and printers.
+  See also "Microsoft SMB over TCP".</description>
+  <description lang="de">Wird in windowsbasierten Netzwerken für den gemeinsamen Zugriff auf
+  Dateien und Drucker verwendet.</description>
+  <description lang="nl">Wordt in Windows-netwerken gebruikt voor het delen van
+  bestanden en printers. Kijk ook bij "Microsoft SMB over TCP"</description>
+  <description lang="fr">Responsable pour les réseaux Windows du partage
+  d'imprimantes et de fichiers. Voir également « Microsoft SMB sur TCP ».</description>
+  <description lang="it">Questo protcollo è protocollo usato da reti di computer basate su Windows per condividerefile e stampanti. Vedi anche la documentazione di Microsoft SMB su TCP</description>
+  <description lang="es">Usado en redes basadas en MS Windows para compartir impresoras y ficheros. Vea
+  también "Microsoft SMB sobre TCP".</description>
+  <classification class="net"/>
+  <network>
+    <tcp source="client" dest="server">
+      <description>NETBIOS Name Service</description>
+      <description lang="de">NETBIOS Name Service</description>
+      <description lang="nl">NETBIOS Name Service</description>
+      <description lang="fr">Service de gestion des noms NETBIOS</description>
+      <description lang="it">Servizio Nomi NETBIOS</description>
+      <description lang="es">Servicio de nombres NETBIOS</description>
+      <dest><port portnum="137"/></dest>
+    </tcp>
+
+    <udp source="client" dest="server" direction="both">
+      <description>NETBIOS Name Service</description>
+      <description lang="de">NETBIOS Name Service</description>
+      <description lang="nl">NETBIOS Name Service</description>
+      <description lang="fr">Service de gestion des noms NETBIOS</description>
+      <description lang="it">Servizio Nomi NETBIOS </description>
+      <description lang="es">Servicio de nombres NETBIOS</description>
+      <source><port portnum="dynamic"/><port portnum="137"/></source>
+      <dest><port portnum="137"/></dest>
+    </udp>
+
+    <!-- This kind of sucks. We need this entry to explicitly allow -->
+    <!-- reply NS lookup UDP packets. Unfortunately, the entry above -->
+    <!-- won't work because a client will send a query to the broadcast -->
+    <!-- address, but the reply will not come from the broadcast address, -->
+    <!-- but from the machine replying instead. This means that we can't -->
+    <!-- use connection tracking to allow the reply back in, because the -->
+    <!-- reply is coming from a different source address and hence, won't -->
+    <!-- be matched with the connection created by the query. -->
+    <udp source="server" dest="client" direction="both">
+      <description>NETBIOS Name Service, announcements, lookup replies.</description>
+      <description lang="de">NETBIOS Name Service, announcements, lookup replies.</description>
+      <description lang="nl">NETBIOS Name Service, announcements, lookup replies.</description>
+      <description lang="fr">Le Service de gestion des noms NETBIOS assure la déclaration des noms
+      ainsi que les réponses aux requêtes.</description>
+      <description lang="it">Servizio Nomi (Name Service) NETBIOS, annunci, repliche per gli agganci </description>
+      <description lang="es">El Servicio de nombres NETBIOS gestiona la declaración de nombres de ordenadores
+      y la respuesta a peticiones de búsqueda de nombres.</description>
+      <source><port portnum="137"/></source>
+      <dest><port portnum="dynamic"/><port portnum="137"/></dest>
+    </udp>
+
+    <udp source="client" dest="server" direction="both">
+      <description>NETBIOS Datagram Service</description>
+      <description lang="de">NETBIOS Datagram Dienst</description>
+      <description lang="nl">NETBIOS Datagram-service</description>
+      <description lang="fr">NETBIOS Datagram service</description>
+      <description lang="it">Servizio NETBIOS Datagram</description>
+      <description lang="es">NETBIOS Datagram Service</description>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="138"/></dest>
+    </udp>
+    <udp source="server" dest="client" direction="both">
+      <description>NETBIOS Datagram Service (announcement)</description>
+      <description lang="de">NETBIOS Datagram Dienst (announcement)</description>
+      <description lang="nl">NETBIOS Datagram service (announcement)</description>
+      <description lang="fr">NETBIOS Datagram service (annonce au maître-explorateur)</description>
+      <description lang="it">Servizio NETBIOS Datagram(annuncio)</description>
+      <description lang="es">NETBIOS Datagram Service (anuncio)</description>
+      <source><port portnum="138"/></source>
+      <dest><port portnum="138"/></dest>
+    </udp>
+    <!-- This one here occurs when Windows is looking for printers on a LAN. -->
+    <udp source="client" dest="server" direction="both">
+      <description>NETBIOS Datagram Service (printer search)</description>
+      <description lang="de">NETBIOS Datagram Dienst (printer search)</description>
+      <description lang="nl">NETBIOS Datagram-service (printer search)</description>
+      <description lang="fr">NETBIOS Datagram service (recherche d'imprimante)</description>
+      <description lang="it">Servizio NETBIOS Datagram (ricerca stampanti)</description>
+      <description lang="es">NETBIOS Datagram Service (búsqueda de impresoras)</description>
+      <source><port portnum="138"/></source>
+      <dest><port portnum="138"/></dest>
+    </udp>
+    <tcp source="client" dest="server">
+      <description>NETBIOS Session Service</description>
+      <description lang="de">NETBIOS Session Dienst</description>
+      <description lang="nl">NETBIOS Session-service</description>
+      <description lang="fr">NETBIOS Service d'ouverture de sessions</description>
+      <description lang="it">Servizio Sessione NETBIOS </description>
+      <description lang="es">Servicio de apertura de sesión NETBIOS</description>
+      <dest><port portnum="139"/></dest>
+    </tcp>
+    <udp source="client" dest="server">
+      <description>NETBIOS Session Service</description>
+      <description lang="de">NETBIOS Session Dienst</description>
+      <description lang="nl">NETBIOS Session-service</description>
+      <description lang="fr">NETBIOS Service d'ouverture de sessions</description>
+      <description lang="it">Servizio Sessione NETBIOS </description>
+      <description lang="es">Servicio de apertura de sesión NETBIOS</description>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="139"/></dest>
+    </udp>
+  </network>
+  <security threat="low" falsepos="high"/>
+  <reference href="http://www.robertgraham.com/pubs/firewall-seen.html">
+  FAQ: Firewall Forensics (What am I seeing?)</reference>
+</protocol>
+
+<protocol name="microsoft-ds">
+  <longname>Microsoft SMB over TCP</longname>
+  <longname lang="de">Microsoft SMB über TCP</longname>
+  <longname lang="nl">Microsoft SMB over TCP</longname>
+  <longname lang="fr">Microsoft SMB sur TCP</longname>
+  <longname lang="it">Microsoft SMB su TCP</longname>
+  <longname lang="es">Microsoft SMB sobre TCP</longname>
+  <description>Using by Windows 2000 and later, to share files and
+  printers.  This is basically Server Message Block (SMB) running directly
+  over TCP without using NETBIOS inbetween. See also "Windows Networking
+  (NETBIOS)".</description>
+  <description lang="de">Verwendung durch Windows 2000 und neuere Versionen für den gemeinsamen
+  Zugriff auf Dateien und Drucker. Es handelt sich hierbei grundsätzlich um das
+  Server Message Block (SMB) Protokoll, das direkt ohne Umweg über NetBIOS über TCP
+  abgewickelt wird.</description>
+  <description lang="nl">Gebruikt door Windows 2000 en nieuwer, voor het
+  delen van bestanden en printers. Dit is in feite het Server Message Block (SMB) protocol
+  dat rechtstreeks over TCP loopt, zonder gebruik te maken van NETBIOS. Kijk ook bij
+  "Windows-netwerken (NETBIOS)".</description>
+  <description lang="fr">Responsable depuis Windows 2000, du partage de
+   fichiers et d'imprimantes. Schématiquement, SMB s'exécute par-dessus TCP sans passer
+   directement par NETBIOS. Voir également « Réseau Windows (NETBIOS) ».</description>
+  <description lang="it">Questo protocollo è usato da Windows 2000 e successivi per condividere file e stampanti. Fondalmentalmente è un Server Message Block (SMB) che entra in esecuzione 
+  direttamente sopra il TCP senza usare nel mezzo il protocollo NETBIOS. Vedi anche la documentazione su Windows Networking (NETBIOS).</description>
+  <description lang="es">Usado por MS Windows 2000 y posteriores, para compartir ficheros e impresoras.
+  Básicamente es Server Message Block (SMB) funcionando directamente sobre TCP sin utilizar NETBIOS. Vea
+  también "Windows Networking (NETBIOS)".
+  </description>
+  <classification class="net"/>
+  <network>
+    <tcp source="client" dest="server">
+      <description>SMB over TCP</description>
+      <description lang="de">SMB über TCP</description>
+      <description lang="nl">SMB over TCP</description>
+      <description lang="fr">SMB sur TCP</description>
+      <description lang="it">SMB su TCP</description>
+      <description lang="es">SMB sobre TCP</description>
+      <dest><port portnum="445"/></dest>
+    </tcp>
+  </network>
+  <security threat="medium" falsepos="low"/>
+  <reference href="http://ntsecurity.nu/papers/port445/">
+  The use of TCP port 445 in Windows 2000</reference>
+</protocol>
+
+<protocol name="imap">
+  <longname>IMAP - Internet Message Access Protocol</longname>
+  <longname lang="de">IMAP - Internet Message Access Protocol</longname>
+  <longname lang="nl">IMAP - Internet Message Access Protocol</longname>
+  <longname lang="fr">IMAP - Protocole de Messagerie</longname>
+  <longname lang="it">IMAP - Protocollo internet per l'accesso a messaggi</longname>
+  <longname lang="es">IMAP - Protocolo de acceso a mensajes en Internet</longname>
+  <description>Used by client machines to read and manage email residing on a
+  mail server.</description>
+  <description lang="de">Wird von Client Rechnern zum Lesen und Verwalten von E-Mails
+  benutzt, die auf einem Server abgelegt sind.</description>
+  <description lang="nl">Wordt gebruikt door cliëntcomputers voor het lezen en
+  beheren van e-mailberichten die op een mailserver staan.</description>
+  <description lang="fr">Permet aux machines clientes de lire et gérer souplement
+  les courriels résidant sur un serveur de courriers.</description>
+  <description lang="it">Questo protocollo è usato da macchine client per leggere e gestire la posta elettronica residente su un server di posta.</description>
+  <description lang="es">Usado por una máquina cliente para leer y gestionar correo que esté en un servidor
+  de correo.</description>
+  <classification class="mail"/>
+  <network>
+    <tcp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="143"/></dest>
+    </tcp>
+    <udp source="client" dest="server"><dest><port portnum="143"/></dest></udp>
+  </network>
+  <security threat="high" falsepos="low"/>
+  <reference href="http://www.robertgraham.com/pubs/firewall-seen.html">
+  FAQ: Firewall Forensics (What am I seeing?)</reference>
+</protocol>
+
+<protocol name="socks">
+  <longname>Socks Application Proxy</longname>
+  <longname lang="de">Socks Application Proxy</longname>
+  <longname lang="nl">Socks Application Proxy</longname>
+  <longname lang="fr">Serveur mandataire Socks pour applications communiquantes</longname>
+  <longname lang="it">Applicazione Proxy tipo Socks</longname>
+  <longname lang="es">Proxy de aplicaciones tipo Socks</longname>
+  <classification class="net"/>
+  <network>
+    <tcp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="1080"/></dest>
+    </tcp>
+    <udp source="client" dest="server"><dest><port portnum="1080"/></dest></udp>
+  </network>
+  <security threat="high" falsepos="low"/>
+  <reference href="http://www.robertgraham.com/pubs/firewall-seen.html">
+  FAQ: Firewall Forensics (What am I seeing?)</reference>
+</protocol>
+
+<protocol name="squid">
+  <longname>Squid HTTP proxy</longname>
+  <longname lang="de">Squid HTTP proxy</longname>
+  <longname lang="nl">Squid HTTP proxy</longname>
+  <longname lang="fr">Serveur mandataire HTTP Squid</longname>
+  <longname lang="it">Proxy HTTP tipo Squid</longname>
+  <longname lang="es">Proxy HTTP Squid</longname>
+  <classification class="net"/>
+  <network>
+    <tcp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="3128"/></dest><description>default</description>
+      <description lang="nl">standaard</description>
+    </tcp>
+  </network>
+  <security threat="high" falsepos="low"/>
+  <reference href="http://www.robertgraham.com/pubs/firewall-seen.html">
+  FAQ: Firewall Forensics (What am I seeing?)</reference>
+</protocol>
+
+<protocol name="pcanywherestat">
+  <longname>pcANYWHEREstat</longname>
+  <longname lang="de">pcANYWHEREstat</longname>
+  <longname lang="nl">pcANYWHEREstat</longname>
+  <longname lang="fr">pcANYWHERE stat</longname>
+  <longname lang="it">pcANYWHEREstat</longname>
+  <longname lang="es">pcANYWHEREstat</longname>
+  <classification class="session"/>
+  <network>
+    <tcp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="5631"/></dest>
+    </tcp>
+    <udp source="client" dest="server" direction="both">
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="5632"/></dest>
+    </udp>
+  </network>
+  <security threat="medium" falsepos="low"/>
+  <reference href="http://www.robertgraham.com/pubs/firewall-seen.html">
+  FAQ: Firewall Forensics (What am I seeing?)</reference>
+  <reference href="http://service1.symantec.com/SUPPORT/pca.nsf/docid/1996123152253">
+  How to select the pcAnywhere registered TCP/IP ports</reference>
+</protocol>
+
+<protocol name="x11">
+  <longname>X Window System</longname>
+  <longname lang="de">X Window System</longname>
+  <longname lang="nl">X Window System</longname>
+  <longname lang="fr">Système X Window</longname>
+  <longname lang="it">Sistema X Window</longname>
+  <longname lang="es">Sistema X Window</longname>
+  <classification class="session"/>
+  <network>
+    <tcp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest><portrange start="6000" end="6063"/></dest>
+    </tcp>
+  </network>
+  <security threat="high" falsepos="medium"/>
+  <reference>Well Known Ports</reference>
+</protocol>
+
+<protocol name="vj-traceroute">
+  <longname>Traceroute as implemented by Van Jacobson</longname>
+  <longname lang="de">Traceroute in der Implementierung von Van Jacobson</longname>
+  <longname lang="nl">Traceroute in de implementatie van Van Jacobson</longname>
+  <longname lang="fr">Traceroute tel qu'implémenté par Van Jacobson</longname>
+  <longname lang="it">Traceroute come implementato da Van Jacobson</longname>
+  <longname lang="es">Traceroute implementado por Van Jacobson</longname>
+  <classification class="net"/>
+  <network>
+    <udp><dest><portrange start="33434" end="33600"/></dest></udp>
+  </network>
+  <security threat="medium" falsepos="low"/>
+  <reference>man traceroute(8) Linux Mandrake 7.2</reference>
+</protocol>
+
+<protocol name="icq">
+  <longname>ICQ chat</longname>
+  <longname lang="de">ICQ Chat</longname>
+  <longname lang="nl">ICQ Chat</longname>
+  <longname lang="fr">Messagerie instantannée ICQ</longname>
+  <longname lang="it">Chat ICQ</longname>
+  <longname lang="es">Chat ICQ</longname>
+  <classification class="chat"/>
+  <network>
+    <udp source="client" dest="server" direction="both"><dest><port portnum="5190"/></dest></udp>
+    <tcp source="client" dest="server">
+      <source><port portnum="nonprivileged"/></source>
+      <dest><port portnum="nonprivileged"/></dest>
+    </tcp>
+    <tcp source="server" dest="client">
+      <source><port portnum="nonprivileged"/></source>
+      <dest><portrange start="3900" end="3999" /></dest>
+    </tcp>
+<!-- Old defintion, 
+    <tcp source="client" dest="client">
+      <source><port portnum="nonprivileged"/></source>
+      <dest><port portnum="nonprivileged"/></dest>
+    </tcp>
+-->
+  </network>
+  <security threat="high" falsepos="medium"/>
+</protocol>
+
+<protocol name="powwow">
+  <longname>PowWow chat</longname>
+  <longname lang="de">PowWow Chat</longname>
+  <longname lang="nl">PowWow Chat</longname>
+  <longname lang="fr">Messagerie instantannée PowWow</longname>
+  <longname lang="it">Chat PowWow</longname>
+  <longname lang="es">Chat PowWow</longname>
+  <classification class="chat"/>
+  <network>
+    <tcp>
+      <dest><port portnum="13223"/></dest>
+    </tcp>
+    <udp source="client" dest="server"><dest><port portnum="13223"/></dest></udp>
+  </network>
+  <security threat="low" falsepos="low"/>
+  <reference href="http://www.robertgraham.com/pubs/firewall-seen.html">
+  FAQ: Firewall Forensics (What am I seeing?)</reference>
+</protocol>
+
+<protocol name="irc">
+  <longname>IRC - Internet Relay Chat</longname>
+  <longname lang="de">IRC - Internet Relay Chat</longname>
+  <longname lang="nl">IRC - Internet Relay Chat</longname>
+  <longname lang="fr">IRC - Service de clavardage</longname>
+  <longname lang="it">Chat IRC</longname>
+  <longname lang="es">Chat IRC</longname>
+  <classification class="chat"/>
+  <pragma name="guarddog">ip_conntrack_irc</pragma>
+  <network>
+    <tcp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest><portrange start="6660" end="6669"/></dest>
+      <description>Server connection</description>
+      <description lang="fr">Connexion serveur</description>
+      <description lang="nl">Serververbinding</description>
+      <description lang="es">Conexión al servidor</description>
+    </tcp>
+    <tcp source="client" dest="client">
+      <source><port portnum="nonprivileged"/></source>
+      <dest><port portnum="nonprivileged"/></dest>
+      <pragma name="guarddog">RELATED</pragma>
+    </tcp>
+  </network>
+  <security threat="low" falsepos="low"/>
+</protocol>
+
+<protocol name="postgresql">
+  <longname>PostgreSQL database server</longname>
+  <longname lang="de">PostgreSQL Datenbank-Server</longname>
+  <longname lang="nl">PostgreSQL databaseserver</longname>
+  <longname lang="fr">Serveur de données PostgreSQL</longname>
+  <longname lang="it">Server di gestione archivi PostgreSQL</longname>
+  <longname lang="es">Servidor de base de datos PostgreSQL</longname>
+  <classification class="data"/>
+  <network>
+    <tcp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="5432"/></dest>
+    </tcp>
+  </network>
+  <security threat="medium" falsepos="low"/>
+</protocol>
+
+<protocol name="mysql">
+  <longname>MySQL database server</longname>
+  <longname lang="de">MySQL Datenbank-Server</longname>
+  <longname lang="nl">MySQL databaseserver</longname>
+  <longname lang="fr">Serveur de données MySQL</longname>
+  <longname lang="it">Server di gestione archivi MySQL</longname>
+  <longname lang="es">Servidor de base de datos MySQL</longname>
+  <classification class="data"/>
+  <network>
+    <tcp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="3306"/></dest>
+    </tcp>
+  </network>
+  <security threat="medium" falsepos="low"/>
+</protocol>
+
+<protocol name="ping">
+  <longname>Ping</longname>
+  <longname lang="de">Ping</longname>
+  <longname lang="nl">Ping</longname>
+  <longname lang="fr">Ping</longname>
+  <longname lang="it">Ping</longname>
+  <longname lang="es">Ping</longname>
+  <classification class="net"/>
+  <network>
+    <icmp source="client" dest="server">
+      <type value="8"/>
+      <description>Echo Request</description>
+      <description lang="de">Echo Request</description>
+      <description lang="nl">Echo-verzoek</description>
+      <description lang="it">Richiesta di risposta (Echo Request)</description>
+      <description lang="es">Petición de respuesta (Echo Request)</description>
+    </icmp>
+    <icmp source="server" dest="client">
+      <type value="0"/>
+      <description>Echo reply</description>
+      <description lang="de">Echo reply</description>
+      <description lang="nl">Echo-antwoord</description>
+      <description lang="it">Replica di risposta (Echo Reply)</description>
+      <description lang="es">Réplica de respuesta (Echo Reply)</description>
+    </icmp>
+  </network>
+  <reference href="http://www.robertgraham.com/pubs/firewall-seen.html">
+  FAQ: Firewall Forensics (What am I seeing?)</reference>
+</protocol>
+
+<protocol name="quake">
+  <longname>Quake</longname>
+  <longname lang="de">Quake</longname>
+  <longname lang="nl">Quake</longname>
+  <longname lang="fr">Quake</longname>
+  <longname lang="it">Quake</longname>
+  <longname lang="es">Quake</longname>
+  <classification class="game"/>
+  <network>
+    <udp source="client" dest="server" direction="both">
+      <dest><port portnum="26000"/></dest>
+    </udp>
+  </network>
+  <reference href="http://www.robertgraham.com/pubs/firewall-seen.html">
+  FAQ: Firewall Forensics (What am I seeing?)</reference>
+</protocol>
+
+<protocol name="quakeworld">
+  <longname>QuakeWorld</longname>
+  <longname lang="de">QuakeWorld</longname>
+  <longname lang="nl">QuakeWorld</longname>
+  <longname lang="fr">QuakeWorld</longname>
+  <longname lang="it">QuakeWorld</longname>
+  <longname lang="es">QuakeWorld</longname>
+  <classification class="game"/>
+  <network>
+    <udp source="client" dest="server" direction="both">
+      <dest><port portnum="27500"/></dest>
+    </udp>
+  </network>
+  <reference href="http://www.robertgraham.com/pubs/firewall-seen.html">
+  FAQ: Firewall Forensics (What am I seeing?)</reference>
+</protocol>
+
+<protocol name="quake2">
+  <longname>Quake 2</longname>
+  <longname lang="de">Quake 2</longname>
+  <longname lang="nl">Quake 2</longname>
+  <longname lang="fr">Quake 2</longname>
+  <longname lang="it">Quake 2</longname>
+  <longname lang="es">Quake 2</longname>
+  <classification class="game"/>
+  <network>
+    <udp source="client" dest="server" direction="both">
+      <dest><port portnum="27910"/></dest>
+    </udp>
+  </network>
+  <reference href="http://www.robertgraham.com/pubs/firewall-seen.html">
+  FAQ: Firewall Forensics (What am I seeing?)</reference>
+</protocol>
+
+<protocol name="nicname">
+  <longname>Who Is</longname>
+  <longname lang="de">Who Is</longname>
+  <longname lang="nl">Who Is</longname>
+  <longname lang="fr">Recherche Who Is</longname>
+  <longname lang="it">Who Is</longname>
+  <longname lang="es">Who Is</longname>
+  <classification class="net"/>
+  <network>
+    <tcp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="43"/></dest>
+    </tcp>
+  <udp source="client" dest="server">
+  <dest><port portnum="43"/></dest>
+  </udp></network>
+  <reference>Well Known Ports</reference>
+</protocol>
+
+<protocol name="webmin">
+  <longname>Webmin web-based administration for Unix systems</longname>
+  <longname lang="de">Webmin webbasierte Systemverwaltung für Unix Systeme</longname>
+  <longname lang="nl">Webmin - op web gebaseerd systeembeheer voor UNIX-systemen</longname>
+  <longname lang="fr">Webmin - Administration des systèmes Unix par navigateur Web</longname>
+  <longname lang="it">Webmin: amministrazione di sistemi Unix via web</longname>
+  <longname lang="es">Webmin: administración de sistemas Unix mediante web</longname>
+  <classification class="session"/>
+  <network>
+    <tcp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="10000"/></dest>
+    </tcp>
+  </network>
+  <security threat="medium" falsepos="low"/>
+  <reference href="http://www.webmin.com/webmin/">Webmin Home Page</reference>
+</protocol>
+
+<protocol name="quench">
+  <longname>ICMP Source Quench</longname>
+  <longname lang="de">ICMP Source Quench</longname>
+  <longname lang="nl">ICMP Source Quench</longname>
+  <longname lang="fr">Limitation de production ICMP</longname>
+  <longname lang="it">ICMP Source Quench</longname>
+  <longname lang="es">ICMP Source Quench</longname>
+  <classification class="net"/>
+  <network>
+    <icmp >
+      <type value="4"/>
+    </icmp>
+  </network>
+  <reference href="http://www.robertgraham.com/pubs/firewall-seen.html">
+  FAQ: Firewall Forensics (What am I seeing?)</reference>
+</protocol>
+
+<protocol name="redirect">
+  <longname>ICMP Redirect</longname>
+  <longname lang="de">ICMP Redirect</longname>
+  <longname lang="nl">ICMP Redirect</longname>
+  <longname lang="fr">Redirection ICMP</longname>
+  <longname lang="it">Redirezione ICMP</longname>
+  <longname lang="es">Redirección ICMP</longname>
+  <classification class="net"/>
+  <network>
+    <icmp source="server" dest="client">
+      <type value="5"/>
+    </icmp>
+  </network>
+  <security threat="high" falsepos="low"/>
+  <reference href="http://www.robertgraham.com/pubs/firewall-seen.html">
+  FAQ: Firewall Forensics (What am I seeing?)</reference>
+</protocol>
+
+<protocol name="realplayer">
+  <longname>Real Audio</longname>
+  <longname lang="de">Real Audio</longname>
+  <longname lang="nl">Real Audio</longname>
+  <longname lang="fr">Real Audio</longname>
+  <longname lang="it">Real Audio</longname>
+  <longname lang="es">Real Audio</longname>
+  <classification class="media"/>
+  <network>
+    <tcp source="client" dest="server"><dest>
+      <port portnum="554"/><port portnum="7070"/></dest>
+    </tcp>
+    <udp source="server" dest="client" direction="both">
+      <dest><portrange start="6970" end="7170"/></dest>
+    </udp>
+  </network>
+  <security threat="low" falsepos="low"/>
+</protocol>
+
+<protocol name="printer">
+  <longname>Line Printer Spooler</longname>
+  <longname lang="de">Line Printer Spooler</longname>
+  <longname lang="nl">Line Printer Spooler</longname>
+  <longname lang="fr">Gestionnaire d'impression en ligne LP</longname>
+  <longname lang="it">LPR - Gestore di stampanti in linea</longname>
+  <longname lang="es">LPR - Gestor de impresoras en línea</longname>
+  <classification class="net"/>
+  <network>
+    <tcp>
+      <dest><port portnum="515"/></dest>
+    </tcp>
+  </network>
+  <security threat="medium" falsepos="low"/>
+</protocol>
+
+<protocol name="syslog">
+  <longname>syslog - System Logging</longname>
+  <longname lang="de">syslog - System Protokollierung</longname>
+  <longname lang="nl">syslog - Systeemlog</longname>
+  <longname lang="fr">syslog - Journalisation du système</longname>
+  <longname lang="it">syslog - Registro di sistema - </longname>
+  <longname lang="es">syslog - Registro de sistema</longname>
+  <classification class="net"/>
+  <network>
+    <udp source="client" dest="server">
+      <dest><port portnum="514"/></dest>
+    </udp>
+  </network>
+  <security threat="high" falsepos="low"/>
+</protocol>
+
+<protocol name="ntp">
+  <longname>NTP - Network Time Protocol</longname>
+  <longname lang="de">NTP - Network Time Protocol</longname>
+  <longname lang="nl">NTP - Network Time Protocol</longname>
+  <longname lang="fr">NTP - Protocole de synchronisation de temps</longname>
+  <longname lang="it">NTP - Protocollo temporale di rete</longname>
+  <longname lang="es">NTP - Protocolo de sincronización de hora</longname>
+  <classification class="data"/>
+  <network>
+    <udp source="client" dest="server" direction="both">
+      <dest><port portnum="123"/></dest>
+    </udp>
+    <tcp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="123"/></dest>
+    </tcp>
+  </network>
+  <security threat="low" falsepos="low"/>
+</protocol>
+
+<protocol name="gnutella">
+  <longname>Gnutella - File Sharing Network</longname>
+  <longname lang="de">Gnutella - Datei-Tauschbörse</longname>
+  <longname lang="nl">Gnutella - Filesharing-netwerk</longname>
+  <longname lang="fr">Gnutella - Réseau de partage de fichiers</longname>
+  <longname lang="it">Gnutella - Protocollo per la condivisione di file</longname>
+  <longname lang="es">Gnutella - Red de compartición de ficheros</longname>
+  <classification class="file"/>
+  <network><tcp source="client" dest="server"><dest><port portnum="6346"/></dest></tcp></network>
+  <security threat="low" falsepos="low"/>
+  <reference href="http://gnutella.wego.com/go/wego.pages.page?groupId=116705&amp;view=page&amp;pageId=200448&amp;folderId=118398&amp;panelId=119597&amp;action=view">
+  Gnutella &amp; Firewalls</reference>
+</protocol>
+
+<protocol name="audiogalaxy">
+  <longname>AudioGalaxy - Music Sharing</longname>
+  <longname lang="de">AudioGalaxy - Musiktauschbörse</longname>
+  <longname lang="nl">AudioGalaxy - muziekbestanden delen</longname>
+  <longname lang="fr">AudioGalaxy - Partage de morceaux musicaux</longname>
+  <longname lang="it">AudioGalaxy - Protocollo per la condivisione di musica</longname>
+  <longname lang="es">AudioGalaxy - Protocolo para compartición de música</longname>
+  <classification class="file"/>
+  <network>
+    <tcp source="client" dest="server">
+      <description>Web connection to the Audiogalaxy site.</description>
+      <description lang="de">Web-Verbindung zur Audiogalaxy Site.</description>
+      <description lang="nl">Webverbinding naar de site van Audiogalaxy.</description>
+      <description lang="fr">Connexion Web au site d'Audiogalaxy.</description>
+      <description lang="it">Connessione web al sito di Audiogalaxy.</description>
+      <description lang="es">Conexión web a la página (site) de Audiogalaxy.</description>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="80"/></dest>
+    </tcp>
+    <tcp source="client" dest="server">
+      <description>Download connection.</description>
+      <description lang="de">Download-Verbindung.</description>
+      <description lang="nl">Download-verbinding.</description>
+      <description lang="fr">Connexion de téléchargement.</description>
+      <description lang="it">Connessione per lo scaricamento.</description>
+      <description lang="es">Conexión para descarga.</description>
+      <source><port portnum="dynamic"/></source>
+      <dest><portrange start="41000" end="41999" /></dest>
+    </tcp>
+    <tcp source="server" dest="client">
+      <description>Serving connection.</description>
+      <description lang="de">Upload-Verbindung.</description>
+      <description lang="nl">Upload-verbinding.</description>
+      <description lang="fr">Connexion de téléversement.</description>
+      <description lang="it">Connessione per l'invio.</description>
+      <description lang="es">Conexión para envío.</description>
+      <source><port portnum="dynamic"/></source>
+      <dest><portrange start="41000" end="41999" /></dest>
+    </tcp>
+  </network>
+  <security threat="low" falsepos="low"/>
+  <reference href="http://www.oofle.com/iptables/filesharing.htm">Stopping File Sharing - oofle.com</reference>
+</protocol>
+
+<protocol name="netmeeting">
+  <longname>NetMeeting - H.323 chat</longname>
+  <longname lang="de">NetMeeting - H.323 Chat</longname>
+  <longname lang="nl">NetMeeting - H.323 Chat</longname>
+  <longname lang="fr">Logiciel de conférence NetMeeting - H.323</longname>
+  <longname lang="it">Chat NetMeeting - H.323</longname>
+  <longname lang="es">Chat NetMeeting - H.323</longname>
+  <classification class="chat"/>
+  <network>
+    <tcp source="client" dest="server">
+      <description>Internet Locator Service (ILS)</description>
+      <description lang="de">Internet Locator Service (ILS)</description>
+      <description lang="nl">Internet Locator Service (ILS)</description>
+      <description lang="fr">Service ILS (Internet Locator Service)</description>
+      <description lang="it">Internet Locator Service (ILS)</description>
+      <description lang="es">Internet Locator Service (ILS)</description>
+      <dest><port portnum="389"/></dest>
+    </tcp>
+    <tcp source="client" dest="server">
+      <description>User Location Service</description>
+      <description lang="de">User Location Service</description>
+      <description lang="nl">User Location Service</description>
+      <description lang="fr">Service d'annuaire</description>
+      <description lang="it">Internet Location Service (ILS)</description>
+      <description lang="es">Servicio de localización de usuario</description>
+      <dest><port portnum="522"/></dest>
+    </tcp>
+    <tcp source="client" dest="server">
+      <description>T.120</description>
+      <description lang="de">T.120</description>
+      <description lang="nl">T.120</description>
+      <description lang="fr">T.120</description>
+      <description lang="it">T.120</description>
+      <description lang="es">T.120</description>
+      <dest><port portnum="1503"/></dest>
+    </tcp>
+    <tcp source="client" dest="server">
+      <description>H.323 call set-up</description>
+      <description lang="de">H.323 call set-up</description>
+      <description lang="nl">H.323 call set-up</description>
+      <description lang="fr">Établissement de communication H.323</description>
+      <description lang="it">Impostazione di chiamata H.323</description>
+      <description lang="es">Establecimiento de llamada H.323</description>
+      <dest><port portnum="1720"/></dest>
+    </tcp>
+    <tcp source="client" dest="server">
+      <description>Audio call control</description>
+      <description lang="de">Audio call control</description>
+      <description lang="nl">Audio call control</description>
+      <description lang="fr">Contrôle d'appels audio</description>
+      <description lang="it">Controllo di chiamata audio</description>
+      <description lang="es">Control de llamada de audio</description>
+      <dest><port portnum="1731"/></dest>
+    </tcp>
+    <tcp source="client" dest="server">
+      <description>H.323 call control</description>
+      <description lang="de">H.323 call control</description>
+      <description lang="nl">H.323 call control</description>
+      <description lang="fr">Contrôle d'appels H.323</description>
+      <description lang="it">Controllo di chiamata H.323</description>
+      <description lang="es">Control de llamada H.323</description>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="dynamic"/></dest>
+    </tcp>
+    <udp source="client" dest="server" direction="both">
+      <description>H.323 streaming</description>
+      <description lang="de">H.323 streaming</description>
+      <description lang="nl">H.323 streaming</description>
+      <description lang="fr">Lecture en transit H.323</description>
+      <description lang="it">Lettura in transito (streaming) H.323</description>
+      <description lang="es">Streaming H.323</description>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="dynamic"/></dest>
+    </udp>
+  </network>
+  <security threat="medium" falsepos="low"/>
+  <reference href="http://www.maxic.com/Product_Support/20_Tech Tips/11_fw_netmeeting.htm">
+  NetMeeting Through Firewalls</reference>
+</protocol>
+
+<protocol name="snmp">
+  <longname>SNMP - Simple Network Management Protocol</longname>
+  <longname lang="de">SNMP - Simple Network Management Protocol</longname>
+  <longname lang="nl">SNMP - Simple Network Management Protocol</longname>
+  <longname lang="fr">SNMP - Protocole simple d'administration de réseau</longname>
+  <longname lang="it">SNMP - Protocollo semplice di amministrazione di rete</longname>
+  <longname lang="es">SNMP - Protocolo simple de administración de red</longname>
+  <classification class="session"/>
+  <network>
+    <udp source="client" dest="server" direction="both">
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="161"/></dest>
+    </udp>
+  </network>
+  <security threat="medium" falsepos="low"/>
+</protocol>
+
+<protocol name="ldap">
+  <longname>LDAP - Lightweight Directory Access Protocol</longname>
+  <longname lang="de">LDAP - Lightweight Directory Access Protocol</longname>
+  <longname lang="nl">LDAP - Lightweight Directory Access Protocol</longname>
+  <longname lang="fr">LDAP - Protocole de gestion d'annuaires</longname>
+  <longname lang="it">LDAP - Protocollo leggero per l'accesso alle cartelle </longname>
+  <longname lang="es">LDAP - Protocolo ligero para acceso a directorios</longname>
+  <description></description>
+  <description lang="fr">LDAP (Lightweight Directory Access Protocol) est un protocole de gestion
+  d'annuaires qui permet à des clients d'accéder automatiquement à des services d'annuaires en ligne.</description>
+  <description lang="it">LDAP è un protocollo di gestione di rubriche che permette a dei client di accedere automaticamente ai servizi di rubriche in linea.</description>
+  <description lang="es">LDAP (Lightweight Directory Access Protocol) es un protocolo que permite a un
+  cliente acceder a servicios de directorio.</description>
+  <classification class="data"/>
+  <network>
+    <tcp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="389"/></dest>
+    </tcp>
+  </network>
+  <security threat="low" falsepos="low"/>
+</protocol>
+
+<protocol name="ldap-ssl">
+  <longname>LDAP SSL - LDAP over Secure Socket Layer</longname>
+  <longname lang="de">LDAP SSL - LDAP über Secure Socket Layer</longname>
+  <longname lang="nl">LDAP SSL - LDAP over Secure Socket Layer</longname>
+  <longname lang="fr">LDAP SSL - Protocole LDAP sécurisé par SSL</longname>
+  <longname lang="it">LDAP SSL - LDAP via SSL</longname>
+  <longname lang="es">LDAP SSL - LDAP por SSL</longname>
+  <classification class="data"/>
+  <network>
+    <tcp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="636"/></dest>
+    </tcp>
+  </network>
+  <security threat="low" falsepos="low"/>
+</protocol>
+
+<protocol name="diablo2">
+  <longname>Diablo II</longname>
+  <longname lang="de">Diablo II</longname>
+  <longname lang="nl">Diablo II</longname>
+  <longname lang="fr">Diablo II</longname>
+  <longname lang="it">Diablo II</longname>
+  <longname lang="es">Diablo II</longname>
+  <classification class="game"/>
+  <network>
+    <tcp source="client" dest="server">
+      <dest><port portnum="6112"/></dest>
+      <description>Battlenet server</description>
+      <description lang="de">Battlenet Server</description>
+      <description lang="nl">Battlenet Server</description>
+      <description lang="fr">Serveur Battlenet</description>
+      <description lang="it">Server Battlenet</description>
+      <description lang="es">Servidor Battlenet</description>
+    </tcp>
+    <tcp source="client" dest="server">
+      <dest><port portnum="4000"/></dest>
+      <description>Game data</description>
+      <description lang="de">Spieldaten</description>
+      <description lang="nl">Gamedata</description>
+      <description lang="fr">Données de jeu</description>
+      <description lang="it">Dati di gioco</description>
+      <description lang="es">Datos de juego</description>
+    </tcp>
+  </network>
+  <security threat="low" falsepos="low"/>
+</protocol>
+
+<protocol name="swat">
+  <longname>SWAT - Samba Web Administration Tool</longname>
+  <longname lang="de">SWAT - Samba Web Administration Tool</longname>
+  <longname lang="nl">SWAT - Samba Web Administration Tool</longname>
+  <longname lang="fr">SWAT - Outil d'administration Samba par le Web</longname>
+  <longname lang="it">SWAT - Samba Web Administration Tool</longname>
+  <longname lang="es">SWAT - Herramienta de administración de Samba por web (Samba Web Administration
+  Tool)</longname>
+  <description>Web based administration tool for configuring a Samba SMB
+    server. See "Windows Networking".</description>
+  <description lang="de">Webbasiertes Verwaltungswerkzeug zur Konfiguration eines Samba SMB
+    Servers. Siehe hierzu "Windows-Netzwerke".</description>
+  <description lang="nl">Op web gebaseerd hulpprogramma voor het instellen
+  van een Samba SMB-server. Kijk ook bij "Windows Networking".
+  </description>
+  <description lang="fr">Outil d'adminitration par interface Web pour configurer un serveur
+  Samba SMB. Voir "Réseau Windows".
+  </description>
+  <description lang="it">Strumento di amministrazione basato sul web ed usato per configurare un 
+  server Samba SMB. Vedi anche la documentazioe su Windows Networking.</description>
+  <description lang="es">Herramienta de administración por web de un servidor Samba SMB. Consulte "Windows
+  Networking".</description>
+  <classification class="session"/>
+  <network>
+    <tcp>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="901"/></dest>
+    </tcp>
+  </network>
+  <security threat="medium" falsepos="low"/>
+</protocol>
+
+<protocol name="ipp">
+  <longname>IPP - Internet Printing Protocol</longname>
+  <longname lang="de">IPP - Internet Printing Protocol</longname>
+  <longname lang="nl">IPP - Internet Printing Protocol</longname>
+  <longname lang="fr">IPP - Protocole d'impression via l'Internet</longname>
+  <longname lang="it">IPP - Protocollo di stampa via internet</longname>
+  <longname lang="es">IPP - Protocolo de impresión por Internet</longname>
+  <description>Protocol for using printers across a TCP network.
+  Used by the Common Unix Printing System (CUPS).</description>
+  <description lang="de">Protokoll zur Nutzung von Druckern über ein TCP-Netzwerk.
+  Wird vom Common Unix Printing System (CUPS) verwendet.</description>
+  <description lang="nl">Protocol voor het gebruiken van printers over
+  een TCP-netwerk. Wordt gebruikt door het Common Unix Printing System
+  (CUPS)</description>
+  <description lang="it">Protocollo per usare stampanti attraverso una rete TCP. E' usato da programmi tipo Common Unix Printing System (CUPS)</description>
+  <description lang="fr">Protocole pour l'utilisation d'imprimantes à travers un réseau TCP.
+  IPP (Internet Printing Protocol) est le protocole utilisé par CUPS (Common Unix Printing System).</description>
+  <description lang="es">Protocolo para el uso de impresoras a través de una red TCP. IPP (Internet Printing
+  Protocol) es el protocolo usado por CUPS (Common Unix Printing System).</description>
+  <classification class="session"/>
+  <network>
+    <tcp>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="631"/></dest>
+    </tcp>
+    <udp source="client" dest="server"><dest><port portnum="631"/></dest></udp>
+  </network>
+  <security threat="low" falsepos="low"/>
+</protocol>
+
+<protocol name="nessus">
+  <longname>Nessus Security Scanner</longname>
+  <longname lang="de">Nessus Security Scanner</longname>
+  <longname lang="nl">Nessus Security Scanner</longname>
+  <longname lang="fr">Nessus - Scanner de vulnérabilité</longname>
+  <longname lang="it">Nessus Security Scanner</longname>
+  <longname lang="es">Escáner de seguridad Nessus</longname>
+  <description>Security auditing tool.</description>
+  <description lang="de">Sicherheitsüberprüfungs-Tool.</description>
+  <description lang="nl">Hulpprogramma voor het testen van de beveiliging.</description>
+  <description lang="fr">Outil d'audit de la sécurité.</description>
+  <description lang="it">Strumento per l'analisi della sicurezza.</description>
+  <description lang="es">Herramienta para analizar la seguridad.</description>
+  <classification class="session"/>
+  <network>
+    <tcp>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="1241"/></dest>
+    </tcp>
+  </network>
+  <security threat="high" falsepos="low"/>
+  <reference href="http://www.nessus.org/">Nessus Home Page</reference>
+</protocol>
+
+<protocol name="xdmcp">
+  <longname>X Display Manager Control Protocol</longname>
+  <longname lang="de">X Display Manager Control Protocol</longname>
+  <longname lang="nl">X Display Manager Control Protocol</longname>
+  <longname lang="fr">XDMCP - Protocole de contrôle de Xdm</longname>
+  <longname lang="it">Protocollo per il controllo di X Display Manager</longname>
+  <longname lang="es">Protocolo de control de X Display Manager</longname>
+  <classification class="session"/>
+  <network>
+    <udp source="client" dest="server" direction="both"><dest><port portnum="177"/></dest></udp>
+  </network>
+  <security threat="high" falsepos="medium"/>
+</protocol>
+
+<protocol name="directplay">
+  <longname>Direct Play Gaming</longname>
+  <longname lang="de">Direct Play Gaming</longname>
+  <longname lang="nl">Direct Play Gaming</longname>
+  <longname lang="fr">Direct Play Gaming</longname>
+  <longname lang="it">Direct Play Gaming</longname>
+  <longname lang="es">Direct Play Gaming</longname>
+  <description>Used by many games for multiplayer games.</description>
+  <description lang="de">Verwendung durch viele Spiele, bei denen mehrere Spieler gegeneinander antreten.</description>
+  <description lang="nl">Wordt gebruikt door veel games voor het spelen met meerdere spelers tegen elkaar.</description>
+  <description lang="fr">Protocole utilisé par de nombreux jeux dans un environnement multi-joueurs.</description>
+  <description lang="it">Questo protocollo è usato da molti giochi per gestire situazioni multi giocatore.</description>
+  <description lang="es">Este protocolo es usado por muchos juegos para controlar entornos de varios
+  jugadores.</description>
+  <classification class="game"/>
+  <network>
+    <tcp source="client" dest="server">
+      <description>Primary Connection</description>
+      <description lang="de">Hauptverbindung</description>
+      <description lang="nl">Hoofdverbinding</description>
+      <description lang="fr">Connexion primaire</description>
+      <description lang="it">Connessione primaria</description>
+      <description lang="es">Conexión primaria</description>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="47624"/></dest>
+    </tcp>
+    <tcp source="client" dest="server">
+      <description>Gaming Connection</description>
+      <description lang="de">Spielverbindung</description>
+      <description lang="nl">Speelverbinding</description>
+      <description lang="fr">Connexion de jeu</description>
+      <description lang="it">Connessione di gioco</description>
+      <description lang="es">Conexión de juego</description>
+      <source><port portnum="dynamic"/></source>
+      <dest><portrange start="2300" end="2400"/></dest>
+    </tcp>
+    <udp source="client" dest="server" direction="both">
+      <description>Gaming Connection</description>
+      <description lang="de">Spielverbindung</description>
+      <description lang="nl">Speelverbinding</description>
+      <description lang="fr">Connexion de jeu</description>
+      <description lang="it">Connessione di gioco</description>
+      <description lang="es">Conexión de juego</description>
+      <source><port portnum="nonprivileged"/></source>
+      <dest><portrange start="2300" end="2400"/></dest>
+    </udp>
+    <udp source="server" dest="client" direction="both">
+      <description>Gaming Connection</description>
+      <description lang="de">Spielverbindung</description>
+      <description lang="nl">Speelverbinding</description>
+      <description lang="fr">Connexion de jeu</description>
+      <description lang="it">Connessione di gioco</description>
+      <description lang="es">Conexión de juego</description>
+      <source><port portnum="nonprivileged"/></source>
+      <dest><portrange start="2300" end="2400"/></dest>
+    </udp>
+  </network>
+  <security threat="high" falsepos="medium"/>
+  <reference href="http://www.isaserver.org/pages/games.htm">
+  Microsoft ISA Server 2000 Game/Application Port Listing</reference>
+</protocol>
+
+<protocol name="halflife">
+  <longname>Halflife</longname>
+  <longname lang="de">Halflife</longname>
+  <longname lang="nl">Halflife</longname>
+  <longname lang="fr">Half-life</longname>
+  <longname lang="it">Halflife</longname>
+  <longname lang="es">Halflife</longname>
+  <description>Halflife and other games based on the Halflife game engine.
+  (e.g. Counterstrike)</description>
+  <description lang="de">Halflife und andere Spiele basieren auf der Halflife game engine.
+  (z.B. Counterstrike)</description>
+  <description lang="nl">Halflife en andere games gebaseerd op de game-engine van Halflife
+  (bijv. Counterstrike).</description>
+  <description lang="fr">Half-life et autres jeux tirant parti de son moteur de jeu (notamment Counterstrike).</description>
+  <description lang="it">Halflife ed altri giochi basati sul motore di Halflife (per esempio: Counterstrike).</description>
+  <description lang="es">Halflife y otros juegos basados en el motor Halflife (Counterstrike, por ejemplo).</description>
+  <classification class="game"/>
+  <network>
+    <tcp source="client" dest="server">
+      <description>Won Authentication Port</description>
+      <description lang="de">Won Authentifizierungs Port</description>
+      <description lang="nl">Won Authenticatiepoort</description>
+      <description lang="fr">Port d'authentification</description>
+      <description lang="it">Porta di autenticazione ottenuta</description>
+      <description lang="es">Puerto obtenido de autentificación</description>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="7002"/></dest>
+    </tcp>
+    <udp source="client" dest="server" direction="both">
+      <description>Server List</description>
+      <description lang="de">Serverliste</description>
+      <description lang="nl">Serverlijst</description>
+      <description lang="fr">Liste serveur</description>
+      <description lang="it">Lista dei server</description>
+      <description lang="es">Lista del servidor</description>
+      <source><port portnum="nonprivileged"/></source>
+      <dest><port portnum="27010"/></dest>
+    </udp>
+    <udp source="client" dest="server" direction="both">
+      <description>Main game connection</description>
+      <description lang="de">Hauptspielverbindung</description>
+      <description lang="nl">Hoofdspelverbinding</description>
+      <description lang="fr">Connexion jeu principale</description>
+      <description lang="it">Connessione principale di gioco</description>
+      <description lang="es">Conexión principal de juego</description>
+      <source><port portnum="nonprivileged"/></source>
+      <dest><portrange start="27005" end="27050"/></dest>
+    </udp>
+  </network>
+</protocol>
+
+<protocol name="bpalogin">
+  <longname>BigPond Cable Login</longname>
+  <longname lang="de">BigPond Cable Login</longname>
+  <longname lang="nl">BigPond Cable-aanmelding</longname>
+  <longname lang="fr">Ouverture de session BigPond Cable</longname>
+  <longname lang="it">BigPond Cable Login</longname>
+  <longname lang="es">Apertura de sesión BigPond Cable</longname>
+  <description>Login and authentication for users in Australia using Telstra's
+  BigPond Cable.</description>
+  <description lang="de">Anmeldung und Authentifizierung für Kunden, die in Australien das Telstra
+  BigPond Cable nutzen.</description>
+  <description lang="nl">Inloggen en authenticatie voor gebruikers die in Australië gebruik
+  maken van Telstra's BigPond Cable.</description>
+  <description lang="fr">Ouverture de session et authentification des utilisateurs de
+  BigPond Cable en Australie.</description>
+  <description lang="it">Protocollo di accesso ed autenticazione per gli utenti australiani che usano il sistema BigPond Cable della Telstra.</description>
+  <description lang="es">Apertura de sesión y autenticación de usuarios australianos que usan el sistema
+  BigPond Cable, de Telstra.</description>
+  <classification class="net"/>
+  <network>
+    <tcp source="client" dest="server">
+      <description>Authentication</description>
+      <description lang="de">Authentifizierung</description>
+      <description lang="nl">Authenticatie</description>
+      <description lang="fr">Authentification</description>
+      <description lang="it">Autenticazione</description>
+      <description lang="es">Autenticación</description>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="5050"/></dest>
+    </tcp>
+    <udp source="server" dest="client" direction="both">
+      <description>Heartbeat</description>
+      <description lang="de">Heartbeat</description>
+      <description lang="nl">Heartbeat</description>
+      <description lang="fr">Battement de coeur</description>
+      <description lang="it">Heartbeat</description>
+      <description lang="es">Latido</description>
+      <source><port portnum="5050"/></source>
+      <dest><port portnum="5050"/></dest>
+    </udp>
+  </network>
+  <security threat="medium" falsepos="low"/>
+  <reference href="http://www.ozcableguy.com/heartbeat.html">
+  The Telstra Heartbeat</reference>
+</protocol>
+
+<protocol name="cddb">
+  <longname>CDDB - CD Database</longname>
+  <longname lang="de">CDDB - CD Datenbank</longname>
+  <longname lang="nl">CDDB - CD-database</longname>
+  <longname lang="fr">CDDB - Base de données de CD</longname>
+  <longname lang="it">CDDB - Archivio CD</longname>
+  <longname lang="es">CDDB - Base de datos de CD</longname>
+  <description>Used by many CD players to lookup the names and track from a CD.</description>
+  <description lang="de">Wird von vielen CD-Spielern benutzt, um den Namen und die Stücke auf einer CD 
+  zu  bestimmen.</description>
+  <description lang="nl">Wordt door veel CD-spelers gebruikt voor het opzoeken van 
+  de titels en tracknamen van CD's.</description>
+  <description lang="fr">Permet à de nombreux lecteurs CD de consulter la table des noms
+  et pistes d'un CD.</description>
+  <description lang="it">Questo protocollo è usato da molti esecutori di CD musicali per ottenere nome e traccia da un CD.</description>
+  <description lang="es">Este protocolo es usado por muchos reproductores de CD musicales para obtener el
+  nombre y los datos de un CD.</description>
+  <classification class="data"/>
+  <network>
+    <tcp>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="888"/></dest>
+    </tcp>
+  </network>
+  <security threat="low" falsepos="low"/>
+</protocol>
+
+<protocol name="pptp">
+  <longname>PPTP - Point-to-Point Tunneling Protocol</longname>
+  <longname lang="de">PPTP - Point-to-Point Tunneling Protocol</longname>
+  <longname lang="nl">PPTP - Point-to-Point Tunneling Protocol</longname>
+  <longname lang="fr">PPTP - Protocole de tunnellisation point-à-point</longname>
+  <longname lang="it">PPTP - Protocollo per il Tunneling Point-to-Point</longname>
+  <longname lang="es">PPTP - Protocolo de canalización punto-a-punto</longname>
+  <description>Point to Point Protocol (PPP) tunneled through an IP network.
+  Commonly used for running Virtual Private Networks (VPN).</description>
+  <description lang="de">Point to Point Protokoll (PPP), das über ein IP-Netzwerk getunnelt wird.
+  Häufig im Gebrauch beim Betrieb von Virtual Private Networks (VPN).</description>
+  <description lang="nl">Point to Point Protocol (PPP), dat over een over een IP-netwerk
+  getunneld wordt. Veelal gebruikt voor het draaien van Virtual Private Networks (VPN).
+  </description>
+  <description lang="fr">Procole point-à-point (PPP) mis sous tunnel à travers un réseau IP.
+  Fréquemment usité pour mettre en place un réseau privé virtuel (VPN)
+  sur l'infrastructure d'un réseau public.</description>
+  <description lang="it">Si tratta di un protocollo da Punto a Punto (PPP) incapsulato attraverso una rete IP e comunemente usato per far funzionare una Rete Privata Virtuale (VPN).</description>
+  <description lang="es">Protocolo punto a punto canalizado (Point-to-Point Tunneling Protocol) a través de una red IP. Se utiliza comúnmente para establecer redes privadas virtuales (VPN).</description>
+  <classification class="net"/>
+  <network>
+    <tcp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="1723"/></dest>
+      <description>Control connection</description>
+      <description lang="de">Kontrollverbindung</description>
+      <description lang="nl">Controleverbinding</description>
+      <description lang="fr">Connexion de contrôle</description>
+      <description lang="it">Controllo connessione</description>
+      <description lang="es">Conexión de control</description>
+    </tcp>
+    <ip source="client" dest="server" protocol="47" direction="both">
+      <description>GRE, user data</description>
+      <description lang="de">GRE, Benutzerdaten</description>
+      <description lang="nl">GRE, gebruikersdata</description>
+      <description lang="fr">GRE, données utilisateur</description>
+      <description lang="it">GRE, dati utente</description>
+      <description lang="es">GRE, datos de usuario</description>
+    </ip>
+  </network>
+</protocol>
+
+<protocol name="vnc">
+  <longname>VNC - Virtual Network Computing</longname>
+  <longname lang="de">VNC - Virtual Network Computing</longname>
+  <longname lang="nl">VNC - Virtual Network Computing</longname>
+  <longname lang="fr">VNC - Prise de contrôle de bureau distant</longname>
+  <longname lang="it">VNC - Rete di calcolatori virtuali</longname>
+  <longname lang="es">VNC - Control remoto de escritorio</longname>
+  <description>VNC is used to work remotely on computer's desktop
+  via an IP network.</description>
+  <description lang="de">VNC ermöglicht das Arbeiten auf dem Desktop
+  eines entfernten Rechners über ein IP-Netzwerk.</description>
+  <description lang="nl">VNC wordt gebruikt om op computer op afstand
+  te werken via een IP-netwerk.</description>
+  <description lang="fr">VNC (Virtual Network Computing) permet de
+  travailler sur le bureau d'un ordinateur distant via un réseau IP.</description>
+  <description lang="it">Il protocollo VNC è usato per lavorare in modo remoto sui desktop di calcolatori collegati attraverso una rete IP.</description>
+  <description lang="es">El protocolo VNC se usa para trabajar sobre un escritorio remoto a través de una red IP.</description>
+  <classification class="session"/>
+  <network>
+    <tcp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest><portrange start="5900" end="5903" /></dest>
+      <description>Main connection</description>
+      <description lang="de">Hauptverbindung</description>
+      <description lang="nl">Hoofdverbinding</description>
+      <description lang="fr">Connexion principale</description>
+      <description lang="it">Connessione principale</description>
+      <description lang="es">Conexión principal</description>
+    </tcp>
+    <tcp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="5800"/></dest>
+      <description>Mini web server for serving the Java VNC client.</description>
+      <description lang="de">Mini-Webserver der den Java VNC Client bedient.</description>
+      <description lang="nl">Mini-webserver voor het bedienen van de Java VNC-cliënt.</description>
+      <description lang="fr">Mini-serveur Web destiné au client VNC écrit en Java.</description>
+      <description lang="it">Mini webserver usato per servire il client Java VNC.</description>
+      <description lang="es">Mini-servidor web usado para servir al cliente Java VNC.</description>
+    </tcp>
+  </network>
+  <security threat="medium" falsepos="low"/>
+  <reference href="http://www.uk.research.att.com/vnc">VNC Documentation</reference>
+</protocol>
+
+<protocol name="msnmessenger">
+  <longname>MSN Messenger</longname>
+  <longname lang="de">MSN Messenger</longname>
+  <longname lang="nl">MSN Messenger</longname>
+  <longname lang="fr">MSN Messenger</longname>
+  <longname lang="it">MSN Messenger</longname>
+  <longname lang="es">MSN Messenger</longname>
+  <description>Microsoft Network Messenger. An instant messenging program.
+  </description>
+  <description lang="de">Microsoft Network Messenger. Ein Instant-Messenging Programm.
+  </description>
+  <description lang="nl">Microsoft Network Messenger. Een Instant-Messenging-programma.
+  </description>
+  <description lang="fr">Microsoft Network Messenger. Un logiciel de messagerie instantannée.
+  </description>
+  <description lang="it">Microsoft Network Messenger: è un programma per inviare e ricevere messaggi istantanei.</description>
+  <description lang="es">Microsoft Network Messenger. Un programa de mensajería instantánea.
+  </description>
+  <classification class="chat"/>
+  <network>
+    <tcp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="1863" /></dest>
+    </tcp>
+  </network>
+  <security threat="medium" falsepos="low"/>
+  <reference href="http://messenger.msn.com/support/firewall.asp">
+  .NET Messenging Service - Network Administrators</reference>
+</protocol>
+
+<protocol name="kerberos">
+  <longname>Kerberos</longname>
+  <longname lang="de">Kerberos</longname>
+  <longname lang="nl">Kerberos</longname>
+  <longname lang="fr">Kerberos</longname>
+  <longname lang="it">Kerberos</longname>
+  <longname lang="es">Kerberos</longname>
+  <description>The Kerberos system authenticates individual users in a
+  network environment. (See also Session/klogin</description>
+  <description lang="de">Das Kerberos System authentifiziert Benutzer in einer
+  Netzwerkumgebung. (Siehe auch Interaktive Sitzungen/klogin)</description>
+  <description lang="nl">Het Kerberos-systeem authenticeert individuele gebruikers
+  in een netwerkomgeving (kijk ook bij Interactieve sessie/klogin).</description>
+  <description lang="fr"> Kerberos est un système permettant une authentification
+  des utilisateurs de services d'un réseau.</description>
+  <description lang="it">Il sistema Kerberos autentica singoli utenti in un ambiente di rete
+  (Vedi anche Sessione/klogin).</description>
+  <description lang="es">El sistema Kerberos autentica usuarios individuales en una red
+  (Vea tambien Sesion/klogin).</description>
+  <classification class="net"/>
+  <network>
+    <udp source="client" dest="server" direction="both">
+      <description>Ticket requests</description>
+      <description lang="de">Ticket Anforderungen</description>
+      <description lang="nl">Ticket requests</description>
+      <description lang="fr">Demandes de ticket</description>
+      <description lang="it">Richiesta Biglietto</description>
+      <description lang="es">Petición de ticket</description>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="88" /></dest>
+    </udp>
+    <udp source="client" dest="server" direction="both">
+      <description>Kerberos 5-to-4 ticket conversion</description>
+      <description lang="de">Kerberos 5-to-4 Ticket Konvertierung</description>
+      <description lang="nl">Kerberos 5-to-4 ticket-conversie</description>
+      <description lang="fr">Conversion de tickets Kerberos 5-vers-4</description>
+      <description lang="it">Conversione del biglietto Kerberos 5-a-4</description>
+      <description lang="es">Conversión de tickets Kerberos 5-a-4</description>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="4444" /></dest>
+    </udp>
+    <tcp source="client" dest="server">
+      <description>Changing password (kpasswd under unix)</description>
+      <description lang="de">Passwort ändern (kpasswd unter unix)</description>
+      <description lang="nl">Wachtwoord wijzigen (kpasswd onder UNIX).</description>
+      <description lang="fr">Changement du mot de passe (kpasswd sous UNIX).</description>
+      <description lang="it">Cambio della password (kpasswd sotto UNIX).</description>
+      <description lang="es">Cambio de contraseña (kpasswd bajo UNIX).</description>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="749" /></dest>
+    </tcp>
+    <tcp source="client" dest="server">
+      <description>Changing password (under windows, old interface)</description>
+      <description lang="de">Passwort ändern (unter Windows, altes Interface)</description>
+      <description lang="nl">Wachtwoord wijzigen (onder Windows, oude interface).</description>
+      <description lang="fr">Changement du mot de passe (sous Windows, ancienne interface).</description>
+      <description lang="it">Cambio della password (sotto windows, vecchia interfaccia).</description>
+      <description lang="es">Cambio de contraseña (bajo Windows, antiguo interfaz).</description>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="464" /></dest>
+    </tcp>
+    <udp source="client" dest="server" direction="both">
+      <description>Changing password (under windows, new interface)</description>
+      <description lang="de">Passwort ändern (unter Windows, neues Interface)</description>
+      <description lang="nl">Wachtwoord wijzigen (onder Windows, nieuwe interface).</description>
+      <description lang="fr">Changement du mot de passe (sous Windows, nouvelle interface).</description>
+      <description lang="it">Cambio della password (sotto windows, nuova interfaccia).</description>
+      <description lang="es">Cambio de contraseña (bajo Windows, nuevo interfaz).</description>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="464" /></dest>
+    </udp>
+    <tcp source="client" dest="server">
+      <description>Running kadmin</description>
+      <description lang="de">kadmin starten</description>
+      <description lang="nl">kadmin starten</description>
+      <description lang="fr">Lancement de kadmin</description>
+      <description lang="it">Avvio kadmin</description>
+      <description lang="es">Arranque de kadmin</description>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="749" /></dest>
+    </tcp>
+  </network>
+</protocol>
+
+<protocol name="klogin">
+  <longname>Klogin - rlogin using Kerberos</longname>
+  <longname lang="de">Klogin - rlogin unter Verwendung von Kerberos</longname>
+  <longname lang="nl">Klogin - rlogin met behulp van Kerberos</longname>
+  <longname lang="fr">Klogin - Ouverture de session à distance avec Kerberos</longname>
+  <longname lang="it">Klogin - rlogin usando Kerberos</longname>
+  <longname lang="es">Klogin - rlogin usando Kerberos</longname>
+  <description>rlogin using Kerberos authentication instead of .rhosts
+  files.</description>
+  <description lang="de">rlogin unter Verwendung von Kerberos Authentifizierung anstelle von .rhosts
+  Dateien.</description>
+  <description lang="nl">rlogin met behulp van Kerberos-authenticatie, in plaats van .rhosts-bestanden.
+  </description>
+  <description lang="fr">Ouverture de session à distance par authentification Kerberos.
+  Ne s'appuie pas sur le contenu des fichiers .rhost tel qu'un rlogin.
+  </description>
+  <description lang="it">rlogin usando l'autenticazione di Kerberos invece dei file .rhosts.</description>
+  <classification class="session"/>
+  <description lang="es">Apertura de sesión remota por autenticación Kerberos, en lugar de usar ficheros
+  .rhost.
+  </description>
+  <network>
+    <tcp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="543" /></dest>
+    </tcp>
+  </network>
+</protocol>
+
+<protocol name="kshell">
+  <longname>Kshell - command execution using Kerberos</longname>
+  <longname lang="de">Kshell - Befehle ausführen unter Verwendung von Kerberos</longname>
+  <longname lang="nl">Kshell - commando's uitvoeren door middel van Kerberos</longname>
+  <longname lang="fr">Kshell - Exécution de commande sous Kerberos</longname>
+  <longname lang="it">Kshell - Comando d'esecuzione via Kerberos</longname>
+  <longname lang="es">Kshell - Ejecución de comandos bajo Kerberos</longname>
+  <description>Remote command execution facilities using Kerberos
+  authentication.</description>
+  <description lang="de">Ausführung von Befehlen auf entfernten Machinen unter Verwendung von Kerberos
+  Authentifizierung.</description>
+  <description lang="nl">Het uitvoeren van commando's op computers op afstand door middel
+  van Kerberos-authenticatie.</description>
+  <description lang="fr">Fonctionnalités permettant d'exécuter des commandes à distance via une authentification Kerberos.</description>
+  <description lang="it">Strumento per l'esecuzione remota di comandi usando Kerberos.</description>
+  <classification class="session"/>
+  <description lang="es">Funciones que permiten la ejecución remota de comandos usando Kerberos.</description>
+  <classification class="session"/>
+  <network>
+    <tcp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="544" /></dest>
+    </tcp>
+  </network>
+</protocol>
+
+<protocol name="nis">
+  <longname>NIS - Network Information Service</longname>
+  <longname lang="de">NIS - Network Information Service</longname>
+  <longname lang="nl">NIS - Network Information Service</longname>
+  <longname lang="fr">NIS - Système d'information en réseau</longname>
+  <longname lang="it">NIS - Servizio d'informazione di rete</longname>
+  <longname lang="es">NIS - Servicio de información en red</longname>
+  <description>System for sharing user account/login information across a
+  network. The Network Information Service (NIS) was formerly known as Sun
+  Yellow Pages (YP).
+  </description>
+  <description lang="de">System zur zentralen Verwaltung  von Benutzerkonten und Anmelde-Informationen
+  in einem Netzwerk. Der Network Information Service (NIS) war früher unter der Bezeichnung Sun
+  Yellow Pages (YP) bekannt. </description>
+  <description lang="nl">Systeem voor centraal beheer van gebruikersaccounts en login-informatie
+  in een netwerk. De Network Information Service (NIS) stond vroeger bekend als
+  Sun Yellow Pages (YP - de Gouden Gids van SUN)
+  </description>
+  <description lang="fr">Système fournissant au réseau des services d'accès partagé d'informations,
+  tels que comptes ou mots de passes. Également connu sous le nom SUN Yellow Pages (YP).
+  </description>
+  <description lang="it">Questo protocollo è usato per condividere gli account utenti e le informazioni di accesso attraverso una rete. Il NIS e' stato anche conosciuto come le Pagine Gialle di Sun Microsystems (YP)</description>
+  <description lang="es">Sistema para compartir información de cuentas de usuario e información de acceso a través de una red. El servicio de Información en red (Network Information Service-NIS) era antiguamente conocido como Páginas Amarillas de Sun (Yellow Pages-YP)</description>
+  <classification class="net"/>
+  <network>
+  	<tcp>
+  	  <description>RPC port mapper service</description>
+	  <description lang="de">RPC Port Mapper Dienst</description>
+	  <description lang="nl">RPC Port Mapper-dienst</description>
+	  <description lang="fr">RPC port mapper service</description>
+	  <description lang="it">Servizio Port Mapper RPC</description>
+	  <description lang="es">Servicio de RPC Port Mapper</description>
+      <dest><port portnum="111"/></dest>
+      <source><port portnum="any"/></source>
+    </tcp>
+  	<udp direction="both">
+  	  <description>RPC port mapper service</description>
+	  <description lang="de">RPC Port Mapper Dienst</description>
+	  <description lang="nl">RPC Port Mapper-dienst</description>
+  	  <description lang="fr">RPC port mapper service</description>
+	  <description lang="it">Servizio Port Mapper RPC</description>
+	  <description lang="es">Servicio de RPC Port Mapper</description>
+  	  <dest><port portnum="111"/></dest>
+      <source><port portnum="any"/></source>
+  	</udp>
+
+  	<tcp>
+  	  <description>General RPC traffic</description>
+	  <description lang="de">Allgemeines RPC Datenaufkommen</description>
+	  <description lang="nl">Algemeen RPC-dataverkeer</description>
+	  <description lang="it">Traffico generale RPC</description>
+	  <description lang="es">Tráfico general RPC</description>
+      <dest><port portnum="dynamic"/></dest>
+      <source><port portnum="any"/></source>
+    </tcp>
+  	<udp direction="both">
+  	  <description>General RPC traffic</description>
+	  <description lang="de">Allgemeines RPC Datenaufkommen</description>
+	  <description lang="nl">Algemeen RPC-dataverkeer</description>
+	  <description lang="it">Traffico generale RPC</description>
+	  <description lang="es">Tráfico general RPC</description>
+  	  <dest><port portnum="dynamic"/></dest>
+      <source><port portnum="any"/></source>
+  	</udp>
+  </network>
+  <security threat="high" falsepos="low"/>
+</protocol>
+
+<protocol name="imaps">
+  <longname>IMAPS - Internet Message Access Protocol over SSL</longname>
+  <longname lang="de">IMAPS - Internet Message Access Protocol über SSL</longname>
+  <longname lang="nl">IMAPS - Internet Message Access Protocol over SSL</longname>
+  <longname lang="fr">IMAPS - Protocole de Messagerie sécurisé par SSL</longname>
+  <longname lang="it">IMAPS - IMAP via SSL</longname>
+  <longname lang="es">IMAPS - IMAP a través de SSL</longname>
+  <description>Used by client machines to read and manage email residing on a
+  mail server. IMAPS is just the normal IMAP protocol being used with Secure
+  Socket Layer (SSL) encryption and authentication for security.</description>
+  <description lang="de">Wird von Client Rechnern zum Lesen und Verwalten von E-Mails
+  benutzt, die auf einem Server abgelegt sind. Bei IMAPS handelt es sich um das
+  normale IMAP Protokoll in Verbindung mit der Secure Socket Layer (SSL) Verschlüsselung
+  und Authentifizierung für sichere Verbindungen.</description>
+  <description lang="nl">Wordt gebruikt door cliëntcomputers voor het lezen en beheren van
+  e-mailberichten op een mailserver. IMAPS is het in feite het normale IMAP-protocol dat samen
+  met de Secure Socket Layer (SSL)-versleuteling en -authenticatie wordt gebruikt
+  voor beveiligde verbindingen.</description>
+  <description lang="fr">Permet aux machines clientes de lire et gérer souplement
+  les courriels résidant sur un serveur de courriers. Le protocole IMAPS n'est autre que le
+  protocole IMAP sécurisé par SSL (Secure Socket Layer) pour le chiffrement des données et l'authentification.</description>
+  <description lang="it">Questo protocollo è usato da macchine client che leggono ed amministrano posta elettronica residente su un server di posta. IMAPS non è altro che il normale protocollo IMAP usato, per sicurezza, assieme ad SSL per la cifratura e l'autenticazione.</description>
+  <description lang="es">Usado por máquinas cliente para leer y gestionar mensajes en un servidor de correo.
+  Este protocolo no es otro que IMAP funcionando con SSL para cifrado de los datos y la
+  autenticación.</description>
+  <classification class="mail"/>
+  <network>
+    <tcp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="993"/></dest>
+    </tcp>
+  </network>
+  <security threat="low" falsepos="low"/>
+</protocol>
+
+<protocol name="pop3s">
+  <longname>POP3S - Post Office Protocol v3 over SSL</longname>
+  <longname lang="de">POP3S - Post Office Protocol v3 über SSL</longname>
+  <longname lang="nl">POP3S - Post Office Protocol v3 over SSL</longname>
+  <longname lang="fr">POP3S - Protocole de messagerie v3 sécurisé par SSL</longname>
+  <longname lang="it">POP3S - POP3 v3 via SSL</longname>
+  <longname lang="es">POP3S - Protocolo de Oficina de Correos v.3 sobre SSL</longname>
+  <description>Used by client machine for retriving email from a mail server.
+  POP3S is just the normal POP3 protocol being used with Secure Socket Layer
+  (SSL) encryption and authentication for security.</description>
+  <description lang="de">Wird von Rechnern zum Abholen von E-Mail von einem Mail-Server benutzt.
+  Bei POP3S handelt es sich um das normale POP3 Protokoll in Verbindung mit der Secure Socket Layer
+  (SSL) Verschlüsselung und Authentifizierung.</description>
+  <description lang="nl">Wordt gebruikt door cliëntcomputers voor het ophalen van e-mailberichten
+  van een mailserver. POP3S is gewoon het normale POP3-protocol, dat samen
+  met de Secure Socket Layer (SSL)-versleuteling en -authenticatie wordt gebruikt
+  voor beveiligde verbindingen.</description>
+  <description lang="fr">Protocole utilisé par un client pour relever les courriels du serveur de
+  courrier. Le protocole POP3S n'est autre que le protocole POP3 sécurisé par SSL (Secure Socket Layer)
+  pour le chiffrement des données et l'authentification.</description>
+  <description lang="it">Questo protocollo è usato da macchine client per ricevere posta elettronica da un server di posta. POP3S non è altro che il protocollo POP3 usato, per sicurezza, assieme ad SSL per cifratura ed autenticazione.</description>
+  <description lang="es">Este protocolo es usado por la máquina cliente para recoger correo de un servidor de
+  correo electrónico. No es otro que POP3 funcionando con SSL para cifrado de los datos y la
+  autenticación.</description>
+  <classification class="mail"/>
+  <network>
+    <tcp>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="995"/></dest>
+    </tcp>
+  </network>
+  <security threat="low" falsepos="low"/>
+</protocol>
+
+<protocol name="isakmp">
+  <longname>ISAKMP - Internet security key management</longname>
+  <longname lang="de">ISAKMP - Internet security key management</longname>
+  <longname lang="nl">ISAKMP - Internet security key management</longname>
+  <longname lang="fr">ISAKMP - Gestion de clés de sécurité Internet</longname>
+  <longname lang="it">ISAKMP - Gestione Chiavi Sicurezza Internet </longname>
+  <longname lang="es">ISAKMP - Gestión de claves de seguridad Internet</longname>
+  <description>Internet Security Association and Key Management Protocol
+  (ISAKMP). RFC2408.</description>
+  <description lang="de">Internet Security Association and Key Management Protocol
+  (ISAKMP). RFC2408.</description>
+  <description lang="nl">Internet Security Association and Key Management Protocol
+  (ISAKMP). RFC2408.</description>
+  <description lang="fr">Internet Security Association and Key Management Protocol
+  (ISAKMP). RFC2408.</description>
+   <description lang="it">Protocollo di assegnamento e di amministrazione delle chiavi di sicurezza Interne (ISAKMP - RFC2408).</description>
+  <description lang="es">Internet Security Association and Key Management Protocol
+  (ISAKMP). RFC2408.</description>
+  <classification class="net"/>
+  <network>
+  	<udp direction="both">
+      <source><port portnum="any"/></source>
+  	  <dest><port portnum="500"/></dest>
+  	</udp>
+  </network>
+  <security threat="low" falsepos="low"/>
+</protocol>
+
+<protocol name="cvspserver">
+  <longname>CVS - Concurrent Versions System</longname>
+  <longname lang="de">CVS - Concurrent Versions System</longname>
+  <longname lang="nl">CVS - Concurrent Versions System</longname>
+  <longname lang="fr">CVS - Système de contrôle de versions</longname>
+  <longname lang="it">CVS - Sistema di controllo delle versioni</longname>
+  <longname lang="es">CVS - Sistema de control de versiones</longname>
+  <description>CVS is a system for managing different versions of source code
+  files.</description>
+  <description lang="nl">CVS is een systeem voor het beheren van verschillende 
+  versies van broncodebestanden.</description>
+  <description>CVS is a system for managing different versions of source code
+  files.</description>
+  <description lang="nl">CVS is een systeem voor het beheren van verschillende 
+  versies van broncodebestanden.</description>
+  <description>CVS is a system for managing different versions of source code files.</description>
+  <description lang="de">CVS ist ein System zur Verwaltung verschiedener Versionen von Quellcode
+  Dateien.</description>
+  <description lang="nl">CVS is een systeem voor het beheren van verschillende versies
+  van broncodebestanden.</description>
+  <description lang="fr">CVS est un système permettant de gérer différentes versions
+  de fichiers de code source.</description>
+  <description lang="it">Il protocollo CVS è un sistema per amministrare versioni diverse di codice sorgente.</description>
+  <description lang="es">CVS es un sistema para administrar diferentes versiones de ficheros de código
+  fuente.</description>
+  <classification class="file"/>
+  <network>
+    <tcp>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="2401"/></dest>
+    </tcp>
+  </network>
+  <security threat="medium" falsepos="low"/>
+</protocol>
+
+<protocol name="dict">
+  <longname>DICT - Dictionary Server Protocol</longname>
+  <longname lang="de">DICT - Dictionary Server Protocol</longname>
+  <longname lang="nl">DICT - Dictionary Server Protocol</longname>
+  <longname lang="fr">DICT - Protocole d'interrogation de dictionnaire</longname>
+  <longname lang="it">DICT - Protocollo per i server di dizionari</longname>
+  <longname lang="es">DICT - Protocolo para servidor de diccionario</longname>
+  <description>Used by a client machine to lookup dictionary definitions
+  from a server. RFC 2229</description>
+  <description lang="nl">Wordt gebruikt door een cliëntcomputer voor het opzoeken van definities
+  in woordenboeken. RFC 2229</description>
+  <description>Used by a client machine to lookup dictionary definitions
+  from a server. RFC 2229</description>
+  <description lang="nl">Wordt gebruikt door een cliëntcomputer voor het opzoeken van definities
+  in woordenboeken. RFC 2229</description>
+  <description>Used by a client machine to lookup dictionary definitions from a server. RFC 2229</description>
+  <description lang="de">Wird von einem Client Rechner zum Nachschlagen von Definitionen in Wörterbüchern
+  verwendet. RFC 2229</description>
+  <description lang="nl">Wordt gebruikt door een cliëntcomputer voor het opzoeken van definities
+  in woordenboeken. RFC 2229</description>
+  <description lang="fr">Permet à une machine cliente de consulter les définitions d'un dictionnaire d'un
+  serveur. Décrit dans la RFC 2229</description>
+  <description lang="it">E' un protocollo usato da una macchina client per ottenere da un server definizioni da dizionari (vedi anche RFC 2229).</description>
+  <description lang="es">Es un protocolo usado por una máquina cliente para buscar definiciones en un servidor de diccionario (ver RFC 2229).</description>
+  <classification class="data"/>
+  <network>
+    <tcp>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="2628"/></dest>
+    </tcp>
+  </network>
+  <security threat="low" falsepos="low"/>
+</protocol>
+
+<protocol name="esp">
+  <longname>ESP - Encapsulating Security Payload</longname>
+  <longname lang="de">ESP - Encapsulating Security Payload</longname>
+  <longname lang="nl">ESP - Encapsulating Security Payload</longname>
+  <longname lang="fr">ESP - Association de sécurité IPSEC</longname>
+  <longname lang="it">ESP - Encapsulating Security Payload</longname>
+  <longname lang="es">ESP - Encapsulating Security Payload</longname>
+  <description>IPSEC protocol, provides data integrity and encryption.
+  Commonly used for running Virtual Private Networks (VPN).</description>
+  <description lang="de">IPSEC Protokoll, liefert Datenvollstandigkeit und
+  Verschusselung. Häufig im Gebrauch beim Betrieb von Virtual Private Networks
+  (VPN).</description>
+  <description lang="nl">IPSEC-protocol, levert data-integriteit en
+-encryptie. Veelal gebruikt voor het draaien van Virtual Private Networks (VPN).</description>
+  <description lang="fr">ESP (Encapsulating Security Payload) est une association de sécurité IPSEC.
+  Le protocole IPSEC (Internet Protocol SEcurity) vérifie l'intégrité des données et assure le chiffrement.
+  Fréquemment usité au sein des réseaux privés virtuels (VPN).</description>
+  <description lang="it">Il protocollo IPSEC provvede l'integrità dei dati e la loro cifratura Viene usato comunemente per far funzionare una Rete Privata Virtuale (VPN).</description>
+  <description lang="es">El protocolo IPSEC se usa comunmente para funcionar en una red privada virtual (VPN)
+  proveyendo cifrado e integridad de datos.</description>
+  <classification class="net"/>
+  <network>
+    <ip source="client" dest="server" protocol="50" direction="both">
+      <description>GRE, user data</description>
+      <description lang="de">GRE, Benutzerdaten</description>
+      <description lang="nl">GRE, gebruikersgegevens</description>
+      <description lang="it">GRE, dati utente</description>
+      <description lang="es">GRE, datos del usuario</description>
+    </ip>
+  </network>
+</protocol>
+
+<protocol name="ah">
+  <longname>AH - Authentication Header</longname>
+  <longname lang="de">AH - Authentication Header</longname>
+  <longname lang="nl">AH - Authentication Header</longname>
+  <longname lang="fr">AH - Association de sécurité IPSEC</longname>
+  <longname lang="it">AH - Authentication Header</longname>
+  <longname lang="es">AH - Authentication Header</longname>
+  <description>IPSEC protocol, provides data integrity.
+  Commonly used for running Virtual Private Networks (VPN).</description>
+  <description lang="de">IPSEC Protokoll, liefert Datenvollstandigkeit.
+  Häufig im Gebrauch beim Betrieb von Virtual Private Networks
+  (VPN).</description>
+  <description lang="nl">IPSEC-protocol, levert data-integriteit.
+  Veelal gebruikt voor het draaien van Virtual Private Networks
+  (VPN).</description>
+  <description lang="fr">AH (Authentication Header) est une association de sécurité IPSEC.
+  Le protocole IPSEC vérifie l'intégrité des données et assure le chiffrement. Fréquemment usité
+  au sein des réseaux privés virtuels (VPN).</description>
+  <description lang="de">IPSEC Protokoll, liefert Datenvollstandigkeit. Häufig im Gebrauch beim Betrieb von 
+  Virtual Private Networks (VPN).</description>
+  <description lang="nl">IPSEC-protocol, levert data-integriteit. Veelal gebruikt voor het draaien van Virtual Private Networks (VPN).</description>
+  <description lang="it">Questo protocollo IPSEC provvede l'integrità dei dati. Viene usato comunemente per far funzionare una rete privata di tipo virtuale (VPN).</description>
+  <description lang="es">Este protocolo IPSEC ofrece integridad de datos. Se usa comunmente para funcionar en
+  una red privada virtual (VPN).</description>
+  <classification class="net"/>
+  <network>
+    <ip source="client" dest="server" protocol="51" direction="both">
+      <description>GRE, user data</description>
+      <description lang="de">GRE, Benutzerdaten</description>
+      <description lang="nl">GRE, gebruikersgegevens</description>
+      <description lang="it">GRE, dati utente</description>
+      <description lang="es">GRE, datos del usuario</description>
+    </ip>
+  </network>
+</protocol>
+
+<protocol name="aim">
+  <!-- Protocol information provided by Maciej Plewa <symbol@iprimus.com.au> -->
+  <longname>AOL Instant Messenger</longname>
+  <longname lang="de">AOL Instant Messenger</longname>
+  <longname lang="fr">Le Messager Instantané d'AOL</longname>
+  <longname lang="pl">AOL Instant Messenger</longname>
+  <longname lang="nl">AOL Instant Messenger</longname>
+  <longname lang="it">AOL Instant Messenger</longname>
+  <longname lang="es">AOL Instant Messenger</longname>
+  <description>AOL Instant Messenger (AIM) is a program developed for aiding
+  communication on the Internet. By writing short messages you can quickly
+  communicate with your friends or co-workers.</description>
+  <description lang="fr">Le Messager Instantané d'AOL (AIM) est un programme
+  développé pour faciliter la communication sur l'Internet. Par l'inscription
+  les messages courts vous pouvez rapidement communiquer avec vos amis ou collègues.</description>
+  <description lang="pl">AOL Instant Messanger (AIM) to program stworzony do
+  ulatwienia komunikacji przez Internet. Dzieki krotkim wiadomosciom mozesz
+  szybko skontakowac sie z przyjaciolmi albo wspolpracownikami.</description>
+  <description lang="nl">AOL Instant Messenger (AIM) is een programma dat
+  gebruikt wordt voor het communiceren met andere gebruikers via het Internet.
+  Met dit programma kunt u door middel van het schrijven van kleine berichtjes
+  rechtstreeks communiceren met uw vrienden en collega's. </description>
+  <description lang="de">AOL Instant Messenger (AIM) ist ein Programm für einfache
+  Kommunikation über das Internet. Mit ihm kann man schnell kurze
+  Nachrichten mit Freunden oder Mitarbeitern austauschen.</description>
+  <description lang="it">AOL Instant Messenger (AIM) è un programma sviluppato per favorire le
+  comunicazioni su internet. Grazie ad esso, potete velocemente parlare con amici o colleghi di lavoro scrivendo brevi messaggi.</description>
+  <description lang="es">AOL Instant Messenger (AIM) es unprograma desarrollado para facilitar la
+  comunicación sobre Internet. Mediante cortos mensajes, puede comunicarse con sus amigos o
+  compañeros.</description>
+  <classification class="chat"/>
+  <network>
+    <tcp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest><portrange start="5190" end="5193"/></dest>
+    </tcp>
+    <udp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest><portrange start="5190" end="5193"/></dest>
+    </udp>
+  </network>
+  <security threat="low" falsepos="low"/>
+  <reference href="http://www.iana.org/assignments/port-numbers">Internet
+  Assigned Numbers Authority registered port list.</reference>
+</protocol>
+
+<protocol name="fasttrack">
+  <!-- Protocol information provided by Maciej Plewa <symbol@iprimus.com.au> -->
+  <longname>FastTrack - File sharing</longname>
+  <longname lang="de">FastTrack</longname>
+  <longname lang="pl">FastTrack</longname>
+  <longname lang="nl">FastTrack - bestanden delen</longname>
+  <longname lang="fr">FastTrack - Partage de fichiers</longname>
+  <longname lang="it">FastTrack - Condivisione di file</longname>
+  <longname lang="es">FastTrack - Compartición de ficheros</longname>
+  <description>FastTrack is a file sharing protocol used by applications such
+  as Kazaa, iMesh, Grokster and others. Note that iMesh registration process
+  possibly requires the ICMP traffic to be enabled.</description>
+  <description lang="pl">FastTrack to protokol wymiany plikow ktory jest
+  uzywany przez aplikacje jak Kazaa, iMesh, Grokster i inne. Proces
+  rejestracji do sieci iMesh moze wymagac wlaczonego ICMP.</description>
+  <description lang="nl">FastTrack is een filesharing-protocol dat wordt
+  gebruikt door applicaties als Kazaa, iMes, Grokster etc. Opmerking:
+  voor het registratieproces van iMesh dient u mogelijk ICMP-verkeer in te
+  schakelen.</description>
+  <description lang="de">FastTrack ist ein Filesharing Protokoll, das von
+  Kazaa, iMesh, Grokster und anderen Programmen verwendet wird. Bitte
+  beachte, dass fürs Registrieren von iMesh eventuell ICMP aktiviert sein
+  muss.</description>
+  <description lang="fr">FastTrack est un protocole de partage de fichiers
+  utilisé par des logiciels tels que Kazaa, iMesh, Grokster. A noter : la phase d'enregistrement
+  d'iMesh requiert probablement d'activer la redirection ICMP.</description>
+  <description lang="it">FastTrack è un protocollo di condivisione file usato da applicazioni
+  quali Kazaa, iMesh, Grokste ed altri. Si noti che il processo di registrazione iMesh richiede che sia possibilmente abilitato il traffico ICMP.</description>
+  <description lang="es">FastTrack es un protocolo de compartición de ficheros usado por aplicaciones como
+  Kazaa, iMesh, Grokste y otros. Tenga en cuenta que la fase de registro de iMesh puede requerir que ICMP
+  esté permitido.</description>
+  <classification class="file"/>
+  <network>
+    <tcp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="1214"/></dest>
+    </tcp>
+    <udp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="1214"/></dest>
+    </udp>
+  </network>
+  <security threat="medium" falsepos="low"/>
+  <reference href="http://www.iana.org/assignments/port-numbers">Internet
+  Assigned Numbers Authority registered port list.</reference>
+</protocol>
+
+<protocol name="blubster">
+  <!-- Protocol information provided by Maciej Plewa <symbol@iprimus.com.au> -->
+  <!-- Warning: this protocol hasn't been tested yet! -->
+  <longname>Blubster</longname>
+  <longname lang="nl">Blubster</longname>
+  <longname lang="fr">Blubster</longname>
+  <longname lang="it">Blubster</longname>
+  <longname lang="es">Blubster</longname>
+  <description>Blubster is another audio sharing application.</description>
+  <description lang="nl">Blubster is een andere applicatie voor het delen van bestanden.</description>
+  <description lang="de">Blubster ist eine weitere Musik-Tauschbörse.</description>
+  <description lang="fr">Blubster est un logiciel de partage de morceaux musicaux.</description>
+  <description lang="it">Blubster è un'altra applicazione per la condivisione di file audio.</description>
+  <description lang="es">Blubster es otra aplicación de compartición de música.</description>
+  <classification class="file"/>
+  <network>
+    <udp source="client" dest="server">
+      <description>Data download</description>
+      <description lang="nl">Data downloaden</description>
+      <description lang="fr">Téléchargement de données</description>
+      <description lang="it">Ricezione dati</description>
+      <description lang="es">Recepción de datos</description>
+      <source><port portnum="nonprivileged"/></source>
+      <dest><port portnum="41170"/></dest>
+    </udp>
+    <udp source="server" dest="client">
+      <description>Data upload</description>
+      <description lang="nl">Data uploaden</description>
+      <description lang="fr">Téléversement de données</description>
+      <description lang="it">Invio dati</description>
+      <description lang="es">Envío de datos</description>
+      <source><port portnum="nonprivileged"/></source>
+      <dest><port portnum="41170"/></dest>
+    </udp>
+  </network>
+  <security threat="medium" falsepos="low"/>
+  <reference href="http://www.blubster.net/php/article.php?sid=34">Blubster documentation</reference>
+</protocol>
+
+<protocol name="directconnect">
+  <!-- Protocol information provided by Maciej Plewa <symbol@iprimus.com.au> -->
+  <longname>Direct Connect</longname>
+  <longname lang="nl">Direct Connect</longname>
+  <longname lang="fr">Direct Connect</longname>
+  <longname lang="it">Direct Connect</longname>
+  <longname lang="es">Direct Connect</longname>
+  <description>Direct Connect, built on a peer-to-peer foundation, offers a
+  community oriented, user-controlled network.</description>
+  <description lang="nl">Direct Connect, gebouwd op een peer-to-peer
+  fundament, biedt een gemeenschapsgeöriënteerd, door gebruikers
+  beheerd netwerk.</description>
+  <description lang="de">Direct Connect, aufbauend auf einer Peer-to-Peer
+  Grundlage, bietet ein Community orientiertes, Benutzer kontrolliertes
+  Netzwerk.</description>
+ <description lang="fr">Direct Connect, basé sur un système de communication poste à poste,
+ propose un réseau communautaire paramétrable par l'utilisateur.</description>
+  <description lang="it">La connessione diretta (Direct Connect) è costruita su un idea di peer-to-peer. Offre una rete controllata dall'utente e orientata alla comunità.</description>
+  <description lang="es">La conexión directa (Direct Connect) está basada en un sistema de comunicación entre
+  pares (peer-to-peer). Ofrece una red comunal y controlada por el usuario.</description>
+  <classification class="file"/>
+  <network>
+    <tcp source="client" dest="server">
+      <description>This is used for connecting to hubs and other users</description>
+      <description lang="nl">Dit wordt gebruikt voor de verbindingsopbouw
+      naar hubs en andere gebruikers</description>
+      <description lang="it">Questo protocollo è usato per connettersi a degli hub e ad altri utenti.</description>
+      <description lang="es">Usado para conectar a los hub y a otros usuarios.</description>
+      <source><port portnum="dynamic"/></source>
+      <dest>
+        <portrange start="411" end="415"/>
+        <portrange start="1411" end="1415" stance="alternate"/>
+      </dest>
+    </tcp>
+    <udp source="client" dest="server">
+      <description>This is used for connecting to hubs and other users</description>
+      <description lang="nl">Dit wordt gebruikt voor de verbindingsopbouw naar hubs en andere 
+     gebruikers</description>
+     <description lang="it">Questo protocollo è usato per connettersi a degli hub e ad altri utenti.</description>
+     <description lang="es">Usado para conectar a los hub y a otros usuarios.</description>
+      <source><port portnum="dynamic"/></source>
+      <dest>
+        <portrange start="411" end="415"/>
+        <portrange start="1411" end="1415" stance="alternate"/>
+      </dest>
+    </udp>
+    <tcp source="client" dest="server">
+      <description>DC Active mode - usable by an unprivileged user</description>
+      <description lang="nl">DC Active mode - te gebruiken door een gebruiker zonder privileges</description>
+      <description lang="it">Modalità DC attiva: è utilizzabile da un utente non privilegiato.</description>
+      <description lang="es">Modo DC Activo - Utilizable por un usuario no privilegiado.</description>
+      <source><portrange start="1411" end="1415"/></source>
+    </tcp>
+    <udp source="client" dest="server">
+	  <description>DC Active mode - usable by an unprivileged user</description>
+	  <description lang="nl">DC Active mode - te gebruiken door een gebruiker zonder privileges</description>
+	  <description lang="it">Modalità DC attiva: è utilizzabile da un utente non privilegiato.</description>
+	  <description lang="es">Modo DC Activo - Utilizable por un usuario no privilegiado.</description>
+      <source><portrange start="1411" end="1415"/></source>
+    </udp>
+    <tcp source="server" dest="client">
+      <description>DC Active mode - usable by an unprivileged user</description>
+      <description lang="nl">DC Active mode - te gebruiken door een gebruike zonder privileges</description>
+      <description lang="it">Modalità DC attiva: è utilizzabile da un utente non privilegiato.</description>
+      <description lang="es">Modo DC Activo - Utilizable por un usuario no privilegiado.</description>
+      <dest><portrange start="1411" end="1415"/></dest>
+    </tcp>
+    <udp source="server" dest="client">
+      <description>DC Active mode - usable by an unprivileged user</description>
+      <description lang="nl">DC Active mode - te gebruiken door een gebruiker zonder privileges</description>
+      <description lang="it">Modalità DC Attiva: utilizzabile da un utente non privilegiato.</description>
+      <description lang="es">Modo DC Activo - Utilizable por un usuario no privilegiado.</description>
+      <dest><portrange start="1411" end="1415"/></dest>
+    </udp>
+
+<!--
+    <tcp source="client" dest="server">
+      <description>This UNODE port is used for UADDR transfers</description>
+      <description lang="it">Questa porta UNODE è usata per i trasferimenti UADDR.</description>
+      <description lang="nl">Deze UNODE-poort wordt gebruikt voor UADDR-overdrachten</description>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="19284"/></dest>
+    </tcp>
+-->
+  </network>
+  <security threat="medium" falsepos="low"/>
+  <reference href="http://www.outpostfirewall.com/guide/rules/preset_rules/p2p.htm">
+  Outpost Firewall preset rules guide</reference>
+</protocol>
+
+<protocol name="winmx">
+  <!-- Protocol information provided by Maciej Plewa <symbol@iprimus.com.au> -->
+  <longname>WinMX</longname>
+  <longname lang="nl">WinMX</longname>
+  <longname lang="fr">WinMX</longname>
+  <longname lang="it">WinMX</longname>
+  <longname lang="es">WinMX</longname>
+  <description>WinMX allows you to connect, download, and share files with
+  millions of other users through the decentralized WinMX Peer Network. </description>
+  <description lang="pl">WinMX pozwala tobie na polaczenie sie, sciaganie i
+  wymiane plikow z milionami innych uzytkownikow przez decentralizowana siec
+  WinMX Peer Network.</description>
+  <description lang="nl">Met WinMX kunt u via het decentrale WinMX peer-netwerk
+  bestanden delen met miljoenen andere gebruikers.</description>
+  <description lang="de">WinMX ermöglicht die Verbindung mit Millionen von
+  Benutzern durch das dezentrale WinMX Peer-Netzwerk um Dateien zu laden und
+  mit anderen zu teilen.</description>
+  <description lang="fr">WinMX vous permet de vous connecter, de télécharger
+  et de partager des fichiers avec des millions d'autres utilisateurs par le
+  réseau décentralisé WinMX.</description>
+  <description lang="it">WinMX permette di connettersi, scaricare e condividere file con
+  milioni di altri utenti attraverso la rete decentralizzata peer di WinMX.</description>
+  <description lang="es">WinMX permite conectar, descargar y compartir ficheros con millones de usuarios de
+  la red WinMX de pares (peer-to-peer) descentralizada.</description>
+  <classification class="file"/>
+  <network>
+    <tcp source="server" dest="client">
+      <source><port portnum="nonprivileged"/></source>
+      <dest><port portnum="6699"/></dest>
+    </tcp>
+    <tcp source="client" dest="server">
+      <source><port portnum="nonprivileged"/></source>
+      <dest><port portnum="6699"/></dest>
+    </tcp>
+    <udp source="server" dest="client">
+      <source><port portnum="nonprivileged"/></source>
+      <dest><port portnum="6257"/></dest>
+    </udp>
+    <udp source="client" dest="server">
+      <source><port portnum="6257"/></source>
+      <dest><port portnum="nonprivileged"/></dest>
+    </udp>
+    <tcp source="client" dest="server">
+      <description>Outgoing connection to WinMX main server</description>
+      <description lang="nl">Uitgaande verbinding naar de hoofdserver van WinMX</description>
+      <description lang="it">Connessione in uscita al server principale WinMX</description>
+      <description lang="es">Conexión saliente hacia el servidor principal WinMX</description>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="5690"/></dest>
+    </tcp>
+    <tcp source="client" dest="server">
+      <description>Outgoing connection to WinMX servers</description>
+      <description lang="nl">Uitgaande verbinding naar WinMX-servers</description>
+      <description lang="it">Connessione in uscita ai server WinMX</description>
+      <description lang="es">Conexión saliente hacia los servidores WinMX</description>
+      <source><port portnum="dynamic"/></source>
+      <dest><portrange start="7890" end="7893"/></dest>
+    </tcp>
+  </network>
+  <security threat="medium" falsepos="low"/>
+</protocol>
+
+<protocol name="ymessenger">
+  <!-- Protocol information provided by Maciej Plewa <symbol@iprimus.com.au> -->
+  <longname>Yahoo! Messenger</longname>
+  <longname lang="it">Yahoo! Messenger</longname>
+  <longname lang="nl">Yahoo! Messenger</longname>
+  <longname lang="es">Yahoo! Messenger</longname>
+  <description>Yahoo! instant messager.</description>
+  <description lang="nl">Yahoo! instant messager.</description>
+  <description lang="de">Yahoo Instant Messager.</description>
+  <description lang="fr">Yahoo! Messagerie instantannée.</description>
+  <description lang="it">Messaggi istantanei di Yahoo!.</description>
+  <description lang="es">Mensajería instantanea de Yahoo!.</description>
+  <classification class="chat"/>
+  <network>
+    <tcp source="client" dest="server">
+      <description>Login to network</description>
+      <description lang="nl">Inloggen in netwerk</description>
+      <description lang="it">Accesso alla rete</description>
+      <description lang="es">Acceso a la red</description>
+      <source><port portnum="dynamic"/></source>
+      <dest>
+        <port portnum="5050"/>
+        <port portnum="23" stance="alternate"/>
+      </dest>
+    </tcp>
+    <tcp source="client" dest="server">
+      <description>Conference</description>
+      <description lang="nl">Conferentie</description>
+      <description lang="it">Conferenza</description>
+      <description lang="es">Conferencia</description>
+      <source><port portnum="dynamic"/></source>
+      <dest><portrange start="5000" end="5001"/></dest>
+    </tcp>
+    <udp source="client" dest="server">
+      <description>Conference</description>
+      <description lang="nl">Conferentie</description>
+      <description lang="it">Conferenza</description>
+      <description lang="es">Conferencia</description>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="5000"/></dest>
+    </udp>
+  </network>
+  <security threat="low" falsepos="medium"/>
+  <reference href="http://help.yahoo.com/help/us/mesg/use/use-17.html">
+  Yahoo Messenger Help - Windows Messenger Help - How do I edit
+  proxy/firewall preferences?</reference>
+  <reference href="http://help.yahoo.com/help/us/mesg/webcams/webcams-13.html">
+  Yahoo Messenger Help - Webcams help - Can I use the Webcam feature behind a
+  firewall or proxy?</reference>
+  <reference href="http://www.outpostfirewall.com/guide/rules/preset_rules/communication.htm">
+  Outpost Firewall preset rules - Communications</reference>
+</protocol>
+
+<protocol name="jabber">
+  <longname>Jabber</longname>
+  <longname lang="nl">Jabber</longname>
+  <longname lang="fr">Jabber</longname>
+  <longname lang="it">Jabber</longname>
+  <longname lang="es">Jabber</longname>
+  <description>Jabber is a free and open instant messaging, presence and chat
+  protocol.</description>
+  <description lang="nl">Jabber is een vrij en open protocol voor instant
+  messaging, presence en chatten.</description>
+  <description lang="de">Jabber ist ein freies und offenes Instant Messaging,
+   Anwesenheits- und Chatprotokoll.</description>
+  <description lang="fr">Jabber est un logiciel libre de messagerie instantannée
+  bâti sur un protocole de clavardage et de signalement de présence.</description>
+  <description lang="it">Jabber è un protocollo aperto e gratuito per lo scambio di messaggi, segnalazione di presenza e chiacchierate.</description>
+  <description lang="es">Jabber es un protocolo abierto y gratuito para mensajería instantánea, notificación
+  de presencia y chat.</description>
+  <classification class="chat"/>
+  <network>
+    <tcp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="5222"/></dest>
+    </tcp>
+    <tcp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="5223"/></dest>
+      <description>Jabber over Secure Socket Layer</description>
+      <description lang="es">Jabber sobre Secure Socket Layer (SSL)</description>
+    </tcp>
+  </network>
+  <security threat="low" falsepos="low"/>
+</protocol>
+
+<protocol name="esound">
+  <longname>EsounD - Network Sound Daemon</longname>
+  <longname lang="nl">EsounD - Network Sound Daemon</longname>
+  <longname lang="fr">EsounD - Démon de son réseau</longname>
+  <longname lang="it">EsounD - Demone sonoro di rete</longname>
+  <longname lang="es">EsounD - Demonio de sonido en red</longname>
+  <classification class="session"/>
+  <network>
+    <tcp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="16001"/></dest>
+    </tcp>
+  </network>
+  <reference href="http://www.redhat.com/docs/manuals/linux/RHL-8.0-Manual/security-guide/s1-server-nis.html">
+  EsounD Protocol (Draft)
+  </reference>
+</protocol>
+
+<protocol name="privoxy">
+  <!--Protocol information provided by Maciej Plewa maciejpl@users.sourceforge.net -->
+  <longname>Privoxy HTTP filtering proxy</longname>
+  <longname lang="nl">Privoxy HTTP-filteringproxy</longname>
+  <longname lang="fr">Privoxy - Mandataire de filtrage HTTP</longname>
+  <longname lang="it">Protocollo Privoxy </longname>
+  <longname lang="es">Privoxy HTTP filtering proxy</longname>
+  <description></description>  
+  <description lang="it">Protocollo Privoxy per il filtraggio HTTP su proxy.</description>
+  <description lang="es">Protocolo Privoxy de filtrado HTTP sobre proxy.</description>
+  <classification class="net"/>
+
+  <network>
+    <tcp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="8118"/></dest>
+    </tcp>
+  </network>
+  <security threat="medium"/>
+  <reference href="http://www.privoxy.org">Privoxy documentation</reference>
+</protocol>
+
+<protocol name="coldfusion_standalone">
+  <!--Protocol information provided by Maciej Plewa maciejpl@users.sourceforge.net -->
+  <longname>ColdFusion Standalone Server</longname>
+  <longname lang="nl">Autonome ColdFusion-server</longname>
+  <longname lang="fr">Serveur autonome ColdFusion</longname>
+  <longname lang="it">Server Standalone ColdFusion</longname>
+  <longname lang="es">ColdFusion Standalone Server</longname>
+  <description>Stand-alone (Windows) or internal (Unix) Macromedia ColdFusion server is mainly used for ColdFusion development.</description>
+  <description lang="nl">Zelstandig (Windows) of interne (Unix) Macromedia ColdFusion server wordt meestal gebruikt voor ColdFuction ontwikkelen.</description>
+  <description lang="de">Der stand-alone (Windows) oder interne (Unix)
+  Macromedia Coldfusion Server wird hauptsächlich genutzt für ColdFusion Code
+  Erstellung.</description>
+  <description lang="fr">Le serveur ColdFusion de Macromedia en version autonome (Windows) ou interne (Unix)
+  est principalement destiné au développement sous Coldfusion.</description>
+  <description lang="it">Il server Macromedia ColdFusion (stand-alone per windows o interno per Unix) è usato principalmente per lo sviluppo di applicazioni ColdFusion.</description>
+  <description lang="es">El servidor Macromedia ColdFusion (autónomo para Windows o interno para Unix) se usa
+  principalmente para el desarrollo de aplicaciones ColdFusion.</description>
+  <classification class="file"/>
+
+  <!-- According to the documentation, the Developer edition server only listens on 127.0.0.1 -->
+  <network>
+    <tcp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="8500"/></dest>
+    </tcp>
+  </network>
+  <security threat="medium"/>
+  <reference href="http://www.macromedia.com/">Installing ColdFusion MX - Macromedia ColdFusion documentation</reference>
+</protocol>
+
+<protocol name="edonkey2000">
+  <longname>eDonkey 2000 - P2P file sharing</longname>
+  <longname lang="fr">eDonkey 2000 - Partage de fichiers poste à poste</longname>
+  <longname lang="it">Protocollo di condivisione file P2P eDonkey 2000</longname>
+  <longname lang="nl">eDonkey 2000 - bestanden delen via P2P</longname>
+  <longname lang="es">eDonkey 2000 - P2P file sharing</longname>
+  <description>Peer-to-Peer file sharing network.</description>
+  <description lang="nl">Peer-to-Peer bestand delen netwerk.</description>
+  <description lang="de">Peer-to-Peer File Sharing Netzwerk.</description>
+  <description lang="fr">Réseau de partage de fichiers poste à poste.</description>
+  <description lang="it">Questo protocollo viene usato un per condividere file su rete di tipo peer-to-peer.</description>
+  <description lang="es">Red de pares (peer-to-peer) de compartición de ficheros.</description>
+  <classification class="file"/>
+  <network>
+    <tcp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="4661"/></dest>
+    </tcp>
+    <tcp source="client" dest="client">
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="4662"/></dest>
+    </tcp>
+    <udp source="client" dest="server" direction="both">
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="4665"/></dest>
+    </udp>
+    <udp source="client" dest="client" direction="both">
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="4666"/></dest>
+    </udp>
+  </network>
+  <security threat="medium"/>
+  <reference href="http://www.edonkey2000.com/cgi-bin/smartfaq/smartfaq.cgi?answer=1025114514&amp;id=1025114052">What ports does eDonkey use?</reference>
+  <reference href="http://www.nongnu.org/mldonkey/faq.html#edonkey6">mldonkey FAQ</reference>
+</protocol>
+
+<protocol name="everquest">
+  <longname>Everquest</longname>
+  <longname lang="de">EverQuest</longname>
+  <longname lang="nl">EverQuest</longname>
+  <longname lang="fr">EverQuest</longname>
+  <longname lang="it">EverQuest</longname>
+  <longname lang="es">EverQuest</longname>
+  <classification class="game"/>
+  <network>
+    <tcp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="7000"/></dest>
+      <description>EQ Patch Server</description>
+      <description lang="de">EQ Patch Server</description>
+      <description lang="nl">EQ Patch Server</description>
+      <description lang="it">Server Patch EQ </description>
+      <description lang="es">Servidor de Parches EQ</description>
+    </tcp>
+    <udp source="client" dest="server" direction="both">
+      <description>EQ Game Data</description>
+      <description lang="de">EQ Game Data</description>
+      <description lang="nl">EQ Game-gegevens</description>
+      <description lang="it">Protocollo dei dati di gioco EQ</description>
+      <description lang="es">Protocolo de datos del juego EQ</description>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="dynamic"/></dest>
+    </udp>
+  </network>
+  <security threat="medium" falsepos="low"/>
+  <reference href="http://eqlive.station.sony.com/support/tech_support/ts_network_support_firewall_proxy_info.jsp">EverQuestLive Basic Troubleshooting</reference>
+</protocol>
+
+<protocol name="icp">
+  <longname>ICP - Internet Cache Protocol</longname>
+  <longname lang="nl">ICP - Internetcacheprotocol</longname>
+  <longname lang="it">Protocollo Internet Cache</longname>
+  <longname lang="es">ICP - Internet Cache Protocol</longname>
+  <description>The Internet Cache Protocol (ICP) is used for messaging between Web Caches/Proxies.</description>
+  <description lang="nl">De Internet Cache Protocol (ICP) wordt gebruikt voor het communiceren tussen Web 
+  Caches/Proxies.</description>
+  <description lang="de">Das Internet Cache Protokoll (ICP) wird für
+  Nachrichten zwischen Web-Cache-Applicationen und Proxies verwendet.</description>
+  <description lang="fr">Le protocole ICP (Internet Cache Protocol) permet aux serveurs cache de communiquer entre eux.</description>
+  <description lang="it">Il Protocollo Internet Cache (ICP) è usato per lo scambio di messaggi tra
+ web cache e proxy. </description>
+ <description lang="es">El Protocolo de caché de Internet (ICP) es usado para comunicaciones entre proxies y
+ cachés de web (Web Caches).</description>
+  <classification class="net"/>
+  <network>
+    <udp source="client" dest="client" direction="both">
+      <source><port portnum="nonprivileged"/></source>
+      <dest><port portnum="3130"/></dest>
+    </udp>
+  </network>
+  <security threat="medium" falsepos="low"/>
+  <reference href="http://www.apps.ietf.org/rfc/rfc2187.html">RFC 2187: Application of Internet Cache Protocol (ICP), version 2</reference>
+  <reference href="http://squid-docs.sourceforge.net/latest/html/x800.html">Squid: A User's Guide</reference>
+</protocol>
+
+<protocol name="yahoogames">
+  <longname>Games on Yahoo.com</longname>
+  <longname lang="fr">Jeux sur Yahoo.com</longname>
+   <longname lang="nl">Spellen bij Yahoo.com</longname>
+  <longname lang="it">Protocollo giochi su Yahoo.com</longname>
+  <longname lang="es">Juegos sobre Yahoo.com</longname>
+  <classification class="game"/>
+  <network>
+    <tcp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="11999"/></dest>
+    </tcp>
+  </network>
+  <security threat="low"/>
+</protocol>
+
+<protocol name="freedb">
+  <longname>FreeDB - CD Database</longname>
+  <longname lang="de">FreeDB - CD Datenbank</longname>
+  <longname lang="fr">FreeDB - Base de données de CD</longname>
+  <longname lang="it">FreeDB - Protocollo di archiviazione CD</longname>
+  <longname lang="nl">FreeDB - CD-database</longname>
+  <longname lang="es">FreeDB - Base de datos de CD</longname>
+  <description>Used by many CD players to lookup the names and track from a CD.</description>
+  <description lang="nl">Gebruikt door vele CD-spelers voor het opzoeken van namen en tracks van een CD.</description>
+  <description lang="de">Wird von vielen CD-Spielern benutzt, um den Namen und die Stücke auf einer CD zu bestimmen.</description>
+  <description lang="fr">Permet à de nombreux lecteurs CD de consulter la table des noms
+  et pistes d'un CD.</description>
+  <description lang="it">E' un protocollo usato da molti riproduttori CD per ottenere nomi e tracce da un CD.</description>
+  <description lang="es">Usado por muchos reproductores de CD para obtener datos sobre el CD que
+  reproducen.</description>
+  <classification class="data"/>
+  <network>
+    <tcp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="8880"/></dest>
+    </tcp>
+  </network>
+  <security threat="low" falsepos="low"/>
+</protocol>
+
+<protocol name="Elster">
+  <longname>Elster - Online Tax declaring in Germany</longname>
+  <longname lang="de">Elster - Online Steuererklaerung</longname>
+  <longname lang="nl">Elster - Online-belastingaangifte in Duitsland</longname>
+  <longname lang="fr">Elster - Déclaration d'impôts en ligne</longname>
+  <longname lang="it">Elster - Protocollo di dichiarazioni fiscali on-line in Germania</longname>
+  <longname lang="es">Elster - Declaración fiscal on-line (Alemania)</longname>
+  <description>Elster is a protocol used by german tax system to transmit tax declarations.</description>
+  <description lang="de">Elster ist ein Protokoll zur Online Uebertragung von Steuerklaerungen an das deutsche Finanzamt</description>
+  <description lang="nl">Elster is een protocol dat gebruikt wordt door de Duitse belastingdienst om 
+  belastingaangiftes te verzenden.</description>
+  <description lang="fr">Elster est un protocole qui permet, en Allemagne, de transmettre sa déclaration d'impôts.</description>
+  <description lang="it">Elster è un protocollo usato dal sistema fiscale tedesco per trasmettere via rete le dichiarazioni fiscali.</description>
+  <description lang="es">Elster es un protocolo usado por el sistema fiscal alemán para transmitir
+  declaraciones fiscales.</description>
+  <classification class="data"/>
+  <network>
+    <tcp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="3000"/></dest>
+    </tcp>
+  </network>
+  <security threat="medium" falsepos="low"/>
+</protocol>
+
+<protocol name="legatonetworker">
+  <longname>Legato NetWorker - Network backup</longname>
+  <longname lang="nl">Legato NetWorker - Netwerk-reservekopie</longname>
+  <longname lang="fr">Legato NetWorker - Sauvegarde réseau</longname>
+  <longname lang="it">Legato Networker - Protocollo di backup di rete</longname>
+  <longname lang="es">Legato Networker - Copia de seguridad por red</longname>
+  <description>Legato NetWorker release 5.5 and later.</description>
+  <description lang="nl">Legato NetWorker versie 5.5 en later.</description>
+  <description lang="de">Legato Networker Version 5.5 und neuer.</description>
+  <description lang="fr">Legato Networker Version 5.5 et ultérieure.</description>
+  <description lang="it">Legato Networker versione 5.5 e successive.</description>
+  <description lang="es">Legato Networker versión 5.5 y posteriores.</description>
+  <classification class="file"/>
+  <network>
+    <tcp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest>
+        <portrange start="7937" end="9936"/>
+        <portrange start="10001" end="30000"/>
+      </dest>
+    </tcp>
+    <udp source="client" dest="server" direction="both">
+      <source><port portnum="dynamic"/></source>
+      <dest>
+        <portrange start="7937" end="9936"/>
+        <portrange start="10001" end="30000"/>
+      </dest>
+    </udp>
+  </network>
+  <security threat="medium" falsepos="low"/>
+  <reference href="http://portal2.legato.com/resources/bulletins/354.html">354: Use of Firewalls with NetWorker Server Release 5.5 and Later</reference>
+</protocol>
+
+<protocol name="time">
+  <longname>Time - Time Protocol</longname>
+  <longname lang="nl">Time Protocol - tijdprotocol</longname>
+  <longname lang="fr">Time Protocol - Protocole de temps</longname>
+  <longname lang="it">Time - Protocollo di sincronizzazione temporale</longname>
+  <longname lang="es">Time - Protocolo de sincronización horaria</longname>
+  <description>The Time protocol is a very light-weight protocol for
+  retrieving the current time from a server.  It is used by the
+  rdate(1) unix command. </description>
+  <description lang="nl">Het Time Protocol is een simpel protocol voor het halen
+  van de huidige tijd van een server. Het wordt gebruikt door de rdate(1) unix
+  commando.</description>
+  <description lang="de">Das Time-Protokoll ist eine sehr einfache
+  Spezifikation zum Empfangen der aktuellen Zeit von einem Server. Es wird
+  vom Unix-Kommando rdate(1) verwendet.</description>
+  <description lang="fr">Le protocole de temps (Time Protocol) est un protocole léger
+  permettant d'extraire la date et l'heure depuis un serveur. Il est invoqué par la commande Unix rdate(1).</description>
+  <description lang="it">Il Protocollo Time è un protocollo molto semplice per ricevere il tempo corrente da un server: è usato dal comando Unix rdate(1).</description>
+  <description lang="es">El protocolo de hora (Time Protocol) es un protocolo muy ligero para extraer la
+  fecha y la hora de un servidor. Es usado por el comando de Unix rdate(1).</description>
+  <classification class="data"/>
+  <network>
+    <udp source="client" dest="server">
+      <dest><port portnum="37"/></dest>
+      <source><port portnum="dynamic"/></source>
+    </udp>
+    <tcp source="client" dest="server">
+      <dest><port portnum="37"/></dest>
+      <source><port portnum="dynamic"/></source>
+    </tcp>
+  </network>
+  <security threat="low" falsepos="low"/>
+  <reference href="ftp://ftp.rfc-editor.org/in-notes/rfc868.txt">RFC 868</reference>
+</protocol>
+
+<protocol name="ncpfs">
+  <longname>NCP File System - Novell NetWare(TM) protocol</longname>
+  <longname lang="nl">NCP File System - Novell NetWare(TM)-protocol</longname>
+  <longname lang="fr">Système de fichiers NCPFS - Protocole de Novell NetWare(TM)</longname>
+  <longname lang="it">NCP File System - Protocollo Novell tipo NetWare(TM)</longname>
+  <longname lang="es">NCP File System - Protocolo de Novell NetWare(TM)</longname>
+  <classification class="file"/>
+  <network>
+    <tcp source="client" dest="server">
+      <description>NCP Requests</description>
+      <description lang="nl">NCP-verzoeken</description>
+      <description lang="fr">Requêtes NCP</description>
+      <description lang="it">Richiede NCP</description>
+      <description lang="es">Peticiones NCP</description>
+      <dest><port portnum="524"/></dest>
+      <source><port portnum="dynamic"/></source>
+    </tcp>
+    <udp source="client" dest="server" direction="both">
+      <description>NCP for time synchronization</description>
+      <description lang="nl">NCP voor tijdsynchronisatie</description>
+      <description lang="fr">NCP synchronisation d'horloge</description>
+      <description lang="it">NCP - sincronizzazione temporale</description>
+      <description lang="es">NCP para sincronización de reloj</description>
+      <dest><port portnum="524"/></dest>
+      <source><port portnum="dynamic"/></source>
+    </udp>
+    <udp source="client" dest="server" direction="both">
+      <description>SLP Requests</description>
+      <description lang="nl">SLP-verzoeken</description>
+      <description lang="fr">Requêtes SLP</description>
+      <description lang="it">Richiede SLP</description>
+      <description lang="es">Peticiones SLP</description>
+      <dest><port portnum="427"/></dest>
+      <source><port portnum="427"/></source>
+    </udp>
+    <tcp source="client" dest="server">
+      <description>SLP Requests</description>
+      <description lang="nl">SLP-verzoeken</description>
+      <description lang="fr">Requêtes SLP</description>
+      <description lang="it">Richiede SLP</description>
+      <description lang="es">Peticiones SLP</description>
+      <dest><port portnum="427" /></dest>
+      <source><port portnum="427" /></source>
+    </tcp>
+    <tcp source="client" dest="server">
+      <description>CMD</description>
+      <description lang="nl">CMD</description>
+      <dest><port portnum="2303"/></dest>
+      <source><port portnum="dynamic"/></source>
+    </tcp>
+    <udp source="client" dest="server" direction="both">
+      <description>CMD</description>
+      <description lang="nl">CMD</description>
+      <dest><port portnum="2645"/></dest>
+      <source><port portnum="2645"/></source>
+    </udp>
+  </network>
+  <security threat="medium" falsepos="low"/>
+  <reference href="http://developer.novell.com/research/sections/netsupport/abend/2001/december/x011201.htm">NOVELL AppNotes</reference>
+</protocol>
+
+<protocol name="bt-tracker">
+  <longname>BitTorrent Tracker</longname>
+  <longname lang="nl">BitTorrent-tracker</longname>
+  <longname lang="it">Tracker BitTorrent </longname>
+  <longname lang="es">BitTorrent</longname>
+  <description>Protocol for talking to a Tracker which coordinates
+  BitTorrent download peers.</description>
+  <description lang="it">Questo protocollo viene usato per contattare un Tracker che coordina
+  i peer di scaricamento di BitTorrent.</description>
+  <description lang="nl">Protocol voor het communiceren met een Tracker die 
+  het downloaden van Bittorent-leden co&#246;rdineert.</description>
+  <description lang="es">Protocolo para conectar con un coordinador (Tracker) de descargas peer-to-peer
+  BitTorrent.</description>
+  <classification class="file"/>
+  <network>
+    <tcp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="6969"/></dest>
+      <description lang="en">BitTorrent Tracker</description>
+      <description lang="it">Tracker BitTorrent</description>
+    </tcp>
+  </network>
+  <security threat="medium" falsepos="low"/>
+</protocol>
+
+<protocol name="bt-peer">
+  <longname>BitTorrent Peer</longname>
+  <longname lang="it">Peer BitTorrent </longname>
+  <longname lang="nl">BitTorrent-peer</longname>
+  <longname lang="es">Peer BitTorrent </longname>
+  <description>Protocol for file piece exchange between BitTorrent
+  download peers.</description>
+  <description lang="it">Questo protocollo viene usato per lo scambio di porzioni di file tra i peer di scaricamento di BitTorrent.</description>
+  <description lang="nl">Protocol voor het uitwisselen van bestandsstukken 
+  met BitTorrent-leden.</description>
+  <description lang="es">Protocolo para el intercambio de fragmentos de ficheros entre pares
+  BitTorrent.</description>
+  <classification class="file"/>
+  <network>
+    <tcp source="client" dest="client">
+      <source><port portnum="dynamic"/></source>
+      <dest><portrange start="6881" end="6889"/></dest>
+      <description lang="en">BitTorrent Peer</description>
+      <description lang="it">Peer BitTorrent</description>
+      <description lang="es">Peer BitTorrent</description>
+      <description lang="nl">BitTorrent-deelnemer</description>
+    </tcp>
+  </network>
+  <security threat="medium" falsepos="low"/>
+</protocol>
+
+<protocol name="rsync">
+  <longname>rsync - incremental file transfer</longname>
+  <longname lang="it">rsync - Trasferitore incrementale di file</longname>
+  <longname lang="nl">rsync - incrementele bestandsoverdracht</longname>
+  <longname lang="es">rsync - Trasferencia incremental de ficheros</longname>
+  <classification class="file"/>
+  <network>
+    <tcp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="873"/></dest>
+    </tcp>
+  </network>
+  <security threat="high" falsepos="medium"/>
+  <reference href="http://www.robertgraham.com/pubs/firewall-seen.html">
+  FAQ: Firewall Forensics (What am I seeing?)</reference>
+</protocol>
+
+<protocol name="distcc">
+  <longname>distcc - distributed C compiler</longname>
+  <longname lang="it">distcc - Compilatore C distribuito</longname>
+  <longname lang="nl">distcc - gedistributeerde C compiler</longname>
+  <longname lang="es">distcc - Compilador C distribuido</longname>
+  <classification class="data"/>
+  <network>
+    <tcp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="3632"/></dest>
+    </tcp>
+  </network>
+  <security threat="medium" falsepos="medium"/>
+  <reference href="http://distcc.samba.org/security.html">
+  distcc security design
+  </reference>
+</protocol>
+
+<protocol name="gkrellm">
+  <longname>gkrellm - GNU Krell Monitor</longname>
+  <longname lang="it">gkrellm - GNU Krell Monitor</longname>
+  <longname lang="de">gkrellm - GNU Krell Monitor</longname>
+  <longname lang="nl">gkrellm - GNU Krell Monitor</longname>
+  <longname lang="es">gkrellm - GNU Krell Monitor</longname>
+  <classification class="data"/>
+  <network>
+    <tcp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="19150"/></dest>
+    </tcp>
+  </network>
+  <security threat="high" falsepos="medium"/>
+  <reference href="http://www.robertgraham.com/pubs/firewall-seen.html">
+  FAQ: Firewall Forensics (What am I seeing?)</reference>
+</protocol>
+
+<protocol name="pgpkeyserver">
+  <longname>PGP Key Server</longname>
+  <longname lang="it">Server delle chiavi PGP</longname>
+  <longname lang="nl">PGP Key Server</longname>
+  <longname lang="es">Servidor de claves PGP</longname>
+  <network>
+    <tcp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="11371"/></dest>
+    </tcp>
+  </network>
+  <security threat="low" falsepos="low"/>
+</protocol>
+
+<protocol name="windowsmedia">
+  <longname>Microsoft Media Server</longname>
+  <longname lang="de">Microsoft Media Server</longname>
+  <longname lang="nl">Microsoft Media Server</longname>
+  <longname lang="fr">Microsoft Media Server</longname>
+  <longname lang="it">Microsoft Media Server</longname>
+  <longname lang="es">Microsoft Media Server</longname>
+  <description>Microsoft Media Server protocol is used to send Windows Media streams as used
+  by Windows Media Player.</description>
+  <description lang="nl">Microsoft Media Server protocool wordt gebruikt om Windows Media streams te verzenden, als gebruikt bij Windows Media Player.</description>
+  <description lang="it">Questo protocollo viene usato per flussi Windows Media quando siano usati da Windows Media Player.</description>
+  <description lang="es">Se usa para enviar flujos (streams) de Windows Media cuando son solicitados por
+  Windows Media Player.</description>
+  <classification class="media"/>
+  <network>
+    <tcp source="client" dest="server"><dest>
+      <port portnum="1755"/></dest>
+      <description lang="en">Microsoft Media Server with TCP based transport (MMST)</description>
+      <description lang="nl">Microsoft Media Server met TCP gebaseerd transport (MMST)</description>
+      <description lang="it">Microsoft Media Server con trasporto basato su TCP (MMST)</description>
+      <description lang="es">Microsoft Media Server con trasporte basado en TCP (MMST)</description>
+    </tcp>
+    <udp source="client" dest="server" direction="both">
+      <dest><port portnum="1755"/></dest>
+      <description lang="it">Microsoft Media Server con trasporto basato su UDP (MMSU)</description>
+      <description lang="nl">Microsoft Media Server met UDP gebaseerd transport (MMSU)</description>
+      <description lang="en">Microsoft Media Server with UDP based transport (MMSU)</description>
+      <description lang="es">Microsoft Media Server con trasporte basado en UDP (MMSU)</description>
+    </udp>
+  </network>
+  <security threat="medium" falsepos="low"/>
+  <reference href="http://www.microsoft.com/windows/windowsmedia/serve/firewall.aspx">
+  Windows Media Services 9 Series Firewall Information</reference>
+</protocol>
+
+<protocol name="tftp">
+  <longname>TFTP - Trivial File Transfer Protocol</longname>
+  <description>A simple protocol used for transfering files during the boot process of diskless clients.</description>
+  <classification class="net"/>
+  <pragma name="guarddog">ip_conntrack_tftp</pragma>
+  <network>
+     <udp source="client" dest="server" direction="both">
+       <dest><port portnum="69"/></dest>
+     </udp>
+   </network>
+   <security threat="high" falsepos="low"/>
+   <reference href="http://www.robertgraham.com/pubs/firewall-seen.html">
+   FAQ: Firewall Forensics (What am I seeing?)</reference>
+</protocol>
+
+<protocol name="netconsole">
+  <longname>netconsole</longname>
+  <description>A protocol used for kernel debugging.</description>
+  <classification class="session"/>
+  <network>
+    <udp source="client" dest="server" direction="both">
+      <source><port portnum="6665"/></source>
+      <dest><port portnum="6666"/></dest>
+    </udp>
+  </network>
+  <security threat="high" falsepos="low"/>
+  <reference href="http://www.robertgraham.com/pubs/firewall-seen.html">
+  FAQ: Firewall Forensics (What am I seeing?)</reference>
+</protocol>
+
+<protocol name="rdesktop">
+  <longname>rdesktop - Windows Terminal Service</longname>
+  <description>Protocol used for remotely using Windows desktops.</description>
+  <classification class="session"/>
+  <network>
+    <tcp source="client" dest="server">
+      <description>Request connection.</description>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="3389"/></dest>
+    </tcp>
+  </network>
+  <security threat="high" falsepos="low"/>
+  <reference href="http://www.robertgraham.com/pubs/firewall-seen.html">
+  FAQ: Firewall Forensics (What am I seeing?)</reference>
+</protocol>
+
+<protocol name="svnserve">
+  <longname>subversion - svn simple server</longname>
+  <description>Protocol used for accessing remote subversion repositories.</description>
+  <classification class="file"/>
+  <network>
+    <tcp source="client" dest="server">
+      <description>Request connection.</description>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="3690"/></dest>
+    </tcp>
+  </network>
+  <security threat="high" falsepos="low"/>
+  <reference href="http://www.robertgraham.com/pubs/firewall-seen.html">FAQ: Firewall Forensics (What am I seeing?)</reference>
+</protocol>
+<protocol name="smtps">
+ Â <longname>SMTP - Simple Mail Transfer Protocol over SSL</longname>
+Â  <description>SMTP is used to transfer and deliver email across the network.
+Â  It is the standard for transmitting email across the Internet. This enables
+Â  the SSL (secure socket layer) SMTP transmission. Note that this method
+Â  for mail transmission is deprecated and you should use TLS instead which
+Â  uses the normal port 25 instead.
+  </description>
+ Â <classification class="mail"/>
+Â  <network>
+Â   Â <tcp source="client" dest="server">
+Â   Â  Â <source><port portnum="dynamic"/></source>
+Â   Â  Â <dest><port portnum="465"/></dest>
+Â   Â </tcp>
+Â  </network>
+Â  <security threat="low" falsepos="low"/>
+</protocol>
+</protocoldb>

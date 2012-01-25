@@ -1,0 +1,1574 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE book PUBLIC  "-//KDE//DTD DocBook XML V4.1-Based Variant V1.0//EN" "dtd/kdex.dtd" [
+  <!ENTITY kappname "Guarddog">
+  <!ENTITY % addindex "IGNORE">
+  <!ENTITY % English "INCLUDE">
+
+  <!-- Do not define any other entities; instead, use the entities
+       from kde-genent.entities and $LANG/user.entities. -->
+]>
+<!-- kdoctemplate v0.8 October 1 1999 
+     Minor update to "Credits and Licenses" section on August 24, 2000
+     Removed "Revision history" section on 22 January 2001   -->
+
+<!-- ................................................................ -->
+<!-- The language must NOT be changed here. -->
+
+<book lang="&language;">
+
+<!-- This header contains all of the meta-information for the document such
+as Authors, publish date, the abstract, and Keywords -->
+
+<bookinfo>
+<title>El Manual de &kappname;</title>
+
+<authorgroup>
+<author>
+<firstname>Simon</firstname>
+<surname>Edwards</surname>
+<affiliation>
+<address><email>simon@simonzone.com</email></address>
+</affiliation>
+</author>
+</authorgroup>
+
+<copyright>
+<year>2000</year>
+<year>2001</year>
+<year>2002</year>
+<year>2003</year>
+<year>2004</year>
+<holder>Simon Edwards</holder>
+</copyright>
+<!-- Translators: put here the copyright notice of the translation -->
+<!-- Put here the FDL notice.  Read the explanation in fdl-notice.docbook 
+     and in the FDL itself on how to use it. -->
+<legalnotice>&FDLNotice;</legalnotice>
+
+<date>12/12/2004</date>
+<releaseinfo>2.4.0</releaseinfo>
+
+<abstract>
+<para>
+&kappname; es una utilidad amigable para configurar un cortafuegos en KDE 
+funcionando sobre Linux. La mejor forma de empezar es leer los tutoriales 
+cortos, empezando por el primero.
+</para>
+</abstract>
+
+<keywordset>
+<keyword>KDE</keyword>
+<keyword>&kappname;</keyword>
+<keyword>firewall</keyword>
+<keyword>linux</keyword>
+<keyword>ipchains</keyword>
+<keyword>iptables</keyword>
+</keywordset>
+
+</bookinfo>
+
+<chapter id="introduction">
+<title>Introducción</title>
+
+<para>
+&kappname; es una utilidad amigable de generación y gestión de cortafuegos 
+para KDE funcionando sobre Linux. Le permite especificar de forma sencilla 
+qué protocolos de red deben ser permitidos entre grupos de ordenadores sin 
+necesidad de que usted tenga conocimiento de número de puertos o paquetes. 
+&kappname; actúa sobre los procesos de filtrado de paquetes 
+<command>ipchains</command> y <command>iptables</command>.
+</para>
+
+<sect1 id="introduction-what">
+<title>¿Que es un cortafuegos y por qué necesito uno?</title>
+
+<para>
+Un cortafuegos es una herramienta de software y/o hardware que defiende su 
+ordenador, o su red de ordenadores, de los ataques realizados por usuarios 
+curiosos o maliciosos. Protege restringiendo qué ordenadores están 
+autorizados a hacer algo con los ordenadores protegidos. Actúa filtrando y 
+bloqueando las comunicaciones de red entre los ordenadores protegidos e 
+Internet.
+</para>
+
+<para>
+Con la aparición de conexiones domésticas a Internet rápidas y permanentes, 
+su ordenador ha quedado expuesto a constantes ataques desde cualquier sitio 
+en el mundo. Puede preguntarse "¿porqué querría nadie acceder a mi ordenador?. 
+¡Si no tengo nada importante!". Pues en realidad lo tiene; un ordenador 
+doméstico almacena nombres de usuario y contraseñas para conectar a Internet, 
+correo electrónico personal, posiblemente información financiera e incluso 
+información de su tarjeta de crédito. Incluso sin tener nada de esto, su 
+ordenador puede ser utilizado por usuarios maliciosos (llamados 
+popularmente 'crackers') como plataforma de ataques a otros ordenadores. 
+Y lo malo es que estos ataques parecerán proceder ¡de usted!.
+</para>
+
+<para>
+Si desea aprender más sobre cortafuegos, puede consultar el artículo (en 
+inglés) <ulink url="http://www.howstuffworks.com/firewall.htm">firewall</ulink> 
+de la página <ulink url="http://www.howstuffworks.com/">How Stuff Works</ulink>.
+</para>
+</sect1>
+
+<sect1 id="introduction-silverbullet">
+<title>Advertencia: No hay Soluciones Mágicas</title>
+
+<para>Intentaremos explicar la naturaleza de la seguridad en ordenadores y 
+qué papel juegan los cortafuegos. La mayoria de brechas de seguridad son 
+causadas simplemente por software defectuoso. No son creadas por 'hackers' o 
+'crackers'. Estos intentan encontrar esos fallos y, entonces, explotarlos.
+Las brechas de seguridad son a menudo fallos o deficiencias del software que 
+se pueden aprovechar con propósitos maliciosos.</para>
+
+<para>Lo que hace un cortafuegos es poner una barrera de seguridad con los 
+'malos' en un lado y su software potencialmente vulnerable en el otro. 
+Intenta evitar que los agresores ganen cualquier tipo de acceso a los 
+servidores y al software que funciona en máquinas detrás del cortafuegos. 
+Sin acceso, los atacantes no serán capaces de aprovechar los fallos del 
+software que usted utiliza. Desgraciadamente, esta forma de protección por 
+desconexión no es útil porque el objetivo de tener ordenadores en red es 
+para que unos se comuniquen con otros. Por ello, para que la red sea útil, 
+deberá abrir agujeros en el cortafuegos para permitir comunicación o acceso 
+entre los ordenadores protegidos y el resto del mundo. Un cortafuegos no 
+ofrece protección para los accesos que se realizan a través de estos agujeros. 
+Por ejemplo, si usted opera un servidor web accesible desde el exterior, 
+el cortafuegos no ofrecerá protección contra los ataques dirigidos contra ese 
+servidor web.</para>
+
+<para>Un cortafuegos es sólo una parte de su sistema de seguridad, sólo una parte. 
+He aquí una lista breve de consejos efectivos para aumentar la seguridad del 
+sistema. Estas recomendaciones son aplicables también a otros sistemas de 
+ordenadores:</para>
+
+<itemizedlist>
+
+<listitem><para>Asegúrese de obtener e instalar las correcciones de seguridad 
+del software que utiliza en sus ordenadores. La mejor forma de detener la 
+explotación de vulnerabilidades en el software es eliminar esas vulnerabilidades. 
+Visite regularmente la sección de actualizaciones del sitio web de su distribución 
+de Linux, y revise si hay disponibles actualizaciones, parches de seguridad o 
+correcciones de errores. Hoy en día, las distribuciones de Linux más modernas 
+cuentan con herramientas que revisan si aparecen nuevas actualizaciones. Aprenda 
+a usar esas herramientas y utilícelas.
+</para></listitem>
+
+<listitem><para>No instale software que no necesite o no vaya a usar. Esto es 
+especialmente crítico con software orientado al funcionamiento en red, como 
+servidores y software de cliente de red. Muchas distribuciones Linux instalan 
+por defecto una cantidad enorme de software y una buena parte de ese software 
+no lo necesitará. Asegúrese de desinstalar cualquier software innecesario tras 
+instalar un sistema Linux nuevo. Otra estrategia que puede adoptar, si su 
+distribución ofrece esa posibilidad, es seleccionar una instalación mínima y 
+posteriormente instalar el software que necesite.</para></listitem>
+
+<listitem><para>El creador de su distribución Linux seguramente tendrá una 
+lista de correo de advertencias de seguridad. Encuentrela en la web de su 
+distribución y únase a la lista para conocer las correcciones disponibles tan 
+pronto como estén disponibles.</para></listitem>
+
+<listitem><para>Si una parte del software que esté usando tiene un historial 
+de seguridad malo y aún tiene problemas de seguridad sin resolver, considere 
+seriamente cambiar a alguna alternativa mejor y más segura.</para></listitem>
+</itemizedlist>
+
+<para>Si usted sigue estos consejos, sus sistemas serán cien veces más seguros, 
+incluso sin usar un cortafuegos.</para>
+
+</sect1>
+
+<sect1 id="introduction-why">
+<title>Por qué usar &kappname;</title>
+<itemizedlist>
+<listitem><para>Interfaz de usuario fácil de usar. Usted le dice al cortafuegos 
+lo que tiene que hacer, sin necesidad de explicarle los detalles ni cómo lo ha 
+de hacer.</para></listitem>
+
+<listitem><para>
+Basado en protocolos de aplicaciones. A diferencia de otras herramientas, 
+&kappname; no requiere que usted conozca los entresijos de los paquetes IP y 
+puertos. &kappname; ya se cuida de eso. Esto reduce las posibilidades de una
+configuración errónea que deje brechas de seguridad en los ordenadores.
+</para></listitem>
+
+<listitem><para>
+No es sólo una configuración inicial de cortafuegos. &kappname; se usa para 
+mantener y modificar el cortafuegos siempre que lo necesite.
+</para></listitem>
+
+<listitem><para>
+Puede ser usado en estaciones de trabajo y configuraciones de enrutador.
+</para></listitem>
+
+<listitem><para>
+Le permite dividir su red en grupos de ordenadores y controlar qué protocolos 
+están permitidos entre los grupos.
+</para></listitem>
+
+<listitem><para>
+Trabaja con el subsistema de cortafuegos <command>ipchains</command> 
+de kernels de la serie 2.2 de Linux , y tambien con netfilter/
+<command>iptables</command> de la serie de kernels 2.4 y superior.
+</para></listitem>
+
+<listitem><para>
+Aprovecha características avanzadas de la serie de kernels 2.4, como seguimiento 
+de la conexión y límites de tasa de registro.
+</para></listitem>
+
+<listitem><para>
+Licenciado bajo los términos de GPL. Es libre y así se mantendrá.
+</para></listitem>
+
+</itemizedlist>
+</sect1>
+</chapter>
+
+<chapter id="using-guarddog">
+<title>Usando &kappname;</title>
+<para>
+</para>
+
+<sect1 id="tutorial-basic">
+<title>Tutorial: Configuración Básica</title>
+<para>
+En este tutorial se explicarán varios conceptos básicos de red y cómo 
+configurar &kappname; rápidamente para proteger una máquina.
+</para>
+<sect2>
+<title>Arrancar &kappname;</title>
+<para>
+Primero, arranque &kappname;. En los sistemas más recientes de Mandrake 
+y Redhat debería haber una entrada en el menú K bajo Sistema/Configuración/Internet 
+ó Red. Ante todo, el sistema solicitará la contraseña del usuario 'root'. 
+Esto es necesario porque &kappname; necesita acceso de administrador para 
+modificar el subsistema de red del ordenador.
+</para>
+<para>
+Cuando &kappname; haya arrancado, podrá ver que el interfaz de usuario
+está dividido en cuatro pestañas. En este tutorial ignoraremos las pestañas 
+<guilabel>Zona</guilabel>, <guilabel>Registro</guilabel> y 
+<guilabel>Avanzado</guilabel> y nos concentraremos en la pestaña
+<guilabel>Protocolo</guilabel>.
+</para>
+</sect2>
+
+<sect2>
+<title>Conceptos básicos de redes</title>
+<para>
+(Puede saltarse esta sección si ya comprende los protocolos y el "Modelo 
+Cliente/Servidor".)
+</para>
+
+<para>
+Ahora explicaremos lo que es un protocolo. En las redes de ordenadores, 
+unos ordenadores hablan con otros. Y, de la misma forma que en el mundo 
+real es necesario que dos personas se hablen en el mismo idioma (ya
+sea inglés, español o el lenguaje de signos), lo mismo se aplica a los 
+ordenadores de una red; necesitan acordar en qué lenguaje van a hablar 
+con otro ordenador. Estos 'lenguajes' son conocidos como protocolos de red.
+Una diferencia importante entre el lenguaje humano y los protocolos de red 
+es que los protocolos se usan para una sola tarea particular, como 
+transferir ficheros (por ejemplo, FTP, File Transfer Protocol, o protocolo 
+de transferencia de ficheros), visualizar páginas web (por ejemplo HTTP, 
+HyperText Transmission Protocol, o Protocolo de transmisión de hipertexto) 
+o chatear con otros usuarios de ordenadores (por ejemplo, IRC, Internet 
+Relay Chat).
+</para>
+
+<para>
+Los ataques contra sistemas se realizan abusando de los protocolos y del 
+software que los utiliza. Muy a menudo, el software que utiliza un 
+protocolo contiene fallos que pueden ser aprovechados por usuarios 
+maliciosos para conseguir acceder a un sistema o para interrumpir su 
+funcionamiento.
+</para>
+
+<para>
+Un importante concepto que debe entender sobre los protocolos de red es 
+el "Modelo Cliente/Servidor". Todos los protocolos de red tienen al menos 
+dos partes que se comunican. Aunque ambas partes usan el mismo protocolo, 
+tendrán diferentes papeles que interpretar. El modelo más común es aquel 
+en que una parte actúa como "cliente" y la otra actúa como "servidor". 
+Como analogía muy aproximada, supongamos que está comprando patatas fritas 
+en un establecimiento de comida rápida. Usted y la persona que está tras 
+el mostrador utilizan el mismo lenguaje (por ejemplo, español) como 
+protocolo de comunicación, pero realizan distintos papeles. Usted es el 
+"cliente", que hace las peticiones, y el dependiente es el "servidor", que 
+cumple las peticiones que el cliente le indica. HTTP, el protocolo usado 
+en la World Wide Web, usa el modelo Cliente/servidor. Su navegador web 
+actúa como cliente mientras que el potente servidor web de Slashdot o CNN 
+actúa como servidor, entregando páginas a su navegador cuando éste se las pide.
+</para>
+</sect2>
+
+<sect2>
+<title>Permitir DNS</title>
+<para>
+(Puede saltarse esta sección si ya sabe qué es DNS.)
+</para>
+<para>
+La pestaña <guilabel>Protocolo</guilabel> es donde usted especifica qué 
+protocolos pueden ser usados entre su ordenador e Internet. El protocolo 
+"Domain Name System" (sistema de nombres de dominio), comúnmente conocido 
+como DNS, es un protocolo muy importante. Todos los ordenadores de Internet 
+tienen algo llamado dirección IP, que solo es un número. Puede que en alguna 
+ocasión lo haya visto. A menudo se escribe como cuatro números separados por 
+puntos (dotted quad), como "195.231.34.5". Una dirección IP es como un número 
+de teléfono, pero identifica ordenadores en Internet, no teléfonos. Un 
+problema que tiene el uso de estas direcciones IP es que no es muy amigable 
+para el ser humano, y esta es la razón por la que se inventaron los "Nombres 
+de Dominio". Un "Nombre de Dominio" es una forma más humana de identificar 
+una máquina. Algunos ejemplos son www.simonzone.com, www.cnn.com o dot.kde.org. 
+Pero los ordenadores entienden de direcciones IP, no de nombres de dominio. 
+Y aquí es donde DNS entra en acción. Son como la guía telefónica entre nombres 
+de dominio y direcciones IP. Las máquinas DNS de Internet no hacen otra cosa 
+que devolver la dirección IP correspondiente a un nombre de dominio. Mediante 
+el uso de DNS, su ordenador sabe a qué se refiere cuando usted le pide 
+www.slashdot.org. Si no puede usar DNS, su navegador web no sabrá encontrar 
+la página web de www.cnn.com, ni su cliente de chat ICQ sabrá encontrar la 
+red de chat de icq.com. Sin DNS, la mayoría del resto de protocolos no podrán 
+funcionar.</para>
+
+<para>
+Veamos los pasos que hay que dar para permitir a su ordenador que se comunique 
+con servidores DNS de Internet.</para>
+
+<itemizedlist>
+<listitem><para>
+Vaya a la pestaña <guilabel>Protocolo</guilabel>.
+</para></listitem>
+<listitem><para>
+Primero, asegúrese de que <guilabel>Internet</guilabel> está seleccionada en
+la lista <guilabel>Zonas de red Definidas:</guilabel>. (Está en la parte 
+superior izquierda de la ventana.) La lista debería tener dos entradas,
+<guilabel>Internet</guilabel> y <guilabel>Local</guilabel>.
+</para></listitem>
+<listitem><para>
+Abra la categoría <guilabel>Red</guilabel> de la lista que aparece.
+Al expandirse deberá mostrar más opciones y casillas con entradas como
+<guilabel>ICMP Redirect</guilabel> y <guilabel>DNS - Domain Name Server
+</guilabel> por ejemplo.
+</para></listitem>
+<listitem><para>
+A la derecha de la lista de protocolos aparecen unas casillas bajo la columna
+<guilabel>Local</guilabel>. Haga clic en ellas para que aparezca una señal 
+de 'marcada'. La casilla tiene tres estados: vacía, marcada o cruzada. 
+Haciendo clic repetidamente verá como la casilla pasa por los tres estados.
+</para></listitem>
+</itemizedlist>
+
+<para>
+Y ya está. Esto es lo que se necesita para que su ordenador tenga permiso 
+para acceder a los servidores DNS en Internet. Su pantalla debería parecerse 
+a la que aparece debajo.
+</para>
+<para>
+<screenshot>
+<screeninfo>Leyendo la pestaña Protocolo.</screeninfo>
+	<mediaobject>
+	  <imageobject>
+	    <imagedata fileref="guarddog2_protocol.png" format="PNG"/>
+	  </imageobject>
+	  <textobject>
+	    <phrase>Leyendo la pestaña Protocolo.</phrase>
+	  </textobject>
+	</mediaobject>
+</screenshot>
+</para>
+<para>
+Esta ilustración resume como leer la información presentada en la pestaña 
+<guilabel>Protocolo</guilabel>. Hay bastante información aquí, pero es 
+necesario que entienda lo que significa para evitar configuraciones erróneas.
+</para>
+</sect2>
+
+<sect2>
+<title>Organización de Protocolos</title>
+
+<para>
+Ahora que hemos permitido el protocolo DNS, podemos autorizar otros protocolos 
+comunes que seguramente necesitaremos usar.
+</para>
+
+<para>
+&kappname; soporta muchos protocolos distintos. Están organizados en 
+categorías para facilitar su búsqueda. Las categorías son:
+</para>
+
+<itemizedlist>
+<listitem><para>
+<guilabel>Chat</guilabel> - Protocolos usados por programas de chat como IRC o ICQ.
+</para></listitem>
+<listitem><para>
+<guilabel>Servicio de datos</guilabel> - Protocolos usados por bases de datos y otras
+fuentes de datos como servidores de hora, por ejemplo.
+</para></listitem>
+<listitem><para>
+<guilabel>Transferencia de ficheros</guilabel> - Protocolos usados para
+transferir ficheros. HTTP para la Web y FTP son buenos ejemplos.
+</para></listitem>
+<listitem><para>
+<guilabel>Juego</guilabel> - Protocolos usados para juegos multijugador en línea.
+</para></listitem>
+<listitem><para>
+<guilabel>Sesión Interactiva</guilabel> - Protocolos usados para trabajar
+o realizar acciones sobre un sistema remoto. Los protocolos SSH Secure Shell, 
+telnet y RPC están en esta categoría.
+</para></listitem>
+<listitem><para>
+<guilabel>Correo</guilabel> - Protocolos asociados con la entrega y manejo de correo. 
+Aquí están SMTP y POP3, por ejemplo.
+</para></listitem>
+<listitem><para>
+<guilabel>Medios</guilabel> - Protocolos usados para multimedia en Internet.
+</para></listitem>
+<listitem><para>
+<guilabel>Miscelánea</guilabel> - Otros protocolos que no pueden englobarse en 
+otras categorías.
+</para></listitem>
+<listitem><para>
+<guilabel>Red</guilabel> - Protocolos relacionados con la operación propia 
+de la red.
+</para></listitem>
+<listitem><para>
+<guilabel>Definido por el usuario</guilabel> - Aquí aparecen los protocolos definidos 
+por el usuario en la pestaña <guilabel>Avanzado</guilabel>.
+</para></listitem>
+</itemizedlist>
+
+<para>
+Naturalmente, hay protocolos que podrían estar en otra categoría distinta a la que 
+finalmente han sido asignados. Depende de las interpretaciones.
+</para>
+
+<tip><para>
+Haga clic sobre un nombre de protocolo para ver rápidamente información sobre él.
+Aparecerá una descripción del protocolo en el área que está en la parte inferior 
+izquierda de la ventana.
+</para></tip>
+
+</sect2>
+
+<sect2>
+<title>Permitiendo Protocolos Comunes</title>
+
+<para>
+Esta es una lista rápida de los protocolos más comunes que seguramente querrá 
+autorizar.
+</para>
+
+<itemizedlist>
+<listitem><para>
+HTTP - Usado para ver páginas de la World Wide Web. Si quiere consultar páginas 
+web lo necesitará. Está en la categoría <guilabel>Transferencia de Ficheros</guilabel>.
+</para></listitem>
+<listitem><para>
+FTP - Protocolo de Transferencia de ficheros (File Transfer Protocol). Usado 
+para cargar y descargar ficheros, tambien es usado comunmente en la red. Si ha 
+visto en algún momento alguna dirección que empezara como "ftp://" en la barra 
+de direcciones de su navegador, entonces ha utilizado FTP. FTP está tambien en 
+la categoría <guilabel>Transferencia de Ficheros</guilabel>.
+</para></listitem>
+<listitem><para>
+SMTP - Protocolo Simple de Transporte de Correo (Simple Mail Transport Protocol). 
+Usado para enviar correo en Internet. Se encuentra en la categoría 
+<guilabel>Correo</guilabel>.
+</para></listitem>
+<listitem><para>
+POP3 - Protocolo de Oficina de Correos (Post Office Protocol) versión 3. Usado 
+comunmente para descargar correo desde un buzón que está en nuestro proveedor 
+de servicios de internet. Tambien está en la categoría 
+<guilabel>Correo</guilabel>.
+</para></listitem>
+</itemizedlist>
+
+<warning><para>
+Resista la tentación de permitir todos los protocolos. Cuantos más protocolos 
+permita, más débil será su cortafuegos. La idea es permitir sólo los protocolos 
+que realmente necesite, y ninguno más. No permita un protocolo si sólo piensa 
+que lo necesitará en el futuro. Siempre puede activar Guarddog y permitir el 
+protocolo en el momento en que lo necesite.
+</para></warning>
+</sect2>
+
+<sect2>
+<title>Aplicando su nuevo cortafuegos</title>
+<para>
+Para activar los cambios que haga en &kappname;, necesita
+pulsar el botón <guibutton>Aplicar</guibutton> o el botón 
+<guibutton>Aceptar</guibutton>. El botón <guibutton>Aceptar</guibutton> 
+cerrará tambien &kappname; dejando el cortafuegos activo. &kappname; configurará 
+entonces el subsistema de red de su ordenador aplicando las normas de su 
+cortafuegos. Una vez que pulse el botón <guibutton>Aplicar</guibutton>
+aparecerá un mensaje que advierte que el cambio de configuración del cortafuegos 
+interrumpirá momentáneamente las conexiones de red. Por lo tanto, no es una 
+buena idea estar haciendo alguna operación importante, como una transferencia 
+FTP, cuando aplique la configuración. Tras pulsar el botón 
+<guibutton>Aceptar</guibutton> del mensaje de advertencia aparecerá 
+otra ventana que mostrará el proceso de configuración del cortafuegos. 
+Si sucede algún error, se mostrará en esa ventana. Puse el botón 
+<guibutton>Aceptar</guibutton> para salir de la ventana de resultado.
+</para>
+
+<para>
+¡Listo! Su nuevo cortafuegos debería estár funcionando.
+Desde ahora, cada vez que arranque su sistema, el cortafuegos arrancará 
+automáticamente. &kappname; no necesita estar funcionando constantemente 
+para proteger su ordenador. Si necesita modificar la configuración de su 
+cortafuegos, simplemente vuelva a arrancar &kappname; y haga los cambios 
+que desee.
+</para>
+
+<tip><para>
+Para comprobar que su cortafuegos está trabajando correctamente, vaya 
+a la página <ulink url="http://grc.com/">Gibson Research Corporation</ulink>, 
+diríjase a la zona "Shields Up!" y pídale que haga una prueba "Test My 
+Shields!" o "Probe My Ports!". Hará una exploración de su máquina y le 
+dará un informe de los resultados. Esperamos que obtenga un informe positivo.
+</para>
+</tip>
+</sect2>
+</sect1>
+
+<sect1 id="tutorial-zones">
+<title>Tutorial: Usando Zonas</title>
+<para>
+En este tutorial aplicaremos lo aprendido en el primer tutorial y 
+presentaremos el concepto de <guilabel>Zonas</guilabel>. Las 
+<guilabel>Zonas</guilabel> le permiten controlar con precisión qué 
+protocolos están permitidos entre distintos grupos de ordenadores.
+</para>
+
+<sect2>
+<title>Introducción a las Zonas</title>
+<para>
+En &kappname;, una zona es sólo un conjunto de direcciones IP. 
+Puede considerar que las direcciones IP son como números de 
+teléfono para máquinas de Internet. Una zona especifica más o 
+menos un grupo de ordenadores. Una vez que la zona ha sido creada 
+podemos usar la pestaña <guilabel>Protocolo</guilabel> para 
+especificar qué protocolos usarán los ordenadores de la zona.
+</para>
+
+<para>
+Por ejemplo, si sabemos que la gente de evil.com no es fiable, 
+podemos restringir su acceso a nuestro ordenador usando zonas. 
+Primero creamos una zona llamada "Bad Guys" y situamos evil.com 
+en ella. Despues, vamos a la pestaña <guilabel>Protocolo</guilabel> 
+y nos aseguramos de que no hay protocolos seleccionados entre la 
+zona "Bad Guys" y la zona "Local". (La zona <guilabel>Local</guilabel> 
+representa la máquina local). De esta forma podemos limitar, e 
+incluso bloquear completamente, el acceso de evil.com a nuestro ordenador.
+</para>
+
+<para>
+<screenshot>
+<screeninfo>Situando a los Bad Guys en una zona y dejándolos fuera.</screeninfo>
+	<mediaobject>
+	  <imageobject>
+	    <imagedata fileref="guarddog2_zonedia.png" format="PNG"/>
+	  </imageobject>
+	  <textobject>
+	    <phrase>Situando a los Bad Guys en una zona y dejándolos fuera.</phrase>
+	  </textobject>
+	</mediaobject>
+</screenshot>
+</para>
+
+</sect2>
+
+<sect2>
+<title>Editando Zonas</title>
+<para>
+Las zonas se especifican y editan en la pestaña <guilabel>Zona</guilabel>.
+A la izquierda del formulario <guilabel>Zona</guilabel> está la lista de 
+zonas definidas. Guarddog tiene dos zonas integradas que no se pueden 
+cambiar. Estas son <guilabel>Local</guilabel> e <guilabel>Internet</guilabel>.
+<guilabel>Local</guilabel> es la zona que contiene sólo a la máquina local, la 
+máquina en la que &kappname; está funcionando. <guilabel>Internet</guilabel>
+corresponde a cualquier otra dirección IP que no está en otra zona. 
+Simplemente, si una dirección IP no está en ninguna otra zona, se asume 
+que está en la zona <guilabel>Internet</guilabel>.
+</para>
+
+<para>
+La información sobre la zona seleccionada se visualiza a la derecha de la 
+lista de zonas. Cada zona tiene un nombre que se usa en la pestaña 
+<guilabel>Protocolo</guilabel> y, por lo tanto, debe ser un nombre corto. 
+Se puede dar un comentario más descriptivo a la zona.
+</para>
+
+<para>
+La lista de direcciones IP de la zona se muestra en la lista
+<guilabel>Direcciones de la Zona</guilabel>.
+</para>
+
+<para>
+Las zonas con las que se puede conectar la zona actualmente seleccionada 
+pueden verse en la lista <guilabel>Conexión</guilabel> que está en la 
+parte derecha de la ventana.
+</para>
+
+<para>
+<screenshot>
+<screeninfo>La pestaña Zona</screeninfo>
+	<mediaobject>
+	  <imageobject>
+	    <imagedata fileref="guarddog2_zones.png" format="PNG"/>
+	  </imageobject>
+	  <textobject>
+	    <phrase>La pestaña Zona.</phrase>
+	  </textobject>
+	</mediaobject>
+</screenshot>
+</para>
+
+<warning><para>
+Una dirección IP sólo puede estar en una zona al mismo tiempo.
+</para></warning>
+</sect2>
+
+<sect2>
+<title>Creando una Zona Desmilitarizada</title>
+<para>
+Pongamos las zonas a trabajar.
+</para>
+<para>
+Un buen uso de las zonas pasa por reforzar el cortafuegos 
+configurando una "Zona Desmilitarizada" (DMZ). En seguridad de 
+redes, una DMZ es un grupo de ordenadores situados entre Internet 
+y la red interna de una organización. Los ordenadores de la DMZ 
+están expuestos a Internet y usualmente realizan tareas como 
+servir páginas web al público o manejar correo. Dado que estas 
+máquinas están expuestas a Internet y a constantes ataques del 
+exterior, su acceso a la red interna está restringido. La idea 
+es que si un atacante toma control de una máquina de la DMZ, 
+no gane al mismo tiempo acceso a la red interna de la organización.
+</para>
+
+<para>
+Aún si no está gestionando una red o un grupo de servidores web 
+o de correo, puede que utilice un grupo de ordenadores que puedan 
+considerarse parte de una DMZ. En este tutorial configuraremos 
+una DMZ conteniendo el servidor de correo que usted usa para 
+enviar y recibir correos.
+</para>
+
+<para>
+Vaya a la pestaña <guilabel>Zona</guilabel> y pulse el botón 
+<guibutton>Nueva Zona</guibutton> para crear una nueva zona. 
+Esta nueva zona aparecerá en la lista de zonas y se llamará
+<guilabel>nueva zona</guilabel>. Vaya al campo
+<guilabel>Nombre</guilabel> y cambie <guilabel>nueva zona</guilabel> 
+para que se llame "DMZ". El nombre es corto, pero puede poner 
+una descripción más larga en el campo <guilabel>Comentario</guilabel>.
+</para>
+
+<para>
+A la derecha de la ventana está la lista <guilabel>Conexión</guilabel>. 
+Es un grupo de casillas que le permite especificar qué otras zonas 
+tienen conexión con la que tenemos seleccionada. Seleccione la casilla 
+de <guilabel>Local</guilabel> para indicar que la zona <guilabel>DMZ</guilabel> 
+está conectada a la zona <guilabel>Local</guilabel>. La combinación de <guilabel>DMZ</guilabel> y <guilabel>Local</guilabel> sólo estará 
+disponible en la pestaña <guilabel>Protocolo</guilabel> si esta casilla 
+está seleccionada. &kappname; bloqueará toda comunicación entre zonas 
+que no estén conectadas a otras.
+</para>
+
+<para>
+Ahora vaya a la pestaña <guilabel>Protocolo</guilabel> y asegúrese de que 
+<guilabel>Protocolos Servidos por la zona:</guilabel> incluya 
+<guilabel>DMZ</guilabel>. En la lista de protocolos hay una columna llamada <guilabel>Local</guilabel>. Abra la categoría de protocolos 
+<guilabel>Correo</guilabel>, marque <guilabel>POP2</guilabel>, <guilabel>POP3</guilabel>, y <guilabel>SMTP</guilabel>. 
+POP3 se usa para recoger correo de un buzón que está en un servidor de correo, mientras que SMTP se usa para enviar correo. 
+Permitiendo estos protocolos para la zona <guilabel>Local</guilabel> estamos 
+diciendo que queremos permitir a la máquina local el uso de estos protocolos 
+de correo con las máquinas de la zona <guilabel>DMZ</guilabel>.
+</para>
+
+<para>
+Si las máquinas de la DMZ son tambien servidores web deberá activar HTTP, 
+FTP y otros protocolos comunes.
+</para>
+
+<para>
+Una vez que ha terminado de configurar &kappname;, aplique sus cambios con 
+el botón <guibutton>Aplicar</guibutton> y pruebe su programa de correo 
+para ver si aún puede enviar y recibir correo.
+</para>
+
+</sect2>
+
+</sect1>
+
+<sect1 id="tutorial-router">
+<title>Tutorial: Configuración como enrutador</title>
+<para>
+Hasta ahora hemos usado &kappname; para proteger una sola máquina (el 
+ordenador donde funciona &kappname;), pero mucha gente sabe que un 
+ordenador funcionando con Linux puede funcionar tambien como un 
+fantástico enrutador para conectar múltiples redes. En este tutorial 
+veremos cómo usar &kappname; en una máquina enrutadora para proteger 
+una red local de los peligros de Internet.
+</para>
+
+<important><para>&kappname; sólo soporta configuraciones de enrutamiento 
+en máquinas que funcionen con kernel Linux versión 2.4 o superior con  <command>iptables</command>.
+</para></important>
+
+<sect2>
+<title>Anatomía de una red local típica conectada a Internet</title>
+
+<para>
+<screenshot>
+<screeninfo>Una configuración típica de enrutador con &kappname; funcionando en la máquina enrutadora.</screeninfo>
+	<mediaobject>
+	  <imageobject>
+	    <imagedata fileref="guarddog2_routerdia.png" format="PNG"/>
+	  </imageobject>
+	  <textobject>
+	    <phrase>Una configuración típica de enrutador con &kappname; funcionando en la máquina enrutadora.</phrase>
+	  </textobject>
+	</mediaobject>
+</screenshot>
+</para>
+
+<para>
+El diagrama superior muestra la configuración de red de una red local (en adelante LAN) típica conectada a Internet a través de un sistema Linux actuando como enrutador. La LAN que queremos proteger está en la parte izquierda del diagrama. Internet aparece a la derecha. Toda la comunicación entre la LAN e Internet pasa a través de la máquina puente que aparece señalada por el perro. &kappname; funciona en la máquina puente. El aspecto más importante de esta instalación, desde el punto de vista de seguridad, es que todo el tráfico de red entre la LAN e Internet pasa a través de una máquina: la máquina puente. Esto nos lleva a considerar instalar el cortafuegos en esa máquina para filtrar el tráfico de red. 
+</para>
+
+<para>
+El diagrama tambien muestra las zonas que deberemos configurar en &kappname;.
+</para>
+</sect2>
+
+<sect2>
+<title>"Repita conmigo: &kappname; es un cortafuegos"</title>
+<para>
+Hay un poco de confusión entre la función de un cortafuegos y la de un enrutador de paquetes. Los cortafuegos actúan como <emphasis>filtros</emphasis>de tráfico de red, filtrando y bloqueando tráfico de red peligroso y no deseado. Son dispositivos de seguridad. Las características de enrutamiento o enmascaramiento IP no son 
+dispositivos de seguridad; son características de red avanzadas.
+</para>
+
+<note>
+<para>
+Esta confusión permanece porque, en el pasado de Linux, antes de la serie 2.4 del kernel, el subsistema de red estaba definido de tal forma que no era posible separar  funcionalidades de enrutamiento avanzadas de las funcionalidades normales del cortafuegos. Esto llevó a los programas de cortafuegos a incluir soporte directo para  características de enrutamiento avanzadas, como enmascaramiento IP o redireccionamiento de puertos, por ejemplo.
+</para>
+</note>
+
+<para>
+&kappname; es sólo un cortafuegos y no se usa para configurar esas características. 
+Para ello se debe usar otro programa diferente.
+</para>
+
+<tip>
+<para>
+<ulink url="http://www.simonzone.com/software/guidedog/">Guidedog</ulink>
+es una utilidad amigable para configuraciones de red avanzadas y está diseñada para trabajar conjuntamente con &kappname;.
+</para>
+</tip>
+</sect2>
+
+<sect2>
+<title>Configure las propiedades de enrutamiento y red</title>
+
+<para>
+Antes de continuar, debe establecer el enrutamiento para su máquina y confirmar que 
+el tráfico es correctamente enrutado y enmascarado. Para facilitar la tarea de depurar fácilmente la configuración de su puente puede desactivar &kappname; seleccionando la casilla <guilabel>Deshabilitar cortafuegos</guilabel> de la pestaña 
+<guilabel>Avanzado</guilabel> y aplicar entonces los cambios. Esto permitirá probar su configuración de enrutamiento sin que &kappname; bloquee ningún tráfico de prueba.
+</para>
+
+<warning>
+<para>
+Se recomienda encarecidamente que no pruebe su configuración de red mientras permanece conectado a una red hostil como Internet. Conecte una máquina a la tarjeta de red que planee conectar a Internet y déle una dirección IP semejante a alguna de Internet, como simulador. 
+</para>
+</warning>
+
+</sect2>
+
+<sect2>
+<title>Enseñando a &kappname; a permitir Tráfico de/hacia su LAN</title>
+<para>
+Si ha configurado y probado su configuración de enrutamiento y red con
+&kappname; deshabilitado, vuelva a activar &kappname; otra vez. Si todo va bien, 
+se encontrará que su red no podrá conectar con Internet. &kappname; tiene un diseño a prueba de fallos: "lo que no está explícitamente permitido, está prohibido". En esta situación quiere decir que, hasta que se le diga a &kappname; que permita tráfico desde su red hacia Internet, asumirá que debe bloquear todo el tráfico. De esta forma se puede hacer fácilmente una configuración segura (demasiado, incluso) y dificulta tener una configuración insegura. 
+</para>
+
+<para>
+La forma en que especificamos a &kappname; que los ordenadores de la LAN están permitidos a acceder a Internet es usando zonas. Simplemente creamos una zona para albergar las direcciones de todos los ordenadores de nuestra LAN y entonces especificamos que esta zona está conectada a Internet, y probablemente a la zona 
+<guilabel>Local</guilabel> tambien, y entonces ir a la pestaña <guilabel>Protocolo</guilabel> y marcar los protocolos que deban estar permitidos entre la LAN e Internet. 
+</para>
+
+</sect2>
+
+<sect2>
+<title>Paso a paso</title>
+<para>
+Vaya a la pestaña <guilabel>Zona</guilabel>, cree una nueva zona y llámela "LAN". En la lista <guilabel>Direcciones de la Zona</guilabel> inserte las direcciones IP de los ordenadores de su LAN. La lista de direcciones entiende varios tipos de notaciones de direcciones, y puede aceptar bloques enteros de red. Si está haciendo funcionar una red enmascarada usando el espacio privado de direcciones 192.168.1.0/255.255.255.0, puede indicar el bloque completo en una sola dirección usando el formato 192.168.1.0/255.255.255.0 o el más corto 192.168.1.0/24. 
+</para>
+
+<para>
+Despues, vaya a la lista <guilabel>Conexión</guilabel> y marque 
+<guilabel>Internet</guilabel> y <guilabel>Local</guilabel> para especificar que su zona LAN debe ser conectada a las zonas <guilabel>Internet</guilabel> y 
+<guilabel>Local</guilabel>.
+</para>
+
+<para>
+Ahora, vaya a la pestaña <guilabel>Protocolo</guilabel> y asegúrese de que en
+<guilabel>Protocolos Servidos desde la Zona:</guilabel> aparece 
+<guilabel>Internet</guilabel>. En la lista de protocolos de debajo, debe ver 
+una columna de casillas para la zona <guilabel>Local</guilabel> y otra columna para la zona <guilabel>LAN</guilabel>. Tal y como hemos marcado protocolos para la zona local en el primer tutorial, podemos hacer lo mismo con la zona LAN. Marque en la lista de protocolos los que las máquinas de la zona LAN pueden utilizar en Internet. 
+</para>
+
+<para>
+Cuando esté listo, aplique los cambios y fíjese si sus máquinas pueden acceder a Internet. Eso es todo lo que se ha de hacer.
+</para>
+</sect2>
+</sect1>
+
+<sect1 id="specific-protocols">
+<title>Notas Importantes</title>
+<para>
+He aquí algunas notas importantes referentes al uso de algunos protocolos.
+</para>
+
+<sect2>
+<title>Windows Networking (NETBIOS)</title>
+<para>
+Si su ordenador está conectado a una red local en la que quiere usar NETBIOS, necesita una ayuda extra para hacer que las cosas trabajen bien. Básicamente, cree una zona para su red local, cosa que ya habrá hecho probablemente, y asegúrese de que la dirección de difusión (broadcast) de la red local está tambien en la lista de direcciones de zona. 
+</para>
+
+<para>
+Si no sabe la dirección de difusión de su red local, la forma más sencilla es ir a un terminal de comandos y ejecutar la orden <userinput>/sbin/ifconfig</userinput>. 
+Verá algo semejante a esto: 
+<screen>
+eth0      Link encap:Ethernet  HWaddr 00:50:FC:2A:AB:7A
+          inet addr:192.168.1.1  Bcast:192.168.1.255  Mask:255.255.255.0
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:4 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:100
+          RX bytes:0 (0.0 b)  TX bytes:240 (240.0 b)
+          Interrupt:10 Base address:0x4000
+
+lo        Link encap:Local Loopback
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          UP LOOPBACK RUNNING  MTU:16436  Metric:1
+          RX packets:992 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:992 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0
+          RX bytes:76568 (74.7 Kb)  TX bytes:76568 (74.7 Kb)
+</screen>
+Esta es una lista de los interfaces de red que tiene su ordenador. Su lista puede ser diferente, por supuesto. Los nombres de los interfaces de red están listados a la izquierda. Necesita ver una que corresponda a su red local. Típicamente se llamará  <computeroutput>ethX</computeroutput>. Tambien es posible que tenga múltiples entradas <computeroutput>ethX</computeroutput> especialmente si tambien tiene acceso a Internet por cable o ADSL. Una vez que haya encontrado la que necesita, busque <computeroutput>Bcast:</computeroutput>. Esta es la dirección de difusión (broadcast) de la red conectada a este interfaz. Escriba esta dirección de difusión en la lista de direcciones IP de la zona correspondiente a su red local. 
+</para>
+
+</sect2>
+
+<sect2>
+<title>Rastreos Nmap y Nessus</title>
+<para>
+No es posible hacer rastreos efectivos con nmap o nessus a través de, o desde, una máquina en la que se ejecute &kappname;. La razón es que los cortafuegos son diseñados para bloquear la clase de tráfico inusual y "hostil" que estos programas producen. Un cortafuegos no puede distinguir entre el tráfico de exploración amigo producido por usted y el producido por otros intrusos, por lo que bloquea ambos tipos de tráfico. 
+</para>
+</sect2>
+
+<sect2>
+<title>Telstra BigPond Cable</title>
+<para>
+Las personas que en Australia usan Telstra's BigPond cable para acceder a Internet necesitan asegurarse de que al servidor <computeroutput>dce-server</computeroutput> de Telstra se le permite servir <guilabel>BigPond Cable Login</guilabel> a su máquina local. Esto es necesario para iniciar sesión en BigPond y tambien para permitir el 'latido' que usa BigPond para verificar que su máquina está aún conectada. 
+</para>
+
+<para>
+Una solución es crear una zona especial para los servidores importantes de BigPond que tambien sirven correo, etc... y asegurarse de que el <computeroutput>dce-server</computeroutput> figura en ella, y entonces permitir a la zona servir el protocolo <guilabel>BigPond Cable Login</guilabel> y cualquier protocolo de web o de correo que necesite. 
+</para>
+</sect2>
+
+<sect2>
+<title>X Window System</title>
+<para>
+En X Window System, la noción de cliente y servidor es un poco confusa. Se considera que el servidor es la máquina que ejecuta el servidor X, visualiza la pantalla y acepta las entradas del usuario, mientras que el cliente es el programa remoto cuyo interfaz de usuario está siendo visualizado sobre el servidor X (o sea, que un terminal ligero ejecutando un interfaz X es realmente el servidor X, y el potente servidor que ejecuta el programa cuyo interfaz se visualiza en el cliente ligero es realmente el cliente X). 
+</para>
+
+<para>
+Esto significa que debe asegurarse de permitir que el protocolo X sea servido por la zona que contiene la máquina que muestra el interfaz X (el servidor X), a la zona que contiene las máquinas que realmente ejecutan los programas (los clientes X). 
+</para>
+
+</sect2>
+
+<sect2>
+<title>DHCP (Dynamic Host Configuration Protocol)</title>
+<para>
+Vaya a la sección llamada <xref linkend='dhcp' /> para informarse cómo usar DHCP con  &kappname;.
+</para>
+</sect2>
+
+<sect2>
+<title>Squid, proxys Web e ICP</title>
+<para>
+Si está usando un cache/proxy web como Squid y desea que interactúe con otros cache/proxys, necesita activar el protocolo ICP (Internet Cache Protocol), en la categoría Red de la pestaña <guilabel>Protocolo</guilabel>. Activar el protocolo Squid no bastará para conectar ICP. 
+</para>
+</sect2>
+
+</sect1>
+
+<!--
+<sect1 id="guarddog-features">
+<title>More Guarddog features</title>
+
+<para>It slices! It dices! and it comes with a free toaster!</para>
+<para>
+The Squiggle Tool <guiicon><inlinemediaobject>
+	  <imageobject>
+	    <imagedata fileref="squiggle.png" format="PNG">
+	  </imageobject>
+	  <imageobject>
+	    <imagedata fileref="squiggle.eps" format="EPS">
+	  </imageobject>
+	  <textobject>
+	    <phrase>Squiggle</phrase>
+	  </textobject>
+</inlinemediaobject></guiicon> is used to draw squiggly lines all over
+the &kappname; main window. It's not a bug, it's a feature!
+</para>
+
+</sect1>
+-->
+</chapter>
+<!--
+***************************************************************************
+* Program Reference *******************************************************
+***************************************************************************
+-->
+<chapter id="commands">
+<title>Referencia del Programa</title>
+
+<sect1 id="guarddog-zonetab">
+<title>La pestaña Zona</title>
+<para>
+&kappname; está construido con el concepto de zonas contenedoras de direcciones IP, gestionando qué protocolos de red están permitidos entre las distintas zonas. En esta pestaña es donde se gestionan las zonas y sus contenidos. 
+</para>
+
+<para>
+La lista de las zonas actualmente definidas está en la parte izquierda de la pestaña, en
+<guilabel>Zonas de red definidas:</guilabel>. Las propiedades de la zona seleccionada se muestran en el área <guilabel>Propiedades de la zona</guilabel>. Los botones <guibutton>Nueva Zona</guibutton> y <guibutton>Borrar Zona</guibutton>
+en la parte inferior izquierda del formulario crean nuevas zonas o borran la zona seleccionada.
+</para>
+
+<para>
+Hay dos zonas integradas que no pueden ser modificadas ni borradas. Se llaman <guilabel>Internet</guilabel> y
+<guilabel>Local</guilabel> La zona <guilabel>Local</guilabel> contiene automaticamente las direcciones IP de los interfaces de red de la máquina donde está funcionando el firewall. Fíjese que la lista de direcciones de esta zona no se muestra realmente en la ventana. La zona <guilabel>Internet</guilabel> contiene automáticamente las direcciones que no constan en otra zona. Actúa como la zona donde están las direcciones IP que no están en ninguna otra zona. 
+</para>
+
+<para>
+Cada zona recibe un nombre que puede ser editado en el campo de texto <guilabel>Nombre:</guilabel>. Se recomienda que el nombre sea corto. Se puede insertar un comentario más largo para la zona en el campo <guilabel>Comentario:</guilabel>.
+</para>
+
+<sect2>
+<title>Direcciones</title>
+<para>
+Cada zona consiste en un conjunto de direcciones IP. La lista <guilabel>Direcciones de la zona</guilabel> contiene la lista de direcciones IP de la zona actualmente seleccionada. Se pueden añadir direcciones a la lista usando el botón <guibutton>Nueva dirección</guibutton>. La direccion actualmente seleccionada puede ser borrada usando el botón <guibutton>Borrar dirección</guibutton>. El campo de texto <guilabel>Dirección:</guilabel>, le permite editar la dirección actualmente seleccionada. 
+</para>
+
+<para>
+Las direcciones y rangos de direcciones pueden especificarse de varias formas: 
+</para>
+
+<itemizedlist>
+<listitem>
+  <para>Dirección IP numérica (dotted quad). Se pueden especificar redes enteras usando una máscara. Las máscaras pueden ser máscaras de red (por ejemplo 255.255.255.0) o un número normal (por ejemplo 24). Unos ejemplos: 123.34.56.78, 192.168.1.1/24 y 192.168.1.1/255.255.255.0 (las dos últimas definen todas las direcciones desde 192.168.1.1 hasta 192.168.1.255)</para>
+</listitem>
+<listitem>
+  <para>Nombre de dominio. Sólo se permiten nombres de dominio cualificados (Fully Qualified Domain Names - FQDN); algo parecido a .simonzone.com no funcionará. Se requiere un nombre completo, como www.simonzone.com, por ejemplo.</para>
+</listitem>
+</itemizedlist>
+</sect2>
+
+<sect2>
+<title>Conexión</title>
+<para>La lista <guilabel>Conexión</guilabel> le permite especificar a qué otras zonas está conectada la zona actual. Cuando una zona se conecta a otra, esta combinación particular aparecerá en la pestaña <guilabel>Protocolo</guilabel> Si una combinación no está seleccionada aquí, entonces no aparecerá en la pestaña <guilabel>Protocolo</guilabel>, y no se permitirá ninguna comunicación entre las dos zonas. 
+</para>
+</sect2>
+
+<!--
+<sect2>
+<title>The File Menu</title>
+<para>
+<variablelist>
+<varlistentry>
+<term><menuchoice>
+<shortcut>
+<keycombo><keycap>Ctrl</keycap><keycap>n</keycap></keycombo>
+</shortcut>
+<guimenu>File</guimenu>
+<guimenuitem>New</guimenuitem>
+</menuchoice></term>
+<listitem><para><action>Creates a new document</action></para></listitem>
+</varlistentry>
+<varlistentry>
+<term><menuchoice>
+<shortcut>
+<keycombo><keycap>Ctrl</keycap><keycap>s</keycap></keycombo>
+</shortcut>
+<guimenu>File</guimenu>
+<guimenuitem>Save</guimenuitem>
+</menuchoice></term>
+<listitem><para><action>Saves the document</action></para></listitem>
+</varlistentry>
+<varlistentry>
+<term><menuchoice>
+<shortcut>
+<keycombo><keycap>Ctrl</keycap><keycap>q</keycap></keycombo>
+</shortcut>
+<guimenu>File</guimenu>
+<guimenuitem>Quit</guimenuitem>
+</menuchoice></term>
+<listitem><para><action>Quits</action> &kappname;</para></listitem>
+</varlistentry>
+</variablelist>
+</para>
+
+</sect2>
+-->
+
+</sect1>
+
+<sect1 id="guarddog-protocoltab">
+<title>La pestaña Protocolo</title>
+<para>
+La pestaña <guilabel>Protocolo</guilabel> se usa para especificar qué protocolos se permiten entre qué combinaciones de zonas.
+</para>
+
+<para>
+A la izquierda está la lista <guilabel>Zonas de red definidas:</guilabel>
+conteniendo cada zona que haya sido definida. El área <guilabel>Propiedades de la zona</guilabel>
+muestra qué protocolos o servicios están permitidos y a quien están permitidos. Nos referiremos a la zona actualmente seleccionada como zona servidora.
+</para>
+
+<para>
+La lista extensible de protocolos está organizada en diez categorías:
+</para>
+
+<itemizedlist>
+<listitem><para>
+Chat - Protocolos usados por programas de chat como IRC o ICQ. 
+</para></listitem>
+<listitem><para>
+Servicio de datos - Protocolos usados por bases de datos y otras fuentes de datos como servidores de hora. 
+</para></listitem>
+<listitem><para>
+Transferencia de ficheros - Protocolos usados para tranferir ficheros como HTTP para la Web y FTP. 
+</para></listitem>
+<listitem><para>
+Juego - Protocolos usados por juegos multijugador en línea (online). 
+</para></listitem>
+<listitem><para>
+Sesión Interactiva - Protocolos usados para trabajar o realizar acciones en sistemas remotos. Los protocolos SSH Secure Shell, telnet y RPC están aquí. 
+</para></listitem>
+<listitem><para>
+Correo - Protocolos asociados con la entrega y el movimiento de correo electrónico. SMTP y POP3 están aquí. 
+</para></listitem>
+<listitem><para>
+Medios - Protocolos usados para entrega multimedia en Internet en tiempo real.
+</para></listitem>
+<listitem><para>
+Miscelánea - Otros protocolos no englobables en las otras categorias. 
+</para></listitem>
+<listitem><para>
+Red - Protocolos relacionados con la operación propia de la red. 
+</para></listitem>
+<listitem><para>
+Definido por el usuario - Aquí se muestran los protocolos definidos por el usuario en la pestaña "Avanzado". 
+</para></listitem>
+</itemizedlist>
+
+<para>
+A la derecha de cada protocolo de la lista hay una o más columnas de casillas. Cada zona a la está conectada la zona servidora tiene una columna de casillas. El nombre de la zona encabeza la columna. Las zonas/columnas que aparecen aquí están determinadas en la lista <guilabel>Conexión</guilabel> de la pestaña <guilabel>Zona</guilabel> para la zona actualmente seleccionada. 
+</para>
+
+<para>
+Las casillas tienen los siguientes significados: 
+</para>
+
+<itemizedlist>
+<listitem><para>Vacía - El protocolo no está permitido. Los clientes de esta zona no establecerán una conexión con la zona servidora usando este protocolo. Por ejemplo, si la zona "Web Servers" es la zona servidora actualmente seleccionada, y la casilla del protocolo HTTP (Web) está vacía para la zona "Bad Guys", entonces las máquinas de la zona "Bad Guys" no tienen permiso para acceder a un servidor web que funcione en la zona "Web Servers". Cualquier intento será ignorado. Cualquier paquete entrante será descartado.
+</para></listitem>
+
+<listitem><para>Seleccionada - Se permite el protocolo. Los clientes de esta zona establecerán conexión con la zona servidora usando este protocolo. Por ejemplo, si la zona servidora seleccionada es "Web Servers", y el protocolo HTTP (Web) está seleccionada para la zona "Bad Guys", las máquinas en la zona "Bad Guys" están permitidas para acceder a un servidor web funcionando en una máquina de la zona "Web Servers".
+</para></listitem>
+
+<listitem><para>Cruzada - El protocolo no está permitido y los paquetes serán rechazados en vez de ser simplemente descartados. Cuando se rechaza un paquete, se devuelve otro paquete ICMP al origen para informar de que el paquete ha sido rechazado por el cortafuegos. Por ejemplo, si la zona servidora actualmente seleccionada es "Web Servers", y la casilla del protocolo HTTP (Web) contiene una 'x' para la zona "Bad Guys", las maquinas de la zona "Bad Guys" no tendrán permiso de acceso a un servidor web que funcione en la zona "Web Servers". A diferencia de la casilla vacía, los intentos de conexión son rechazados en lugar de ser simplemente ignorados.</para></listitem>
+</itemizedlist>
+
+<para>Bajo la lista aparecen unas leyendas que muestran el significado de los distintos estados de las casillas. 
+</para>
+
+<tip>
+<para>
+Rechazar un protocolo se considera una forma de bloqueo más 'amigable', debido a que el que establece la conexión es informado inmediatamente de lo sucedido. Cuando un paquete es silenciosamente bloqueado por el cortafuegos, el que establece la conexión no lo sabrá y tendrá que esperar un tiempo antes de determinar que la comunicación ha fallado. 
+</para>
+
+<para>
+Generalmente hay pocas razones para rechazar protocolos en lugar de simplemente descartarlos. Si alguien intenta usar un protocolo no permitido, asumiríamos por seguridad que ese alguien es hostil y no debería ser ayudado. En esta situación, descartar paquetes es mejor porque usa menos capacidad de red y tiene el efecto de hacer que el programa de exploración que puede estar usando el intruso funcione mucho más lentamente. 
+</para>
+
+<para>
+El único protocolo que es deseable rechazar en vez de descartar es el protocolo "ident" (dentro de la categoría Red) (Ver Preguntas y Respuestas).
+</para>
+
+</tip>
+
+<sect2>
+<title>Información de Protocolo</title>
+<para>
+En la parte inferior izquierda se puede ver información sobre un protocolo. Puede obtener información de cualquier protocolo de la lista haciendo clic sobre su nombre. 
+</para>
+
+<para>
+Está disponible la siguiente información sobre cada protocolo:
+</para>
+
+<itemizedlist>
+<listitem><para>Nombre - El nombre del protocolo. Nombre completo y cualquier otro acrónimo por el que se le conozca.
+</para></listitem>
+
+<listitem><para>Descripción - Una corta descripción de para qué es usado el protocolo.
+</para></listitem>
+
+<listitem><para>Riesgo de seguridad - Una estimación del riesgo de seguridad que implica el uso del protocolo. El riesgo puede ser bajo, medio, alto o desconocido.
+</para></listitem>
+
+<listitem><para>Uso de red - Descripción de cómo el protocolo usa la red. Describe qué conexiones, protocolos IP, rango de puertos, etc... usa el protocolo para funcionar. Esta información sólo aparece si la casilla
+<guilabel>Mostrar ayuda avanzada del protocolo</guilabel> de la pestaña
+<guilabel>Avanzado</guilabel> está seleccionada.
+</para></listitem>
+
+</itemizedlist>
+
+</sect2>
+
+</sect1>
+
+<sect1 id="guarddog-loggingtab">
+<title>La pestaña Registro</title>
+<para>La pestaña <guilabel>Registro</guilabel> contiene varias opciones para controlar qué eventos registrar y cómo son registrados.
+</para>
+
+<para>La opción <guilabel>Registrar paquetes bloqueados</guilabel> controla si se han de anotar en el registro del sistema los paquetes que &kappname; ordena bloquear. Un paquete de un protocolo no permitido se bloquea por defecto. Cuando esta opción está seleccionada, se registran los paquetes bloqueados.
+</para>
+
+<para>La Opción <guilabel>Registrar paquetes rechazados</guilabel> controla si se han de anotar en el registro del sistema los paquetes que Guarddog ordena rechazar. Se rechazan los protocolos que aparecen 'cruzados' en la pestaña <guilabel>Protocolo</guilabel>.
+Cuando esta opción está seleccionada, todos los paquetes rechazados son registrados.
+</para>
+
+<para>La opción <guilabel>Registrar conexiones TCP abortadas (exploraciones half open)</guilabel>
+controla si se anotan las conexiones TCP que son forzadas a desconectar usando un paquete RST. Una técnica de exploración de puertos llamada exploración "half-open" usa paquetes RST para abortar rápidamente una conexión TCP medio abierta y evitar de este modo su detección. Esto se puede hacer usando <command>nmap</command> con la opción <option>-sS</option>. Marcando esta opción puede detectar y registrar si esto sucede. Por desgracia, a muchos servidores web les gusta terminar rápidamente las conexiones usando un paquete RST. Esto puede producir un montón de anotaciones no deseadas en su registro del sistema. Por lo tanto, seguramente deseará desmarcar esta opción. Además, esta opción sólo funciona si el cortafuegos se usa en una máquina con kernel Linux 2.4 combinado con <command>iptables</command>.
+</para>
+
+<tip>
+<para>Los registros de paquetes se anotan en el <command>syslog</command>. Consulte
+el manual de <command>syslog</command> para más información.</para>
+</tip>
+
+<sect2>
+<title>Limitar tasas</title>
+<para>Este grupo de opciones le permite especificar cómo &kappname; limitará la tasa con la que anotará los mensajes en el registro del sistema. La tasa limitada de registro se hace para evitar que alguien pueda realizar un ataque de denegación de servicio contra su máquina 'inundándola' con paquetes e intentando llenar su registro de sistema y su espacio de disco.
+</para>
+
+<para>La opción <guilabel>Limitar tasa de registro</guilabel> controla si la tasa de registro de paquetes debe limitarse o no. Se recomienda seleccionar esta opción.</para>
+
+<para>El campo <guilabel>Tasa</guilabel> le permite especificar la tasa máxima a la que los paquetes deben ser añadidos al registro del sistema. La tasa puede ser especificada en medidas de número de entradas por segundo, minuto, hora o día.</para>
+
+<para>El campo <guilabel>Tasa</guilabel> le permite especificar tasa de registro media máxima. Los paquetes que deben ser registrados vienen a menudo en ráfagas de rápida sucesión. El campo
+<guilabel>Ráfaga</guilabel> le permite especificar cuantos paquetes en una ráfaga deben ser registrados. Cuando se rebasa el límite de ráfaga, toma preferencia la tasa de registro media. </para>
+
+<tip><para>Para más información acerca de cómo trabaja esta opción, consulte la documentación de
+<command>iptables</command> y el fichero fuente del kernel Linux
+<filename>/net/ipv4/netfilter/ipt_limit.c</filename>.
+</para></tip>
+
+<para>La opción <guilabel>Advertir cuando llegue al límite</guilabel> controla si
+&kappname; debe insertar mensajes de aviso en el registro del sistema cuando ha sido forzado a aplicar un límite de tasa de registro de paquetes. Cuando el límite de tasa se aplica a los mensajes de registro de paquetes, sólo aparece en el registro un número limitado de paquetes, omitiendo el resto. Cuando usted va a consultar el registro del sistema, es útil saber si se han omitido registros debido a la limitación de tasas. 
+</para>
+
+<para>El campo <guilabel>Tasa de advertencias</guilabel> le permite especificar la frecuencia con la que se insertarán mensajes de advertencia cuando se usa la limitación de tasas.
+</para>
+
+<tip><para>Los mensajes de advertencia en el registro del sistema tienen la palabra <literal>LIMITED</literal> al principio de la línea.</para></tip>
+
+</sect2>
+
+<sect2>
+<title>Opciones de registro</title>
+
+<para>La opción <guilabel>Registrar IP Options</guilabel> controla si el campo 'options' de la cabecera IP de un paquete debe ser incluido en el mensaje de registro del paquete.
+</para>
+
+<para>La opción <guilabel>Registrar TCP Options</guilabel> controla si el campo 'options' de la cabecera TCP de un paquete debe ser incluido en el mensaje de registro del paquete.
+</para>
+
+<para>La opción <guilabel>Registrar números de secuencia TCP</guilabel> controla si se debe incluir el número de secuencia (sequence number) TCP de un paquete en el mensaje de registro del paquete.</para>
+
+<para>El selector <guilabel>Prioridad de registro</guilabel> especifica la prioridad de registro usada cuando se envían los mensajes al registro del sistema. Vea la documentación de <filename>syslog.conf</filename> para más información.
+</para>
+
+</sect2>
+</sect1>
+
+<sect1 id="guarddog-advancedtab">
+<title>La pestaña Avanzado</title>
+<para>
+La pestaña <guilabel>Avanzado</guilabel> contiene diversas opciones avanzadas. Aquí puede definir sus protocolos para abrir un pequeño agujero a través de su cortafuegos para que pueda manejar un protocolo <emphasis>ad hoc</emphasis>. Por ejemplo, acceder a un interfaz web de administración remota que utiliza un puerto distinto del habitual.
+</para>
+
+<para>
+Cuando la casilla <guilabel>Mostrar ayuda avanzada del protocolo</guilabel> está seleccionada, se muestra información extra en la ayuda de protocolos en la pestaña <guilabel>Protocolo</guilabel>. La información  extra incluye qué tipo de conexiones usa el protocolo.
+</para>
+
+<para>
+La opción <guilabel>Permitir TCP timestamps</guilabel> le permite conectar o desconectar los TCP timestamps. Dejando conectado TCP timestamps posibilita a otros calcular cuánto tiempo lleva funcionando su ordenador desde la última vez que ha sido encendido. <command>nmap</command> <option>-O</option> puede hacer esto. Generalmente, a menos que esté conectado a una red de alta velocidad en la que confía, no hay ninguna razón por la que debería permitir TCP timestamps.
+</para>
+
+<para>
+El botón <guilabel>Restaurar a configuración 'de fábrica'</guilabel> borra la configuración del cortafuegos y lo devuelve a la configuración que tendría &kappname; recién instalado.
+</para>
+
+<sect2>
+<title>Rango de Puertos Dinámicos Locales</title>
+<para>
+Los dos campos de texto que siguen a <guilabel>Rango de Puertos Dinámicos Locales</guilabel>
+permiten especificar el rango de puertos usados por el sistema operativo para el puerto de orígen de nuevas conexiones salientes. Cuando se establece una conexión a una máquina externa, el puerto origen de la conexión no suele ser especificado por la aplicación; se deja al sistema operativo que elija un número de puerto que esté libre. El rango de puertos dinámicos locales es sólo el grupo de puertos que el sistema operativo usará cuando busque un puerto disponible.
+</para>
+
+<para>Generalmente, hay pocas razones que fuercen a cambiar estos valores. Sólo será importante en máquinas que deban tener un número inusualmente alto de conexiones activas a la vez.</para>
+</sect2>
+
+<sect2 id='dhcp'>
+<title>DHCP (Dynamic Host Configuration Protocol)</title>
+
+<para>Si utiliza DHCP para configurar un interfaz de red, necesitará especificar el nombre del interfaz o interfaces en el campo <guilabel>Permitir DHCP en los interfaces:</guilabel>.</para>
+ 
+<para>Si su máquina está ejecutando un servidor DHCP sobre un interfaz de red, tendrá que especificarlo en el campo <guilabel>Permitir servidor DHCP sobre el interfaz:</guilabel>.</para>
+ 
+<para>Cuando se especifiquen varios interfaces, separe los nombres utilizando una coma ",". </para>
+
+</sect2>
+
+<sect2>
+<title>Importar/Exportar</title>
+<para><guilabel>Importar</guilabel> y <guilabel>Exportar</guilabel> le permite guardar la configuración actual a un fichero, y volver a recuperarla por &kappname;. Cuando selecciona uno de estos botones, aparece un diálogo de fichero que le permite especificar de qué fichero importar o a qué fichero exportar la configuración.
+</para>
+
+<para>El campo <guilabel>Descripción</guilabel> le permite introducir una anotación breve sobre la configuración actual del cortafuegos. </para>
+
+<tip><para><guilabel>Exportar</guilabel> no exporta tan solo la configuración del cortafuegos: realmente exporta las órdenes completas de configuración del cortafuegos. Estas órdenes se pueden mover a otra máquina y configurarán en ésta el cortafuegos sin necesidad de instalar &kappname; en ella.
+</para></tip>
+
+</sect2>
+
+<sect2>
+<title>Protocolos definidos por el usuario</title>
+
+<para>Además de todos los protocolos soportados por &kappname;, tambien es posible especificar sus propios protocolos.</para>
+
+<para>En el grupo <guilabel>Protocolos definidos por el usuario</guilabel> aparece la lista de protocolos definidos por el propio usuario. Use el botón <guilabel>Nuevo Protocolo</guilabel> para crear un nuevo protocolo en blanco. El botón <guilabel>Borrar Protocolo</guilabel> borra el protocolo definido por el usuario que esté seleccionado en la lista.</para>
+
+<para>Tras crear un nuevo protocolo puede darle un nombre usando el campo <guilabel>Nombre</guilabel>. La lista <guilabel>Tipo</guilabel> le permite especificar qué protocolo IP, TCP o UDP usa el protocolo que define. En los campos <guilabel>Puertos</guilabel> puede especificar el rango de puertos de la máquina remota a los que se conectará el protocolo. Para los protocolos UDP use la casilla <guilabel>bidireccional</guilabel> para especificar si el protocolo es bidireccional y requiere que los paquetes viajen en ambas direcciones. Una vez que el protocolo ha sido especificado, queda disponible en la pestaña <guilabel>Protocolo</guilabel> bajo la categoría <guilabel>Definido por el usuario</guilabel>. Aquí puede ser seleccionado o no, igual que cualquier otro protocolo integrado.</para>
+
+<tip><para>Esta característica está concebida para protocolos simples donde un servidor está escuchando por un puerto simple TCP/UDP. Si necesita especificar un protocolo más complejo, considere contactar con el autor para que pueda integrarse en una futura versión de &kappname;.</para></tip>
+
+</sect2>
+</sect1>
+
+</chapter>
+
+<!--
+<chapter id="developers">
+<title>Developer's Guide to Guarddog</title>
+
+<para>
+Programming &guarddog; plugins is a joy to behold. Just read through the next
+66 pages of API's to learn how!
+</para>
+
+<refentry id="re-1007-unmanagechildren-1">
+<refmeta>
+<refentrytitle>XtUnmanageChildren</refentrytitle>
+<refmiscinfo>Xt - Geometry Management</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>XtUnmanageChildren
+</refname>
+<refpurpose>remove a list of children from a parent widget's managed list.
+</refpurpose>
+<indexterm id="ix-1007-unmanagechildren-1"><primary>widgets</primary><secondary>removing</secondary></indexterm>
+<indexterm id="ix-1007-unmanagechildren-2"><primary>XtUnmanageChildren</primary></indexterm>
+</refnamediv>
+<refsynopsisdiv>
+<refsynopsisdivinfo>
+<date>4 March 1996</date>
+</refsynopsisdivinfo>
+<synopsis>
+void XtUnmanageChildren(<replaceable parameter>children</replaceable>, <replaceable parameter>num_children</replaceable>)
+    WidgetList <replaceable parameter>children</replaceable>;
+    Cardinal <replaceable parameter>num_children</replaceable>;
+</synopsis>
+
+<refsect2 id="r2-1007-unmanagechildren-1">
+<title>Inputs</title>
+<variablelist>
+<varlistentry>
+<term><replaceable parameter>children</replaceable>
+</term>
+<listitem>
+<para>Specifies an array of child widgets. Each child must be of
+class RectObj or any subclass thereof.
+</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><replaceable parameter>num_children</replaceable>
+</term>
+<listitem>
+<para>Specifies the number of elements in <replaceable parameter>children</replaceable>.
+</para>
+</listitem>
+</varlistentry>
+</variablelist>
+</refsect2></refsynopsisdiv>
+
+<refsect1 id="r1-1007-unmanagechildren-1">
+<title>Description
+</title>
+<para><function>XtUnmanageChildren()</function> unmaps the specified widgets
+and removes them from their parent's geometry management.
+The widgets will disappear from the screen, and (depending
+on its parent) may no longer have screen space allocated for
+them.
+</para>
+<para>Each of the widgets in the <replaceable parameter>children</replaceable> array must have
+the same parent.
+</para>
+<para>See the &ldquo;Algorithm&rdquo; section below for full details of the
+widget unmanagement procedure.
+</para>
+</refsect1>
+
+<refsect1 id="r1-1007-unmanagechildren-2">
+<title>Usage</title>
+<para>Unmanaging widgets is the usual method for temporarily
+making them invisible.  They can be re-managed with
+<function>XtManageChildren()</function>.
+</para>
+<para>You can unmap a widget, but leave it under geometry
+management by calling <function>XtUnmapWidget()</function>.  You can
+destroy a widget's window without destroying the widget by
+calling <function>XtUnrealizeWidget()</function>.  You can destroy a
+widget completely with <function>XtDestroyWidget()</function>.
+</para>
+<para>If you are only going to unmanage a single widget, it is
+more convenient to call <function>XtUnmanageChild()</function>.  It is
+often more convenient to call <function>XtUnmanageChild()</function>
+several times than it is to declare and initialize an array
+of widgets to pass to <function>XtUnmanageChildren()</function>.  Calling
+<function>XtUnmanageChildren()</function> is more efficient, however,
+because it only calls the parent's <function>change_managed()</function>
+method once.
+</para>
+</refsect1>
+
+<refsect1 id="r1-1007-unmanagechildren-3">
+<title>Algorithm
+</title>
+<para><function>XtUnmanageChildren()</function> performs the following:
+</para>
+<variablelist>
+<varlistentry>
+<term>-
+</term>
+<listitem>
+<para>Ignores the child if it already is unmanaged or is being
+destroyed.
+</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>-
+</term>
+<listitem>
+<para>Otherwise, if the child is realized, it makes it nonvisible
+by unmapping it.
+</para>
+</listitem>
+</varlistentry>
+</variablelist>
+<para>
+</para>
+</refsect1>
+
+<refsect1 id="r1-1007-unmanagechildren-4">
+<title>Structures</title>
+<para>The <type>WidgetList</type> type is simply an array of widgets:
+</para>
+<screen id="sc-1007-unmanagechildren-1">typedef Widget *WidgetList;
+</screen>
+</refsect1>
+</refentry>
+
+</chapter>
+-->
+
+<chapter id="faq">
+<title>Preguntas y respuestas</title>
+
+&reporting.bugs;
+&updating.documentation;
+
+<qandaset id="faqlist">
+<qandaentry>
+<question>
+<para>¿&kappname; necesita estar funcionando para proteger mi ordenador?</para>
+</question>
+<answer>
+<para>&kappname; ofrece una forma amigable de configurar el cortafuegos integrado en su ordenador. &kappname; no necesita estar en funcionamiento para proteger su ordenador.</para>
+</answer>
+</qandaentry>
+
+<qandaentry>
+<question>
+<para>¿Cómo puedo ver qué puertos utiliza un protocolo específico? o ¿Cómo puedo ver qué puertos abre un protocolo específico?</para>
+</question>
+<answer>
+<para>Vaya a la pestaña <guilabel>Avanzado</guilabel> y marque la casilla
+<guilabel>Mostrar ayuda avanzada del protocolo</guilabel>. Desde ahora, cuando vaya a la pestaña <guilabel>Protocolo</guilabel> y haga clic sobre el nombre de un protocolo, a la izquierda se mostrará información sobre ese protocolo y qué puertos TCP/UDP usa.</para>
+</answer>
+</qandaentry>
+
+<qandaentry>
+<question>
+<para>¿Porqué mis conexiones FTP/Correo/IRC son lentas?</para>
+</question>
+<answer>
+<para>
+Muchos servidores de correo e IRC, cuando se establece la conexión, usan el protocolo "ident" para intentar conocer el propietario de la conexión entrante, y no responden a la conexión entrante hasta que han intentado "ident". Este problema se muestra con retardos en la conexión con servidores de correo. La conexión se establecerá, pero habrá un retardo notable antes de que se pueda recoger el correo. Esto es debido a que el servidor intenta hacer una conexión de respuesta "ident", pero deja pasar un tiempo de espera antes de determinar que no funciona. La solución es asegurarse de que "ident" es rechazado en las conexiones procedentes de la zona en la que está el servidor de correo. 
+</para>
+</answer>
+</qandaentry>
+
+</qandaset>
+</chapter>
+
+<chapter id="credits">
+
+<title>Creditos y Licencia</title>
+
+<para>
+&kappname;
+</para>
+<para>
+Programa copyright 2000-2003 Simon Edwards <email>simon@simonzone.com</email>
+</para>
+
+<para>
+Documentación copyright 2000-2003 Simon Edwards <email>simon@simonzone.com</email>
+</para>
+
+&underFDL;               <!-- FDL: do not remove -->
+
+<!-- Determine which license your application is licensed under, 
+     and delete all the remaining licenses below:
+
+     (NOTE:  All documentation are licensed under the FDL, 
+     regardless of what license the application uses) -->
+
+&underGPL;        	 <!-- GPL License -->
+
+<para>
+Gracias a las siguientes personas:
+</para>
+
+<itemizedlist>
+<listitem><para>J F Gratton (Ayuda con un poco de código de red.)</para></listitem>
+<listitem><para>Joerg Buchland (Ayuda detectando qué interfaz /dev usa RDSI.)</para></listitem>
+<listitem><para>Ludovic Lange (Correcciones, ayuda con DHCP.)</para></listitem>
+<listitem><para>Jason L. Buberel (Impresiones, información de protocolos.)</para></listitem>
+<listitem><para>Carsten Pfeiffer (Impresiones, ayuda con KDE3)</para></listitem>
+<listitem><para>Gunner Poulsen (Traducción Danesa)</para></listitem>
+<listitem><para>Adam Kreuschner (RPMs para SuSE)</para></listitem>
+<listitem><para>Matthew Schick (RPMs para Redhat)</para></listitem>
+<listitem><para>Daniele Medri (Traducción Italiana)</para></listitem>
+<listitem><para>Stephan Johach (Traducción Alemana)</para></listitem>
+<listitem><para>Pascal Billery Schneider (Traducción Francesa)</para></listitem>
+<listitem><para>Antonio Díaz Cayuela (Traducción Española)</para></listitem>
+<listitem><para>Cualquier otro que ha aportado ayuda, informes de errores o soporte.</para></listitem>
+</itemizedlist>
+
+</chapter>
+
+<appendix id="installation">
+<title>Instalación</title>
+
+<sect1 id="getting-guarddog">
+<title>Como conseguir &kappname;</title>
+
+<para>
+&kappname; puede encontrarse en 
+<ulink url="http://www.simonzone.com/software/guarddog/">http://www.simonzone.com/software/guarddog/</ulink>.</para>
+</sect1>
+<!--
+<sect1 id="requirements">
+<title>Requerimientos</title>
+
+<para>
+In order to successfully use &kappname;, you need KDE 2.0. Foobar.lib is required
+in order to support the advanced &kappname; features. &kappname; uses about 5 megs of
+memory to run, but this may vary depending on your platform and
+configuration.
+</para>
+
+<para>
+All required libraries as well as &guarddog; itself can be found
+on <ulink url="ftp://ftp.guarddog.org">The &guarddog; home page</ulink>.
+</para>
+
+<para>
+You can find a list of changes at <ulink
+url="http://apps.kde.org/guarddog">http://apps.kde.org/guarddog</ulink>.
+</para>
+</sect1>
+
+<sect1 id="compilation">
+<title>Compilation and installation</title>
+
+<para>
+In order to compile and install KApp on your system, type the following in the base
+directory of the Icon Editor distribution:
+<screen width="40">
+<prompt>%</prompt> <userinput>./configure</userinput>
+<prompt>%</prompt> <userinput>make</userinput>
+<prompt>%</prompt> <userinput>make install</userinput>
+</screen>
+</para>
+
+<para>Since KApp uses autoconf and automake you should have not trouble compiling it.
+Should you run into problems please report them to the KDE mailing lists.</para>
+
+</sect1>
+
+<sect1 id="configuration">
+<title>Configuration</title>
+
+<para>Don't forget to tell your system to start the <filename>dtd</filename>
+dicer-toaster daemon first, or KApp won't work !</para>
+
+</sect1>
+-->
+</appendix>
+
+&documentation.index;
+</book>
+<!--
+Local Variables:
+mode: sgml
+sgml-minimize-attributes: nil
+sgml-general-insert-case: lower
+End:
+-->

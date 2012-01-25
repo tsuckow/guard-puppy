@@ -1,0 +1,445 @@
+* March 11th 2007 Simon Edwards <simon@simonzone.com>
+- 2.6.0 release. Stable release.
+
+* November 30th 2006 Simon Edwards <simon@simonzone.com>
+- 2.5.1 release. Development release.
+- Russion GUI translation added. (Chapay Sergey)
+- Hungarian translation add (Csaba Zakarias)
+- TFTP and netconsole support added. (Vassilis Virvilis)
+- rdesktop added. (Vassilis Virvilis)
+- svnserve added. (Vassilis Virvilis)
+- SMTPS added. (Vassilis Virvilis)
+- Port reference tab added (Ray Lambert)
+
+* August 13th 2005 Simon Edwards <simon@simonzone.com>
+- 2.5.0 release. Development release.
+- Spanish translation added (Antonio Diaz)
+- Spanish translation of the manual added. (Antonio Diaz)
+- Czech translation added (Tomas N?mec)
+  [sorry for mangling your name Tom]
+- 'Splitter' added to the protocols tab (Davy Gigan).
+- ICQ danger level set to high.
+- ICQ limited to a much smaller and much safe range of TCP ports (3900-3999).
+
+* December 16th 2004 Simon Edwards <simon@simonzone.com>
+- 2.4.0 release. Stable version.
+- Danish translation updated. (Gunner Poulsen)
+- Fix for XDCMP, it wasn't bi-directional. (Josef Urban)
+- Italian protocoldb translation updated. (Costantino)
+
+* August 1st 2004 Simon Edwards <simon@simonzone.com>
+- 2.3.2 release. Development release.
+- Added Microsoft Media Server protocol (typically used by Windows Media
+  player).
+- Fixed a bug in the disable firewall script.
+- Fix for NTP.
+
+* March 7th 2004 Simon Edwards <simon@simonzone.com>
+
+- 2.3.1 release. Development release.
+- Added Jabber over SSL.
+- Added PGP key server.
+- Patch for kernel 2.6 (Paul Cupis)
+- Italian translation update (Costantino).
+- Danish translation update (Gunner Poulsen).
+- Dutch translation update (Rinse de Vries)
+
+* January  3rd 2004 Simon Edwards <simon@simonzone.com>
+
+- 2.3.0 release. Development release.
+- Bittorrent added. (thanks to Steve Horsley)
+- Italian translation updated (Ceoldo Costantino)
+- Spello fixed (thanks J. Wren Hunt)
+- rsync, distcc, gkrellm protocols added (thanks to Roger Luethi)
+- User defined protocols now support port ranges (patch from Per Agerb�)
+
+* August 26th 2003 Simon Edwards <simon@simonzone.com>
+
+- 2.2.0 release. Stable version.
+- Danish translation updated. (thanks Gunner Poulsen)
+
+* August 17th 2003 Simon Edwards <simon@simonzone.com>
+
+- 2.1.8 release.
+- Translations updated.
+
+* August 11th 2003 Simon Edwards <simon@simonzone.com>
+
+- 2.1.7 release.
+- Now recongnises and supports 2.6 kernels. (thanks Roger Luethi for the tip)
+- A updates to the build system for Debian from Paul Cupis.
+- French translation, GUI + protocol info by Pascal Billery Schneider.
+- Italian translation, GUI + protocol info by Ceoldo Costantino.
+- i18n'ised some last remaining strings.
+
+* July 23rd 2003 Simon Edwards <simon@simonzone.com>
+
+- 2.1.6 release.
+- Some spelling/grammar fixes to the manual from Onno Benschop.
+- Patch from Glen Ditchfield. Guarddog now compiles on KDE 2 again.
+- Added some DE translations from Ralf Hempel and Dominik Stadler.
+
+* June 28th 2003 Simon Edwards <simon@simonzone.com>
+
+- 2.1.5 release.
+- Small GUI fixes.
+- The network protocol DB should be super-valid XML now. (thanks to
+  Glen Ditchfield)
+- Fix for pcAnywhere. (thanks to Ed)
+- Small XML parsing bug fixlet (thanks Glen Ditchfield)
+- Manual has been reviewed.
+
+* April 29th 2003 Simon Edwards <simon@simonzone.com>
+
+- 2.1.4 release.
+- Added Novell Netware 5/6 NCP File system protocols.
+- Added 'Time' protocol. (thanks to Glen Ditchfield).
+- When matching packets to zones. Guarddog now uses a simple "best fit"
+  algorithm. A packet address (eg 192.168.1.2) will match a zone containing
+  a more specific address (eg exactly 192.168.1.2) instead of matching
+  another zone containing a less specific address (eg 192.168.1.0/24).
+  (suggested by Jeff Snyder)
+- Fixed a bunch of bugs that could cause Guarddog to crash when dealing with
+  zone addresses using subnet masks.
+- A bunch of compiler warnings fixed. (patch from Glen Ditchfield)
+- Firewall scripts now sets LC_ALL when temporary changing language.
+
+* March 25th 2003 Simon Edwards <simon@simonzone.com>
+
+- 2.1.3 release.
+- Added resetfirewallrules.sh script which can be used to reset the linux
+  firewall subsystem from the command. (Almost the same as going to
+  Guarddog, ticking the Disable checkbox and clicking the Applying button.)
+- Added support for FreeDB and Elster (German Tax program). (thanks Martin
+  Ostertag)
+- Tweeked NFS again.
+- Tweeked IRC too for DCC.
+- Added support for Yahoo games. (thanks to  Dennis Warner)
+- Fixed a bug that caused Guarddog to produce broken scripts sometimes.
+  (thanks Japie for reporting this)
+- Added support for Legato NetWorker backups. (Thanks to Wilma for the URLs)
+  
+* March 2nd 2003 Simon Edwards <simon@simonzone.com>
+
+- 2.1.2 release.
+- Firewall script uses LANG=US instead of LANG=C. (thanks Peter Kesch)
+- Fixed broken XML in the protocol DB. (thanks Bruce Halco)
+- Added eDonkey2000 protocol support. (thanks to Japie for the URLs)
+- Added EverQuest support. (thanks to Ronald Fenner for the URL).
+- Added ICP protocol support. (Attn: Squid users, thanks to Yannick Le
+  Saint)
+- Added port 8888 to HTTP as another alternate port.
+- Now detects if IPSEC is being used and makes sure the kernel rp_filter
+  is correctly set for each network interface. (thanks to Peter Kesch for
+  help)
+
+* February 15th 2003 Simon Edwards <simon@simonzone.com>
+
+- 2.1.1 release.
+- Small fix for NFS and mountd.
+- Added Dutch translation contributed by Rinse de Vries.
+- Bug fix for the PC Anywhere support by Paul Cupis.
+- Privoxy support added. Thanks Maciej Plewa.
+
+* October 20th 2002 Simon Edwards <simon@simonzone.com>
+
+- 2.1.0 release.
+- AIM, Fasttrack, Kazaa, iMesh, Grokster, Blubster, Direct Connect, WinMX
+  and Yahoo! Messenger protocols added to the DB. Contributed by Maciej
+  Plewa.
+- It is now possible to sepecify multiple DHCP interfaces. (comma separated).
+- AH and ESP protocols to the DB. Contributed by Jarl Stefansson.
+- Added Jabber and EsounD protocol support.
+- Increased the IRC server ports from 6667 to 6660-6669. (Thanks Maciej
+  Plewa).
+
+* July 9th 2002 Simon Edwards <simon@simonzone.com>
+
+- 2.0.0 release.
+- Fixed a small bug that was stopping Guarddog from compiling on Qt2.
+- Fixed a small bug in the kernel detection scipt/code. (Reported and
+  patched by Jess Thrysoee).
+- Reviewed and edited the manual.
+  
+* June 20th 2002 Simon Edwards <simon@simonzone.com>
+
+- 1.9.16 release.
+- Fixed a major bug in the output script code concerning the use of &>
+  redirection. This bug made most of the kernel tweaking code useless.
+  (Thanks to Martin Matti Raivio for finding that one.)
+- Fixed a bug in the SNMP support. (Thanks Michele Ferritto).
+- Fixed a bug that was stopping ICQ direct messages.
+- Fixed Yet Another SMB bug, affected network printers. (Thanks Jason
+  Buberel).
+- Bug fixes related to internationalisation and translation use in Guarddog.
+- Additions and updates to the manual.
+- Doing "Apply" and "Ok" now only tries to run the firewall script once.
+- Added Italian translation of the program strings from Daniele Medri.
+- Added Germany translation of the program strings and protocol text from
+  Stephan Johach.
+- Fixed a crash bug related to the import functionality.
+  
+* April 28th 2002 Simon Edwards <simon@simonzone.com> 
+
+- 1.9.15 release
+- Changed the 'Apply' button behaviour a little. 'Apply'->'Cancel'->'Keep
+  settings' is now permanent, unlike before. The previous behaviour was
+  a little unexpected.
+- Added Danish translation file from Gunner Poulsen.
+- Added CVS-server, DICT support.
+- It should now compile ok on KDE 2 and 3. (With KDE 3 you may have to
+  specify to configure --enable-mt and --with-qt-dir=... )
+
+* April 1st 2002 Simon Edwards <simon@simonzone.com>
+
+- 1.9.14 release
+- Now correctly detects which filter system is being using on 2.5 kernels.
+- Moved NNTP to the Mail section.
+- Small fix to Windows Networking (NETBIOS).
+- Added Kerberos, klogin, kshell, NIS, IMAPS, POP3S, ISAKMP.
+
+* March 8th 2002 Simon Edwards <simon@simonzone.com>
+
+- 1.9.13 release
+- Something happened when I made the last tar ball which corrupted
+  the networkprotocoldb.xml file by one character. (honest!) I'm
+  rereleasing 1.9.12 basically with this new version name to avoid
+  confusion.
+
+* March 7th 2002 Simon Edwards <simon@simonzone.com>
+
+- 1.9.12 release
+- Should work ok with recent autoconf versions now, and will probably
+  work on KDE3 too. (Thanks to Carsten Pfeiffer)
+- No longer requires that packets creating a NEW tracked connection have
+  thier SYN bit set. It can now pick up previously dropped (tracked)
+  connections. (Blocking !SYN was causing too many log entries and a bit of
+  trouble elsewhere).
+- Added CDDB, MSN Messenger, VNC and PPTP support.
+
+* Feburary 20th 2002 Simon Edwards <simon@simonzone.com>
+
+- 1.9.11 release
+- Bugfix: Now doesn't try to enforce the Strong ES model. Linux 2.2 and 2.4
+  as it turns out, use the weak model.
+- Fixed a nasty flaw in the way UDP reply packets were handled.
+  (Thanks to Sander Plomp for noticing this).
+- Added control over TCP timestamps usage (defaults to off).
+- Windows Networking (NETBIOS) fixes.
+- Small SSH fix.
+- Added support for Telstra's BigPond Cable authentication/heartbeat.
+- Changed the GUI layout on the Protocol tab. Hopefully it's clearer now.
+- Additions to the manual.
+
+* January 17th 2002 Simon Edwards <simon@simonzone.com>
+
+- 1.9.10 release.
+- A "Restore to factory defaults" button.
+- Small changes to some of the text strings in the GUI.
+- Explicitly requests /bin/bash when running the scripts from the GUI.
+- Additions and improvements to the manual.
+
+* December 20th 2001 Simon Edwards <simon@simonzone.com>
+
+- 1.9.9 release.
+- Fixed a small bug in the DHCP rules. (It was blocking lease refreshes on
+  Win).
+- Fixed ipchains support, looks like it's been broken for a while.
+- Resetting the network subsystem now handles ipchains or iptables in
+  /usr/sbin/ too.
+- Added AudioGalaxy and DirectPlay (most Microsoft games), Halflife support.
+- Fixed a tiny crash bug in the case where the protocol DB file can't be
+  found.
+- Made the source port usage info in the protocol DB tighter.
+- Looks for ipchains/iptables in /usr/local/sbin too.
+
+* November 29th 2001 Simon Edwards <simon@simonzone.com>
+
+- 1.9.8 release.
+- Added proper multi-language support to the protocol DB.
+- Fixed a nasty bug in the generated firewall scripts that could cause
+  the machine to appear to hang at boottime.
+- Fix a small design bug concerning the user defined protocols. (Accepts
+  any source port now, instead of just ones in the dynamic range).
+- Guarddog now looks for ipchains or iptables in /usr/sbin/.
+  
+* November 19th 2001 Simon Edwards <simon@simonzone.com>
+
+- 1.9.7 release.
+- The README file has been updated. Please read it.
+- Firewall script now returns a proper exit code.
+- Fixed Diablo II protocol entry. (I hope)
+- Added Microsoft's "SMB over TCP" protocol to the DB.
+- Added XDMCP to the DB.
+- The iptables part now only accepts NEW state tracking entries that are SYN
+  packets.
+- Fixed a buglet where clicking 'Ok' is the firewall disabled didn't exit the
+  program after reseting the network subsystem.
+- Added DHCP support to the "Advanced" tab. (Thanks to Ludovic Lange for the
+  patch).
+- Added "Log Aborted TCP connections" option. This can detect half-open
+  stealth scans. (Now every nmap scan type can be logged).
+- Specifies the log level to iptables as a number. (iptables>=1.2.3 wants a
+  number)
+- Scripts now explictly use bash instead of just plain sh. (bash is the
+  official standard linux shell anyway).
+- Fixed NFS support.
+- Scripts now explicitly use gawk(1) instead of just plain awk(1).
+- Fixed a problem that would stop the firewall script from working properly
+  for people who use a language setting other than English. (thanks to
+  Ludovic Lange detecting submitting a patch for this).
+
+* September 28th 2001 Simon Edwards <simon@simonzone.com>
+
+- 1.9.6 release.
+- Fixed a bug that would cause Guarddog to crash if you pressed ctrl+u while
+  editing an address.
+- Removed use of ++ in the firewall script.
+- Added the netbios port 138 stuff to the DB and rolled all the netbios
+  entries into just one entry: Windows Networking.
+- Renamed "Authentication" in the DB to the more accurate "ident/auth".
+- Added LDAP, LDAP-SLL, SWAT, Diablo II, IPP and Nessus to the DB.
+- Should handle broadcast packets better. (Your logs should not fill up with
+  netbios/smb broadcasts).
+- Firewall script doesn't make as many assumptions about which directories
+  the unix tools live in.
+
+* August 29th 2001 Simon Edwards <simon@simonzone.com>
+
+- 1.9.5 release.
+- Small clean ups.
+- The "Advanced Protocol Help" now works.
+- Fixed a nasty bug in the definition for ICQ that leaving the firewall
+  wide open.
+- Fixed the annoying "[: -eq: unary operator expected" buglet that some
+  people were seeing.
+- Fixed to work when virtual interfaces are defined.
+- Now handles NIC broadcast addresses properly.
+- Added code to enforce the Strong ES model (RFC 1122 section 3.3.4.2).
+- Now correctly avoids trying to use DNS when there are no decent NICs
+  available. (This was causing slow reboots with iptables complaining when
+  it could not resolve host names).
+- Added the ability to Import/Export the firewall script to the Advanced tab.
+  It also has a "Description" text box for the benefit of people who want to
+  juggle firewalls for several machines.
+- Since adding Import/Export of firewall scripts, it has become meaningful to
+  run Guarddog as a non-root user to create scripts to be used elsewhere.
+  It is now possible to run Guarddog as a mere mortal with reduced
+  functionality.
+- Reformatted the changelog.
+
+* August 12th 2001 Simon Edwards <simon@simonzone.com>
+
+- 1.9.4 release.
+- No long uses the konsole to run the firewall script in. Guarddog now has
+  it's own window that it can run the firewall and other scripts in.
+- When run, the firewall script was says what it is doing. Much friendlier.
+- Gnutella and NetMeeting support added.
+- Fixed a small bug that sometimes caused the same modprobe command to
+  output multiple times.
+- Fixed a bug that was causing configuration to get scrambled when read in.
+
+* July 9th 2001 Simon Edwards <simon@simonzone.com>
+
+- 1.9.3 release.
+- Fixed a crash if you click to the right of the checkboxes on
+  the protocol page.
+- Fixed a bug that would cause Guarddog to fail to read the existing
+  firewall if it doesn't contain at least one user defined zone.
+- Add 'Connections' list which allows the user to select which zones the
+  current zone should be connected to.
+- Rearranged the GUI somewhat. It's now much better layed out and sports
+  icons and symbolic hints in places.
+- Added builtin help box on the protocol panel. Shows information and help
+  about a given protocol.
+- Also replaced a lot of input boxes in the GUI with spinboxes.
+
+* June 14th 2001 Simon Edwards <simon@simonzone.com>
+
+- 1.9.2 release.
+- Netfilter/iptables is now supported. The generated firewalls
+  use either ipchains or iptables automatically at run time. It also uses
+  iptables state tracking modules to handle annoying things like FTP. This
+  provides a *much* tighter firewall than old ipchains.
+- Advanced logging also part of the new iptables support, including rate
+  limited logging and even log messages to warn when rate limiting is in
+  effect. Reflected in the GUI is a whole new tab pane dedicated to logging.
+- The address lists now happily accept domain names instead of just IP
+  addresses.
+- Also fixed a nasty bug in the ipchains firewall that was causing the wrong
+  zone policies to be applied to packets. We don't call these a development
+  versions for nothing folks!
+
+* May 9th 2001 Simon Edwards <simon@simonzone.com>
+
+- 1.9.1 release.
+- Protocols can now be set to either Deny/Accept and now also Reject.
+- It is now possible to specify user defined protocols. i.e. open/close
+  specific ports.
+- 'printer', 'syslog' and 'ntp' have now been added to the network protocol
+  database.
+
+* April 14th 2001 Simon Edwards <simon@simonzone.com>
+
+- 1.9.0 release.
+- The first developer release aiming at version 2.0. The 1.9.0 and higher
+  code is a rewrite and redesign.  Significant changes are the use of XML
+  to store a database of information about network protocols. The work
+  and code is also shared with Watchdog. I intend to fully document the XML
+  format I've designed in the hope that others will find it useful and
+  support it.
+- Guarddog now has the concept of 'zones' which allow you to place different
+  hosts and networks into groups which can then have different firewall
+  policies.
+- Router configurations are a target for 2.0, but this development version
+  still doesn't support them, yet.
+
+* January 17th 2001 Simon Edwards <simon@simonzone.com>
+
+- 1.0.0 release, finally.
+- No real changes except for updates and additions to the documentation.
+
+* December 22th 2000 Simon Edwards <simon@simonzone.com>
+
+- 0.9.5 release.
+- Generated firewalls now setup the kernel networking protection.
+- Generated firewalls are now tighter, only opening the Local Port range
+  instead of all non-privileged ports where appropriate.
+- Added option to always Reject Auth requests. (This can speed up POP
+  connections).
+
+* November 30th 2000 Simon Edwards <simon@simonzone.com>
+
+- 0.9.4 release.
+- Small fix for ISDN users. (Thanks to Joerg Buchland).
+
+* November 22th 2000 Simon Edwards <simon@simonzone.com>
+
+- 0.9.3 release.
+- Now requires KDE 2. Most of the GUI code has been rewritten for KDE 2.
+- GUI has also been cleaned up somewhat.
+- It also attempts to automatically identify which interface is being used
+  to access the net. (Thanks to J. F. Gratton).
+- Added an option to completely disable the firewall.
+
+* September 2nd 2000 Simon Edwards <simon@simonzone.com>
+
+- 0.9.2 release.
+- RealPlayer support added.
+- Small changes to the GUI to fix a few layout problems. Still not perfect,
+  but much better.
+- Manual is much more complete now. Now has a tutorial and FAQ section.
+
+* June 11th 2000 Simon Edwards <simon@simonzone.com>
+
+- 0.9.1 release.
+- Packaged with RPM for Mandrake 7.1 (should also work with
+  Redhat).
+- Some display glitch fixes, still more remain, grrr.
+- Should now be able to find the protocol database file ok. Sorry to those
+  people who tried to get it to run from source and failed.
+- Uses sane defaults for checkboxes in new firewalls.
+
+* June 2nd 2000 Simon Edwards <simon@simonzone.com>
+
+- 0.9 Initial developer release.

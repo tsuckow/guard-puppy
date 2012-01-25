@@ -1,0 +1,1830 @@
+<?xml version="1.0" ?>
+<!DOCTYPE book PUBLIC  "-//KDE//DTD DocBook XML V4.1-Based Variant V1.0//EN" "dtd/kdex.dtd" [
+  <!ENTITY kappname "Guarddog">
+  <!ENTITY % addindex "IGNORE">
+  <!ENTITY % English "INCLUDE">
+
+  <!-- Do not define any other entities; instead, use the entities
+       from kde-genent.entities and $LANG/user.entities. -->
+]>
+<!-- kdoctemplate v0.8 October 1 1999 
+     Minor update to "Credits and Licenses" section on August 24, 2000
+     Removed "Revision history" section on 22 January 2001   -->
+
+<!-- ................................................................ -->
+<!-- The language must NOT be changed here. -->
+
+<book lang="&language;">
+
+<!-- This header contains all of the meta-information for the document such
+as Authors, publish date, the abstract, and Keywords -->
+
+<bookinfo>
+<title>The &kappname; Handbook</title>
+
+<authorgroup>
+<author>
+<firstname>Simon</firstname>
+<surname>Edwards</surname>
+<affiliation>
+<address><email>simon@simonzone.com</email></address>
+</affiliation>
+</author>
+</authorgroup>
+
+<copyright>
+<year>2000</year>
+<year>2001</year>
+<year>2002</year>
+<year>2003</year>
+<year>2004</year>
+<holder>Simon Edwards</holder>
+</copyright>
+<!-- Translators: put here the copyright notice of the translation -->
+<!-- Put here the FDL notice.  Read the explanation in fdl-notice.docbook 
+     and in the FDL itself on how to use it. -->
+<legalnotice>&FDLNotice;</legalnotice>
+
+<date>12/12/2004</date>
+<releaseinfo>2.4.0</releaseinfo>
+
+<abstract>
+<para>
+&kappname; is user friendly firewall utility for KDE running on Linux. The
+best way to get started is to read the short tutorials starting with
+the first one.
+</para>
+</abstract>
+
+<keywordset>
+<keyword>KDE</keyword>
+<keyword>&kappname;</keyword>
+<keyword>firewall</keyword>
+<keyword>linux</keyword>
+<keyword>ipchains</keyword>
+<keyword>iptables</keyword>
+</keywordset>
+
+</bookinfo>
+
+<chapter id="introduction">
+<title>Introduction</title>
+
+<para>
+&kappname; is a user friendly firewall generation and management utility for KDE
+running on Linux. It allows you to simply specify which network protocols should
+be allowed between which groups of computers without requiring you to have
+knowledge of port numbers or packets. &kappname; is built on top of Linux's
+<command>ipchains</command> and <command>iptables</command> packet
+filtering commands.
+</para>
+
+<sect1 id="introduction-what">
+<title>What is a firewall and why do I need one?</title>
+
+<para>
+A firewall is a software and/or hardware tool for defending a computer or
+network of computers, from attacks via the network performed by malicious or
+curious computer users. It protects by restricting what hostile
+computers are permitted to do to the protected computers.
+It does this by filtering and blocking the network communication between the
+protected computers and the Internet at large.
+</para>
+
+<para>
+With the arrival of fast, permanent, 24 hour/7 day, internet connections for
+home users, your computer is now exposed to constant attacks from anywhere in
+the world. You may ask yourself "why would anyone want to break into my
+computer? I don't have anything important". Actually you do, even a home
+computer stores usernames and passwords for connecting to the internet,
+personal email, possibly financial information and perhaps even credit card
+information. Even without these things, your computer can be used as a
+stepping stone by malicious users (often called 'crackers') to attack other
+computers. The worst part of this is that these further attacks will look
+like they are coming from you!
+</para>
+
+<para>
+For more introductory material about firewalls try the
+<ulink url="http://www.howstuffworks.com/firewall.htm">firewall</ulink> article
+over at <ulink url="http://www.howstuffworks.com/">How Stuff Works</ulink>.
+</para>
+</sect1>
+
+<sect1 id="introduction-silverbullet">
+<title>A Warning: No Silver Bullet Here</title>
+
+<para>I will now try to explain the nature of computer security and how a
+firewall fits into the picture. The majority of security holes are quite
+simply caused by bad software. Security holes are not created by 'hackers'
+or 'crackers'. They merely find and exploit already existing flaws in
+software. Security holes are usually just bugs or flaws in software itself
+that can be taken advantage of for malicious purposes.</para>
+
+<para>What a firewall does is try to put up a barrier with the bad guys on
+one side and your possibly vulnerable software and services on the other.
+It tries to stop attackers from gaining any kind of access to servers
+and software running on machines behind the firewall. With no access,
+attackers shouldn't be able to leverage flaws in the software you are
+running. Unfortunately this approach of protection by disconnection only goes
+so far because the whole point of having a network is to allow computers
+on the network to communicate with each other.  Simply put, for the network
+to be useful you need to put 'holes' in the firewall to allow communication
+or access between the protected computers and the outside world.  A firewall
+offers no protection from accesses that occur via 'holes' in the firewall.
+For example, if you are operating a web server that can be accessed from the
+outside, then the firewall will do nothing to protect you from attacks
+aimed at your webserver.</para>
+
+<para>A firewall should be just a part of your approach to security, and not
+the whole thing. Here is a quick list of effective tips to greatly increase
+the system's security.  This advice will also apply to other computer systems
+too:</para>
+
+<itemizedlist>
+
+<listitem><para>Number one. Make sure you get and install security fixes for
+the software you are using on your computer systems.  The best way to stop
+attackers from exploiting flaws in the software you use, is to remove the
+flaws.  Go to the website for the Linux distribution you are using and go to
+the security section or updates section regularly to see if security
+updates, patches, or bug fixes are available. Most modern Linux distributions
+these days also include tools for automatically checking for software updates.
+Learn about and use these tools.
+</para></listitem>
+
+<listitem><para>Don't install software that you don't need or use. This is
+especially true for network oriented software like servers and network
+client software. Most Linux distributions install an incrediable amount
+software by default. Most of it you won't need. Make sure you uninstall
+any unneeded software after installing a new Linux system. Another strategy
+is at install time to choose a 'minimumal' install if your distribution
+offers that choice, and then after the installation install any additional
+software that you may need.
+</para></listitem>
+
+<listitem><para>The maker of the Linux distribution that you are using will
+have a security announcement mailing list. Find it on thier web site and join
+it to hear about security fixes as soon as they become available.</para></listitem>
+
+<listitem><para>If a piece of software you are using has a bad security
+record and is still having security problems found in it, seriously consider
+changing to a better, safer alternative.</para></listitem>
+</itemizedlist>
+
+<para>If you follow these tips, even without a firewall, your systems be about
+one hundred times more secure.</para>
+
+</sect1>
+
+<sect1 id="introduction-why">
+<title>Why use &kappname;</title>
+<itemizedlist>
+<listitem><para>Easy to use goal oriented user interface. You say what the
+firewall should do without having to explain all the details of how it should
+do it.</para></listitem>
+
+<listitem><para>
+Application protocol based. Unlike other tools, &kappname; does not require
+you to understand the ins and outs of IP packets and ports. &kappname; takes
+care of this for you. This also reduces the chances of configuration
+mistakes being made which are a prime source of security holes in computer
+systems.
+</para></listitem>
+
+<listitem><para>
+Doesn't just generate an initial firewall and forgets it. &kappname; is used
+to maintain and modify the firewall in place.
+</para></listitem>
+
+<listitem><para>
+Can be used in workstation and router configurations.
+</para></listitem>
+
+<listitem><para>
+Allows you to divide your network into groups of machines and control
+what network protocols are allowed between them.
+</para></listitem>
+
+<listitem><para>
+Works on the older Linux kernel 2.2 series <command>ipchains</command>
+firewall subsystem, and also on newer Linux kernel 2.4 netfilter/
+<command>iptables</command> firewall subsystem.
+</para></listitem>
+
+<listitem><para>
+Takes advantage of advanced Linux kernel 2.4 features such as connection
+tracking and rate limited logging.
+</para></listitem>
+
+<listitem><para>
+Licensed under the terms of the GPL. Is Free and will remain Free.
+</para></listitem>
+
+</itemizedlist>
+</sect1>
+</chapter>
+
+<chapter id="using-guarddog">
+<title>Using &kappname;</title>
+<para>
+</para>
+
+<sect1 id="tutorial-basic">
+<title>Tutorial: Basic Configuration</title>
+<para>
+In this tutorial I will explain some basic networking concepts and how to
+quickly setup &kappname; to protect a single workstation.
+</para>
+<sect2>
+<title>Starting &kappname;</title>
+<para>
+First start up &kappname;. For recent Mandrake and Redhat systems there
+should be a &kappname; menu entry on the K menu under Configuration/Networking.
+You will then immediately be asked for the password for the 'root' user. 
+This is required because &kappname; needs administrator access in order to
+modify the computer's networking sub-system.
+</para>
+<para>
+Once &kappname; has opened it's window you will see that the user interface
+is divided across four tabs. For this tutorial we will ignore the the
+<guilabel>Zone</guilabel>, <guilabel>Logging</guilabel> and
+<guilabel>Advanced</guilabel> tabs and concentrate on the
+<guilabel>Protocol</guilabel> tab.
+</para>
+</sect2>
+
+<sect2>
+<title>Basic Networking Concepts</title>
+<para>
+(Skip this section if you understand network protocols and the
+"Client Server Model".)
+</para>
+
+<para>
+Now I must explain what a protocol is. Computer networks are all about
+computers talking to other computers. And just like when talking to other
+person in the real world, it helps if you both agree to speak the same
+language, be it English, Dutch or Sign Language. The same thing applies
+to computers on networks. They need to agree on what language they are going
+to speak when talking to another computer. These 'languages' are know as network
+protocols.  An important difference between human languages and network
+protocols is that protocols are usually only intended for one particular task,
+like moving files (for example, FTP, the File Transfer Protocol), fetching web
+pages (for example, HTTP, the HyperText Transmission Protocol) or chatting
+with other computer users (for example, IRC, Internet Relay Chat).
+</para>
+
+<para>
+Attacks against computer systems across a network are performed by using
+and abusing protocols and the software that implements them. All too often
+the software implementing a protocol contains flaws that can be
+exploited by malicious people to gain access to a system, or to disrupt it.
+</para>
+
+<para>
+One more important concept to understand about network protocols is the
+"Client Server Model". All network protocols involve at least two different
+parties communicating. Although each party is using the same protocol,
+quite often they will have different roles to play in that protocol. The most
+common model is where one party acts as a "client" while the other acts as a
+"server" who responds to requests from the "client". A very close analogy
+in the real world would be buying fries down at the local fast food
+restaurant. You and the person behind the counter would both be using English
+as the communication protocol, but in this situation you both have different
+roles. You would have the role of "client" while the person serving you would
+be acting as the "server", basically doing what the "client" requests. HTTP,
+the protocol used on the World Wide Web uses a the "Client Server Model".
+Your web browser acts as the client while the big web server at Slashdot or
+CNN acts as the server, delivering pages back to your browser when it asks for
+them.
+</para>
+</sect2>
+
+<sect2>
+<title>Permitting DNS</title>
+<para>
+(Skip the next paragraph is you know what DNS is.)
+</para>
+<para>
+The <guilabel>Protocol</guilabel> tab is where you specify which protocols
+may be used between your computer and the internet. The "Domain Name System"
+protocol, commonly known as DNS, is a very important protocol. All machines
+on the internet have what is known as an IP address, which is just a number.
+You may have seen some before. They are often written as a "dotted quad" like
+"195.231.34.5" for example. An IP address is sort of like a telephone number,
+except that it's for identifying computers on the internet and not
+telephones. One problem with using IP addresses to identify machines is that
+it's not very human friendly. This is why "Domain Names" were invented. A
+"Domain Name" is just a human friendly name for a machine. Some examples of
+domain names are www.simonzone.com, www.cnn.com and dot.kde.org. But to use
+the internet your computer needs IP addresses, and not "domain names".
+This is where DNS comes in. It bridges the gap between "Domain Names" and IP
+addresses. It is a system for turning human friendly names like www.simonzone.com
+into computer friendly IP addresses. Machines on the internet known as DNS
+Servers do nothing except answer queries from other machines wanting to know
+what IP address matches which domain name. Much like how a telephone directory
+matches people's names and address to telephone numbers. By using a DNS server
+your computer knows what you are talking about when you ask for
+www.slashdot.org. Without DNS your web browser won't know where to find
+www.cnn.com, and ICQ chat client won't be able to find the chat network at
+icq.com either. Without DNS most other protocols don't work.
+</para>
+
+<para>
+Lets go through the steps involved for permitting our computer to use the DNS
+protocol to communicate with DNS servers on the internet.
+</para>
+
+<itemizedlist>
+<listitem><para>
+Go to the <guilabel>Protocol</guilabel> tab.
+</para></listitem>
+<listitem><para>
+First make sure that <guilabel>Internet</guilabel> is selected in the 
+<guilabel>Defined Network Zones:</guilabel> list. (It's at the top left
+corner in the window.) The list should have two entries,
+<guilabel>Internet</guilabel> and <guilabel>Local</guilabel>.
+</para></listitem>
+<listitem><para>
+Open the <guilabel>Network</guilabel> part of the list view control in the
+center of the window.
+It should expand to show more options and check boxes with entries like
+<guilabel>ICMP Redirect</guilabel> and <guilabel>DNS - Domain Name Server
+</guilabel> for example.
+</para></listitem>
+<listitem><para>
+To the right of the protocol list is a black box in the
+<guilabel>Local</guilabel> column. The box is a check box. Click on it until it shows
+a check mark (tick). The box has three states, unchecked, checked and crossed.
+Just repetitively click on it to cycle through the states.
+</para></listitem>
+</itemizedlist>
+
+<para>
+Done. That is all you need to do to grant your machine permission to access
+DNS servers on the Internet. Your screen should look like the picture below.
+</para>
+<para>
+<screenshot>
+<screeninfo>Reading the protocol tab</screeninfo>
+	<mediaobject>
+	  <imageobject>
+	    <imagedata fileref="guarddog2_protocol.png" format="PNG"/>
+	  </imageobject>
+	  <textobject>
+	    <phrase>Reading the protocol tab</phrase>
+	  </textobject>
+	</mediaobject>
+</screenshot>
+</para>
+<para>
+This illustration also summarises how to read all of the information presented
+on the <guilabel>Protocol</guilabel> tab. There is a lot of information
+packed into this one tab, but it is vital that you understand what it means
+so that you can avoid misconfiguration.
+</para>
+</sect2>
+
+<sect2>
+<title>Protocol Organisation</title>
+
+<para>
+Once we have DNS permitted we can move on to permitting other common protocols
+that we might want to use.
+</para>
+
+<para>
+&kappname; supports many different network protocols. They are organised into
+categories to make it easier to find what you want. The different categories are:
+</para>
+
+<itemizedlist>
+<listitem><para>
+<guilabel>Chat</guilabel> - Protocols used by chat programs like IRC and ICQ.
+</para></listitem>
+<listitem><para>
+<guilabel>Data Serve</guilabel> - Protocols used by databases and other data sources like time
+servers for example.
+</para></listitem>
+<listitem><para>
+<guilabel>File Transfer</guilabel> - Protocols used to transfers files. HTTP
+for the Web and FTP are very good examples.
+</para></listitem>
+<listitem><para>
+<guilabel>Game</guilabel> - Protocols used by games for online multiplayer gaming.
+</para></listitem>
+<listitem><para>
+<guilabel>Interactive Session</guilabel> - Protocols used for working on or
+performing actions on a remote system. SSH Secure Shell, telnet and also RPC
+protocols are here.
+</para></listitem>
+<listitem><para>
+<guilabel>Mail</guilabel> - Protocols associated with delivering and moving
+email. SMTP and POP3 are under here.
+</para></listitem>
+<listitem><para>
+<guilabel>Media</guilabel> - Protocols used for delivering multimedia
+across the internet.
+</para></listitem>
+<listitem><para>
+<guilabel>Miscellaneous</guilabel> - Other protocols that really didn't fit
+under the other categories.
+</para></listitem>
+<listitem><para>
+<guilabel>Network</guilabel> - Protocols related to the operation of the
+network itself.
+</para></listitem>
+<listitem><para>
+<guilabel>User Defined</guilabel> - Protocols defined by the user on the
+<guilabel>Advanced</guilabel> tab appear here.
+</para></listitem>
+</itemizedlist>
+
+<para>
+Naturally there is some overlap and some protocols could easily be
+placed under a different category than the end they are currently in.
+</para>
+
+<tip><para>
+Click on the name of a protocol to quickly get information about it. A
+description of the protocol will appear in the area in the lower left corner
+ of the window.
+</para></tip>
+
+</sect2>
+
+<sect2>
+<title>Permitting Common Protocols</title>
+
+<para>
+Here is a quick list of the most common protocols that you will probably
+want to permit.
+</para>
+
+<itemizedlist>
+<listitem><para>
+HTTP - Used on the World Wide Web to move web pages around. If you want to
+browse the web you will need this. It's in the <guilabel>File Transfer</guilabel>
+category.
+</para></listitem>
+<listitem><para>
+FTP - File Transfer Protocol. Used for uploading and downloading files. Also
+commonly used on the web too. If you have seen something like "ftp://" in the
+location bar on your web browser, then you have used FTP. FTP is in the
+<guilabel>File Transfer</guilabel> category.
+</para></listitem>
+<listitem><para>
+SMTP - Simple Mail Transport Protocol. Used for sending email around the
+internet. It's in the <guilabel>Mail</guilabel> category.
+</para></listitem>
+<listitem><para>
+POP3 - Post Office Protocol version 3. Commonly used for picking up and
+downloading email from a mailbox located at an ISP. It's in the
+<guilabel>Mail</guilabel> category.
+</para></listitem>
+</itemizedlist>
+
+<warning><para>
+Resist any temptation to permit all protocols. The more protocols you permit
+the weaker your firewall will be. The idea is to only permit the protocols
+you really need, and no more. Don't permit something just in case you might
+need it in the future. If you need to permit another protocol in the future
+then you can just come back to &kappname; and turn it on.
+</para></warning>
+</sect2>
+
+<sect2>
+<title>Applying your new Firewall</title>
+<para>
+Changes made in &kappname; don't take effect immediately. To activate your
+changes you need to press the <guibutton>Apply</guibutton> button or the
+<guibutton>OK</guibutton> button. The <guibutton>Ok</guibutton> button will
+also quit the &kappname; once the firewall is in place. &kappname; will then
+set up the networking subsystem on your machine with your new firewall
+rules. Once you click on the <guibutton>Ok</guibutton> or
+<guibutton>Apply</guibutton> button a warning message 
+appears to warn you that changing the system's firewall may disrupt existing
+network connections. Generally it is not a good idea to be doing anything
+important on your network, like an FTP download for example, when you
+<guibutton>Apply</guibutton> the firewall. After you click on the warning's
+<guibutton>OK</guibutton> button another popup window will appear, showing
+the firewall setup progress. If any errors occurred while setting up the 
+firewall, they will be shown in the popup. Click on the
+<guibutton>OK</guibutton> button to exit the popup window.
+</para>
+
+<para>
+Done! Your new firewall should now be in place and working. From now on
+whenever your system starts it will automatically be set up to use your
+firewall. &kappname; does not have to be constantly running to protect
+your computer. As your firewalling needs evolve you can just run &kappname;
+again and modify the configuration.
+</para>
+
+<tip><para>
+To see if your firewall is doing its job you can put it too a bit of a test.
+Go over to <ulink url="http://grc.com/">Gibson Research Corporation</ulink> and
+head towards the "Shields Up!" area and ask it to "Test My Shields!" or "Probe
+My Ports!". It will then scan your machine and give you a report on what it
+found. Hopefully it should give you a very positive report.
+</para>
+</tip>
+</sect2>
+</sect1>
+
+<sect1 id="tutorial-zones">
+<title>Tutorial: Using Zones</title>
+<para>
+In this tutorial we will build on what we have learnt in the first tutorial
+and introduce the concept of <guilabel>Zones</guilabel>.
+<guilabel>Zones</guilabel> allow you to precisely control which protocols
+are permitted between different groups of computers.
+</para>
+
+<sect2>
+<title>Introducing Zones</title>
+<para>
+In &kappname; a zone is just a bunch of IP addresses.
+You may recall that IP addresses are like telephone numbers for machines
+on the internet.  A zone more or less specifies a group of computers.
+Once a zone has been created we can use the <guilabel>Protocol</guilabel>
+tab to specify which protocols computers in the zone may use.
+</para>
+
+<para>
+For example. If we know that the people at evil.com are evil and can not be
+trusted, then we can restrict thier access to our computer by using zones.
+First we create a zone called "Bad Guys" and place evil.com in it. Next we
+go to the <guilabel>Protocol</guilabel> tab and make sure that no
+protocols are selected between the "Bad Guys" zone and the "Local" zone. (The
+<guilabel>Local</guilabel> zone represents the local machine). This
+way we can limit, or even completely block evil.com's access to our computer.
+</para>
+
+<para>
+<screenshot>
+<screeninfo>Placing the Bad Guys in a zone and firewalling them out</screeninfo>
+	<mediaobject>
+	  <imageobject>
+	    <imagedata fileref="guarddog2_zonedia.png" format="PNG"/>
+	  </imageobject>
+	  <textobject>
+	    <phrase>Placing the Bad Guys in a zone and firewalling them out.</phrase>
+	  </textobject>
+	</mediaobject>
+</screenshot>
+</para>
+
+</sect2>
+
+<sect2>
+<title>Editing Zones</title>
+<para>
+Zones are specified and edited on the <guilabel>Zone</guilabel> tab.
+To the left of the <guilabel>Zone</guilabel> tab is the list of
+defined zones.
+&kappname; has two builtin zones that you can't change. They are
+<guilabel>Local</guilabel> and <guilabel>Internet</guilabel>.
+<guilabel>Local</guilabel> is a zone simply containing the local machine;
+the machine that &kappname; is running on. <guilabel>Internet</guilabel>
+corresponds to any IP address that's not in another zone. Put simply, if a
+IP address is not in another zone it is assumed to be in the
+<guilabel>Internet</guilabel> zone.
+</para>
+<para>
+The information about the currently selected zone are displayed to the right
+of the zone list. Each zone has a name which is used on the
+<guilabel>Protocol</guilabel> tab and therefore should be kept fairly short.
+A more descriptive comment can also be given to a zone.
+</para>
+<para>
+The list of IP addresses in a zone are shown in the
+<guilabel>Zone Addresses</guilabel> list.
+</para>
+
+<para>
+Zones that the currently selected zone may communicate with, are listed in the
+<guilabel>Connection</guilabel> list located on the right side of the window.
+</para>
+
+<para>
+<screenshot>
+<screeninfo>The Zone tab.</screeninfo>
+	<mediaobject>
+	  <imageobject>
+	    <imagedata fileref="guarddog2_zones.png" format="PNG"/>
+	  </imageobject>
+	  <textobject>
+	    <phrase>The Zone tab.</phrase>
+	  </textobject>
+	</mediaobject>
+</screenshot>
+</para>
+
+<warning><para>
+An IP address should only be in one zone at a time.
+</para></warning>
+</sect2>
+
+<sect2>
+<title>Creating a Demilitarised Zone</title>
+<para>
+Let's put zones to work.
+</para>
+<para>
+A good use of zones is to harden our firewall by setting up a "Demilitarised
+Zone" (DMZ). In network security a DMZ is a group of computers 
+located between the internet and an organisation's internal computer
+network. Computers in the DMZ are exposed to the internet and usually
+performing tasks like serving web pages to public or handling email.
+Since these machines are exposed to the internet and constant attack from
+outside, thier access to the internal network is restricted. The idea is that
+if an attacker gains control of a machine in the DMZ, they won't
+automatically gain higher access to the organisation's internal computer
+network.
+</para>
+
+<para>
+Even if you are not managing an internal network or a group of web or email
+servers, you probably do make use of a group of computers that could
+be considered to be in a DMZ. For this tutorial we will set up a DMZ
+containing the mail server you use for sending and receiving email.
+</para>
+
+<para>
+Go to the <guilabel>Zone</guilabel> tab and click on the <guibutton>New Zone</guibutton>
+button to create a new zone. The new zone will appear in the zone list
+and will be called <guilabel>new zone</guilabel>. Go up to the
+<guilabel>Name</guilabel> text box and change <guilabel>new zone</guilabel> to
+say "DMZ". The name should be fairly short, but you may put a longer, more
+descriptive comment in the <guilabel>Comment</guilabel> text box.
+</para>
+
+<para>
+On the right side of the window is the <guilabel>Connection</guilabel> list.
+It is just a group of check boxes that let you specify which other zones the
+currently selected zone is connected to. Put a tick in <guilabel>Local</guilabel>
+check box to indicate that the <guilabel>DMZ</guilabel> zone is connected to the
+<guilabel>Local</guilabel> zone.  The combination of <guilabel>DMZ</guilabel> and
+<guilabel>Local</guilabel> zone will only be available on the
+<guilabel>Protocol</guilabel> tab when this check box is ticked. &kappname;
+will block all communication between zones that are not connected to each
+other.
+</para>
+
+<para>
+Now move over to the <guilabel>Protocol</guilabel> tab and make sure that
+<guilabel>Protocols Served from Zone:</guilabel> is set to
+<guilabel>DMZ</guilabel>. In the protocol list below there is a
+column called <guilabel>Local</guilabel>.  Open up the
+<guilabel>Mail</guilabel> group of protocols and tick
+<guilabel>POP2</guilabel>, <guilabel>POP3</guilabel>, and
+<guilabel>SMTP</guilabel>. POP3 is used to fetch mail from a
+mail box on a mail server. While SMTP is used for sending outgoing mail. By
+turning these on for <guilabel>Local</guilabel> we are saying that we want 
+the local machine to be allowed to use these mail protocols with the machines
+in the <guilabel>DMZ</guilabel> zone.
+</para>
+
+<para>
+If the machines in your DMZ are also web servers you may also want to turn on
+HTTP, FTP and some other common protocols.
+</para>
+
+<para>
+Once you have finished configuring &kappname;, apply your changes with the
+<guibutton>Apply</guibutton> button and test your email program to see if you
+can still send and receive email.
+</para>
+
+</sect2>
+
+</sect1>
+
+<sect1 id="tutorial-router">
+<title>Tutorial: Router Configuration</title>
+<para>
+So far we have only used &kappname; to protect a single workstation (i.e. the
+computer &kappname; is running on), but as many people know a computer
+running Linux can also act as a fantastic router for connecting multiple
+networks. In this tutorial we will go through how &kappname; can be used on
+a gateway machine to protect a LAN from the internet.
+</para>
+
+<important><para>&kappname; only supports router configurations on machines
+running Linux kernel series 2.4 or later with <command>iptables</command>.
+</para></important>
+
+<sect2>
+<title>Anatomy of a typical LAN connected to the Internet</title>
+
+<para>
+<screenshot>
+<screeninfo>A typical router or gateway configuration with &kappname; running on the router machine.</screeninfo>
+	<mediaobject>
+	  <imageobject>
+	    <imagedata fileref="guarddog2_routerdia.png" format="PNG"/>
+	  </imageobject>
+	  <textobject>
+	    <phrase>A typical router configuration with &kappname; running on the router machine.</phrase>
+	  </textobject>
+	</mediaobject>
+</screenshot>
+</para>
+
+<para>
+The diagram above shows the network configuration of a typical LAN connected
+to the Internet via a Linux based system acting as a router.
+The LAN that we wish to protect is on the left side of the diagram. The
+internet is shown on the right side. All communication between the LAN
+and internet passes through the gateway machine which is marked by the dog.
+&kappname; runs on the gateway machine. The most important aspect of this
+setup from a security point of view is that all of the network traffic
+between the LAN and the internet passes through one machine: the gateway.
+This provides us with an obvious "choke point" that we can place the
+firewall on to filter the network traffic.
+</para>
+
+<para>
+The diagram also shows the zones that we will setup in &kappname;.
+</para>
+</sect2>
+
+<sect2>
+<title>"Repeat after me: &kappname; is a firewall"</title>
+<para>
+There seems to be a bit of confusion surrounding the function of a firewall
+versus the task of packet routing. Firewalls act as network traffic
+<emphasis>filters</emphasis>. Filtering and blocking unwanted and dangerous
+network traffic. They are security devices. Features such as routing and
+IP masquerade are not primarily security devices. They are advanced networking
+features.
+</para>
+
+<note>
+<para>
+This misconception arose because in the past on Linux, before kernel series 2.4,
+the networking sub-system was such that it wasn't possible to separate
+advanced routing functionality from normal firewall functionality. This lead
+to firewall programs that also included direct support for advanced routing
+features such as IP masquerade and port forwarding for example.
+</para>
+</note>
+
+<para>
+&kappname; is a firewall and is not used for configuring networking
+features such as IP masquerade and routing. These networking features must
+be configured using a different program.
+</para>
+
+<tip>
+<para>
+<ulink url="http://www.simonzone.com/software/guidedog/">Guidedog</ulink>
+is a user friendly utility for configuring advanced networking features
+and is designed to work along side &kappname;.
+</para>
+</tip>
+</sect2>
+
+<sect2>
+<title>Configure Routing and Network Settings</title>
+
+<para>
+Before we continue, you should go and configure the routing setup for your machine
+and confirm that it is routing/masquerading network traffic as expected.
+To make the task of debugging your gateway configuration easier, you can
+disable &kappname; by checking the <guilabel>Disable firewall</guilabel>
+checkbox on the <guilabel>Advanced</guilabel> tab and then applying the
+changes. This will allow you to test your routing setup separately without
+&kappname; blocking any test traffic.
+</para>
+
+<warning>
+<para>
+I strongly recommend that you do not test your network setup while connected
+to a hostile network like the Internet. Attach a machine to the network
+card that you plan to connect to the internet and give it an IP address so
+that it can act as a pretend Internet.
+</para>
+</warning>
+
+</sect2>
+
+<sect2>
+<title>Teaching &kappname; to Allow Traffic to/from your LAN</title>
+<para>
+If you configured and tested your routing and network settings with
+&kappname; disabled, enable firewalling in &kappname; again and apply.
+If all is going well then you will find that your LAN is once
+again totally cut off from the internet. &kappname; has a fail-safe, "what is
+not explicitly permitted, is denied" design.  What this means in this
+situation is that since &kappname; hasn't been told to allow traffic from your
+LAN out to the internet, or visa versa, it will assume that the traffic should
+be blocked. This is intended to make it easy to get a secure configuration
+(even if it is too secure) and difficult to have an insecure configuration.
+</para>
+
+<para>
+The way we specify to &kappname; that computers on the LAN are allowed to
+access computers on the Internet is by using zones. We simply create a zone
+to hold the addresses of all of the computers on our LAN and then specify that
+this zone is connected to the Internet, and probably to the
+<guilabel>Local</guilabel> zone also, and then go to the
+<guilabel>Protocols</guilabel> tab and tick on whatever
+protocols should be allowed between the LAN and the Internet.
+</para>
+
+</sect2>
+
+<sect2>
+<title>Step by Step</title>
+<para>
+Go to the <guilabel>Zone</guilabel> tab and create a new zone and call
+it "LAN". In the <guilabel>Zone Addresses</guilabel> list enter the IP
+addresses of the computers on your LAN.
+The address list understands several notations for addresses and can also
+accept whole network blocks. If you are running an IP masqueraded network
+using the 192.168.1.0/255.255.255.0 private address space, you can enter
+the whole block into a single address line using 192.168.1.0/255.255.255.0
+format or the shorter 192.168.1.0/24 format.
+</para>
+
+<para>
+Next, go to the <guilabel>Connection</guilabel> list and tick
+<guilabel>Internet</guilabel> and <guilabel>Local</guilabel> to specify that
+your LAN zone should be connected to the <guilabel>Internet</guilabel> and
+<guilabel>Local</guilabel> zones.
+</para>
+
+<para>
+Now, go to the <guilabel>Protocol</guilabel> tab and make sure that
+<guilabel>Protocols Served from Zone:</guilabel> is set to
+<guilabel>Internet</guilabel>.  In the list of protocols below you should see
+a column of check boxes for the <guilabel>Local</guilabel> zone and another column
+for the <guilabel>LAN</guilabel> zone.
+Just like when we were turning on protocols for the local zone in the first
+tutorial, we can do the same for the LAN zone. Tick the list of protocols that
+machines in the LAN zone should be able to use with the Internet.
+</para>
+
+<para>
+When you are ready, apply the changes and see if your machines on your LAN
+can access the internet. That's all there is to it.
+</para>
+</sect2>
+</sect1>
+
+<sect1 id="specific-protocols">
+<title>Important Notes</title>
+<para>
+Here are some important notes concerning the use of some protocols. 
+</para>
+
+<sect2>
+<title>Windows Networking (NETBIOS)</title>
+<para>
+If your computer is connected to a LAN that you want to use NETBIOS on, there
+is a little extra you need to do to get things working smoothly. Basically,
+create a zone for your LAN, which you probably have done anyway, and make
+sure that the broadcast address of the LAN is is also in the list of zone
+addresses.
+</para>
+
+<para>
+If you don't know what the broadcast address for your LAN is, the simplest way
+is to go to shell and run the command <userinput>/sbin/ifconfig</userinput>.
+You will see something similar to this:
+<screen>
+eth0      Link encap:Ethernet  HWaddr 00:50:FC:2A:AB:7A
+          inet addr:192.168.1.1  Bcast:192.168.1.255  Mask:255.255.255.0
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:4 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:100
+          RX bytes:0 (0.0 b)  TX bytes:240 (240.0 b)
+          Interrupt:10 Base address:0x4000
+
+lo        Link encap:Local Loopback
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          UP LOOPBACK RUNNING  MTU:16436  Metric:1
+          RX packets:992 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:992 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0
+          RX bytes:76568 (74.7 Kb)  TX bytes:76568 (74.7 Kb)
+</screen>
+This is a list of the network interfaces that your computer has. Your list
+will probably be different of course. The names of the network interfaces are
+listed on the left side. You need to go to one that corresponds to you LAN.
+It will typically be called <computeroutput>ethX</computeroutput>. It's also
+possible that you will have multiple <computeroutput>ethX</computeroutput>
+entries, especially if you also have cable internet access or ADSL. Once you
+have found the entry look for <computeroutput>Bcast:</computeroutput>.
+This is the broadcast address for the network connected to that network
+interface. Put this broadcast address in your LAN zone's list of IP addresses.
+</para>
+
+</sect2>
+
+<sect2>
+<title>Nmap and Nessus Scanning</title>
+<para>
+It is not possible to do effective scanning with nmap or nessus through, or
+from out of, a machine running &kappname;.  The reason is that firewalls are
+designed to block the kind of unusual and "hostile looking" network traffic
+that these kinds of programs produce. A firewall can't distinguish between
+friendly scan traffic produced by you, and unwanted scan traffic produced by
+intruders, so it blocks both types.
+</para>
+</sect2>
+
+<sect2>
+<title>Telstra BigPond Cable</title>
+<para>
+People in Australia using Telstra's BigPond cable for internet access
+need to make sure that Telstra's <computeroutput>dce-server</computeroutput>
+machine is permitted to serve <guilabel>BigPond Cable Login</guilabel> to
+your local machine. This is needed for logging on to BigPond and also to
+allow the 'heartbeat' that BigPond uses to check that your machine is still
+online.
+</para>
+
+<para>
+One thing you could do is create special zone for the important BigPond
+servers that also serve mail etc and then make sure that
+<computeroutput>dce-server</computeroutput> is entered in there, and then
+permit <guilabel>BigPond Cable Login</guilabel> protocol and whatever mail
+and web protocols you want, to be served from there.
+</para>
+</sect2>
+
+<sect2>
+<title>X Window System</title>
+<para>
+In X Window System the notion of client and server is a bit backwards. The
+server is considered to be the machine running the X server program and
+displaying the screen and accepting user input. While the client is
+considered to be the remote program whose user interface is being displayed
+on the X server.
+</para>
+
+<para>
+What this means is that you need to make sure that X is permitted to be served
+from the zone containing the machine showing the X display (the X server), to
+the zone containing the machines that actually run your programs (the
+clients).
+</para>
+
+</sect2>
+
+<sect2>
+<title>DHCP (Dynamic Host Configuration Protocol)</title>
+<para>
+Go to <xref linkend='dhcp' /> for information about using DHCP with &kappname;.
+</para>
+</sect2>
+
+<sect2>
+<title>Squid, Web proxies and ICP</title>
+<para>
+If you are using a web cache/proxy like Squid and also want to peer and
+interact with other web caches, you may have to enable the ICP (Internet
+Cache Protocol, under the network section of the <guilabel>Protocol</guilabel>
+tab. Just enabling the Squid protocol will not enable ICP.
+</para>
+</sect2>
+
+</sect1>
+
+<!--
+<sect1 id="guarddog-features">
+<title>More Guarddog features</title>
+
+<para>It slices! It dices! and it comes with a free toaster!</para>
+<para>
+The Squiggle Tool <guiicon><inlinemediaobject>
+	  <imageobject>
+	    <imagedata fileref="squiggle.png" format="PNG">
+	  </imageobject>
+	  <imageobject>
+	    <imagedata fileref="squiggle.eps" format="EPS">
+	  </imageobject>
+	  <textobject>
+	    <phrase>Squiggle</phrase>
+	  </textobject>
+</inlinemediaobject></guiicon> is used to draw squiggly lines all over
+the &kappname; main window. It's not a bug, it's a feature!
+</para>
+
+</sect1>
+-->
+</chapter>
+<!--
+***************************************************************************
+* Program Reference *******************************************************
+***************************************************************************
+-->
+<chapter id="commands">
+<title>Program Reference</title>
+
+<sect1 id="guarddog-zonetab">
+<title>The Zone Tab</title>
+<para>
+&kappname; is built around the concept of zones containing IP
+addresses, and then managing which network protocols are permited
+between the different zones. This tab is where zones and thier contents
+are managed.
+</para>
+
+<para>
+The list of currently defined zones is on the left side of the tab under
+<guilabel>Defined Network Zones:</guilabel>. The properties of the currently
+selected zone are shown in the <guilabel>Zone Properties</guilabel> area.
+The <guibutton>New Zone</guibutton> and <guibutton>Delete Zone</guibutton>
+buttons in the bottom left corner of the tab create new zones or delete the
+currently selected zone.
+</para>
+
+<para>
+There are two zones which are built-in and can not be modifed or
+deleted. They are called the <guilabel>Internet</guilabel> and
+<guilabel>Local</guilabel> zones. The <guilabel>Local</guilabel> zone
+automatically contains the IP addresses of the network interfaces for the
+machine that the firewall runs on. Note that the list of addresses in this
+zone are not actually shown in the window. The <guilabel>Internet</guilabel> zone
+automatically contains the IP addresses of anything that is not in another
+zone. It acts as the default zone holding addresses that are not in
+any other zone.
+</para>
+
+<para>
+Each zone has a name that can be edited in the <guilabel>Name:</guilabel>
+text edit box. It is recommended that this be kept relatively brief. A longer
+comment can be entered for each zone in the <guilabel>Comment:</guilabel>
+text edit box.
+</para>
+
+<sect2>
+<title>Addresses</title>
+<para>
+Each zone consists of a number of IP addresses. The <guilabel>Zone Addresses</guilabel>
+list holds the list of IP addresses for the currently selected zone. 
+Addresses can be added to the list by using the <guibutton>New Address</guibutton>
+button. The currently selected address can be deleted using the <guibutton>Delete Address</guibutton>
+button. The text field next to <guilabel>Address:</guilabel>, allows you
+to edit the currently selected address.
+</para>
+
+<para>
+Addresses and ranges of addresses can be specified in several ways:
+</para>
+
+<itemizedlist>
+<listitem>
+  <para>Numeric IP address (dotted quad). Whole networks can be specified by
+  using a mask. Masks can be network masks (e.g. 255.255.255.0) or a plain number
+  (e.g. 24). Some examples are: 123.34.56.78, 192.168.1.1/24 and
+  192.168.1.1/255.255.255.0 (the last two mean all the addresses
+  from 192.168.1.1 to 192.168.1.255)</para>
+</listitem>
+<listitem>
+  <para>Domain name. Only Fully Qualified Domain Names (FQDN) are allowed,
+  something like .simonzone.com will not work. A complete name is required,
+  like www.simonzone.com, for example.</para>
+</listitem>
+</itemizedlist>
+</sect2>
+
+<sect2>
+<title>Connection</title>
+<para>The <guilabel>Connection</guilabel> list allows you to specify which
+other zones the currently selected zone is connected to.  When a zone is
+connected to another zone, that particular combination will appear on the
+<guilabel>Protocol</guilabel> tab. If a combination is not selected here
+then it won't appear on the <guilabel>Protocol</guilabel> tab, and no
+communication will be permitted between the two zones.
+</para>
+</sect2>
+
+<!--
+<sect2>
+<title>The File Menu</title>
+<para>
+<variablelist>
+<varlistentry>
+<term><menuchoice>
+<shortcut>
+<keycombo><keycap>Ctrl</keycap><keycap>n</keycap></keycombo>
+</shortcut>
+<guimenu>File</guimenu>
+<guimenuitem>New</guimenuitem>
+</menuchoice></term>
+<listitem><para><action>Creates a new document</action></para></listitem>
+</varlistentry>
+<varlistentry>
+<term><menuchoice>
+<shortcut>
+<keycombo><keycap>Ctrl</keycap><keycap>s</keycap></keycombo>
+</shortcut>
+<guimenu>File</guimenu>
+<guimenuitem>Save</guimenuitem>
+</menuchoice></term>
+<listitem><para><action>Saves the document</action></para></listitem>
+</varlistentry>
+<varlistentry>
+<term><menuchoice>
+<shortcut>
+<keycombo><keycap>Ctrl</keycap><keycap>q</keycap></keycombo>
+</shortcut>
+<guimenu>File</guimenu>
+<guimenuitem>Quit</guimenuitem>
+</menuchoice></term>
+<listitem><para><action>Quits</action> &kappname;</para></listitem>
+</varlistentry>
+</variablelist>
+</para>
+
+</sect2>
+-->
+
+</sect1>
+
+<sect1 id="guarddog-protocoltab">
+<title>The Protocol Tab</title>
+<para>
+The <guilabel>Protocol</guilabel> tab is used to specify which protocols are
+permitted between which combinations of zones.
+</para>
+
+<para>
+To the left of the tab is the <guilabel>Defined Network Zones:</guilabel>
+list holding every zone currently defined. The <guilabel>Zone Properties</guilabel>
+area shows which protocols or services the currently selected zone is
+permitted to serve and to whom. We will refer to the currently selected zone
+as the serving zone.
+</para>
+
+<para>
+The expandable list of protocols is organised into ten categories:
+</para>
+
+<itemizedlist>
+<listitem><para>
+Chat - Protocols used by chat programs like IRC and ICQ.
+</para></listitem>
+<listitem><para>
+Data Serve - Protocols used by databases and other data sources like time
+servers.
+</para></listitem>
+<listitem><para>
+File Transfer - Protocols used to tranfers files like HTTP for the Web and FTP.
+</para></listitem>
+<listitem><para>
+Game - Protocols used by games for online multiplayer gaming.
+</para></listitem>
+<listitem><para>
+Interactive Session - Protocols used for working on or performing actions on
+remote systems. SSH Secure Shell, telnet and RPC protocols are here.
+</para></listitem>
+<listitem><para>
+Mail - Protocols associated with delivering and moving email. SMTP and POP3
+are here.
+</para></listitem>
+<listitem><para>
+Media - Protocols used for delivering multimedia across the internet in real
+time.
+</para></listitem>
+<listitem><para>
+Miscellaneous - Other protocols that really didn't fit under the other
+categories.
+</para></listitem>
+<listitem><para>
+Network - Protocols related to the direct operation of the network inself.
+</para></listitem>
+<listitem><para>
+User Defined - Protocols defined by the user on the "Advanced" tab show up
+here.
+</para></listitem>
+</itemizedlist>
+
+<para>
+To the right of each protocol entry in the list is one or more columns
+of check boxes. Each zone that the serving zone is connected to has a
+column on check boxes. The name of the zone is at the top of the column.
+The zones/columns which appear here are determined by the <guilabel>Connection</guilabel>
+list on the <guilabel>Zone</guilabel> tab for the currently selected zone.
+</para>
+
+<para>
+The check boxes have the following meanings:
+</para>
+
+<itemizedlist>
+<listitem><para>Clear - The protocol is not permitted. Clients in this zone
+may not start a connection to the serving zone using this protocol. For
+example, if "Web Servers" is the currently selected serving zone, and the
+HTTP (Web) protocol box is clear for the "Bad Guys" zone, then machines in
+the "Bad Guys" zone will not be allowed to access a web server running on a
+machine in the "Web Servers" zone. Any attempt will be completely ignored.
+Any incoming packets will be dropped.
+</para></listitem>
+
+<listitem><para>Checked/Ticked - The protocol is permitted. Clients in this
+zone may start a connection to the serving zone using this protocol. For
+example, if "Web Servers" is the currently selected serving zone, and the
+HTTP (Web) protocol box is ticked for the "Bad Guys" zone, then machines in
+the "Bad Guys" zone will be allowed to access a web server running on a
+machine in the "Web Servers" zone.</para></listitem>
+
+<listitem><para>Crossed - The protocol is not permitted and packets will be
+rejected instead of just dropped. When a packet is rejected an ICMP packet
+is sent back to the source to inform it that the packet was rejected by the
+firewall. For example, if "Web Servers" is the currently selected serving
+zone, and the HTTP (Web) protocol box is crossed for the "Bad Guys" zone, then
+machines in the "Bad Guys" zone will not be allowed to access a web server
+running on a machine in the "Web Servers" zone. But unlike when the check box
+is clear, any connection attempts will be rejected instead of 
+ignored.</para></listitem>
+</itemizedlist>
+
+<para>This information is summerised at the bottom of the tab in a concise
+key or legend showing each of the different check box states and meanings.
+</para>
+
+<tip>
+<para>
+Rejecting a protocol is considered a more "friendly" way of blocking it's use,
+because the sender is immediately informed about what has happened. When a
+packet is quietly blocked by the firewall, the sender will not know and will
+have to wait and "time out" before realising that communication has failed.
+</para>
+
+<para>
+Generally there is little reason to reject protocols instead of just having
+them dropped.  If someone is trying to use a protocol that you didn't allow,
+then for safety's sake we should assume that they are hostile and therefore
+should not be helped. In this situation, dropping packets is better because
+it uses less network capacity and has the effect of making most port scanning
+software that an intruder may be using, run very slowly.
+</para>
+
+<para>
+The only situation that you are likely to run into where rejecting a protocol
+is desirable, is with the "ident" protocol (located under the Network category).
+</para>
+
+</tip>
+
+<sect2>
+<title>Protocol Information</title>
+<para>
+Information about a protocol is displayed on the botton left side of the tab.
+You can get information about any of the protocols in the list by clicking on
+it's title.
+</para>
+
+<para>
+The following information about each protocol is available:
+</para>
+
+<itemizedlist>
+<listitem><para>Name - The name of the protocol. It's full name and also any
+acronym it may be known by.</para></listitem>
+
+<listitem><para>Description - A short description of what the protocol is
+used for.</para></listitem>
+
+<listitem><para>Security Risk - An estimate of the security risk that use of
+the protocol has. The risk ranges from low, medium, high or unknown.
+</para></listitem>
+
+<listitem><para>Network Usage - This is a description of how the protocol
+uses the network. It describes which connections, IP protocols and port
+ranges etc that the protocol uses to operate. This field is only shown if the
+<guilabel>Show Advanced Protocol Help</guilabel> checkbox on the
+<guilabel>Advanced</guilabel> tab is checked.
+</para></listitem>
+
+</itemizedlist>
+
+</sect2>
+
+</sect1>
+
+<sect1 id="guarddog-loggingtab">
+<title>The Logging Tab</title>
+<para>The <guilabel>Logging</guilabel> tab holds many options for controlling
+what events are logged and how they are logged.</para>
+
+<para>The <guilabel>Log blocked packets</guilabel> checkbox controls whether
+packets that are blocked by &kappname; are logged in the system log. A packet
+that is not part of a permitted protocol is by blocked by default. When this
+checkbox is ticked, blocked packets are logged.</para>
+
+<para>The <guilabel>Log rejected packets</guilabel> checkbox controls whether
+packets that are rejected by &kappname; are logged in the system log. 
+Protocols are marked to be rejected on the <guilabel>Protocol</guilabel>
+tab by putting a cross in their checkbox.  When this checkbox is
+ticked, any rejected packets are logged.</para>
+
+<para>The <guilabel>Log aborted TCP connections (half open scans)</guilabel>
+check box controls whether TCP connections that are forcefully terminated using
+a RST packet are logged.  A port scanning technique know as "half-open"
+scanning uses RST packets to quickly abort an half open TCP connection in
+order to avoid detection.  This can be done using <command>nmap</command>'s
+<option>-sS</option> option.  By
+turning this option on you can detect and log when this happens. Unfortunately
+many web servers like to quickly terminate connections by using a RST packet.
+This can produce quite a lot of unwanted noise in your system logs. Therefore
+you may want to turn this option off. Also, this option only has effect when
+the firewall is used on a Linux kernel 2.4 machine in combination with 
+<command>iptables</command>.</para>
+
+<tip>
+<para>Packet logs are received by the <command>syslog</command>. Consult
+the <command>syslog</command> manual page for more information.</para>
+</tip>
+
+<sect2>
+<title>Rate Limiting</title>
+<para>This group of options allows you to specify how &kappname; should limit
+the rate at which messages are placed in the system log. Rate Limited logging
+is intended to stop someone from performing a Denial of Service attack against
+your machine by flooding it with packets and trying to fill your system log
+files and disk space.</para>
+
+<para>The <guilabel>Rate limit logging</guilabel> checkbox controls whether
+packet logging should be rate limited or not. It is recommended that this be
+left on.</para>
+
+<para>The <guilabel>Rate</guilabel> widget allows you to specify the maximum
+average rate that packet log entries may be added to the system log. The rate
+may be specified in terms of the number of entries per second, minute, hour or
+day.</para>
+
+<para>The <guilabel>Rate</guilabel> widget allows you to specify the
+<emphasis>average</emphasis> maximum logging rate. Packets to be logged often
+come in bursts of many packets in very quick succession. The
+<guilabel>Burst</guilabel> widget allows you to specify how many packets
+in a burst may be logged. Once the burst limit has been reached, the
+average logging rate is enforced.</para>
+
+<tip><para>For more information on exactly how this works, consult the
+<command>iptables</command> documentation and the Linux kernel source
+<filename>/net/ipv4/netfilter/ipt_limit.c</filename> file.
+</para></tip>
+
+<para>The <guilabel>Warn when limiting</guilabel> check box controls whether
+&kappname; should put warning messages in the system log when it has been
+forced to apply rate limiting to the packet log messages. When rate limiting
+is applied to packet log messages, only a limited number of messages appear
+in the log, while the rest are omitted.  When you come to view the system log,
+it useful to know if packet log messages have been omitted due to rate limiting.
+</para>
+
+<para>The <guilabel>Warning rate</guilabel> widget allows you to specify how
+often warning messages should be placed in the system log when rate limiting
+is being used.
+</para>
+
+<tip><para>The warning messages in the system log have the word
+<literal>LIMITED</literal> at the start of the line.</para></tip>
+
+</sect2>
+
+<sect2>
+<title>Logging Options</title>
+
+<para>The <guilabel>Log IP Options</guilabel> checkbox controls whether the
+options field in the IP header of a packet should be included in a packet log
+message.</para>
+
+<para>The <guilabel>Log TCP Options</guilabel> checkbox controls whether the
+options field in the TCP header of a packet should be included in a packet
+log message.</para>
+
+<para>The <guilabel>Log TCP sequence numbers</guilabel> checkbox controls
+whether the TCP sequence number for a packet should be included in a packet
+log message.</para>
+
+<para>The <guilabel>Logging Priority</guilabel> selector specifies the logging
+priority used when sending log messages to the system log. See the
+documentation for <filename>syslog.conf</filename> for more information.
+</para>
+
+</sect2>
+</sect1>
+
+<sect1 id="guarddog-advancedtab">
+<title>The Advanced Tab</title>
+<para>The <guilabel>Advanced</guilabel> tab holds many miscellaneous advanced
+options. Here you can also set up your own simple protocols for opening a
+small hole through your firewall to support an <emphasis>ad hoc</emphasis>
+protocol. For example, accessing a remote administration web interface that
+is served from a non-standard port number.</para>
+
+<para>When the <guilabel>Show advanced protocol help</guilabel> check box is
+ticked, extra information is given in the help text for protocols on the
+<guilabel>protocol</guilabel> tab.  The extra information includes the what
+kinds of network connections the protocols uses.</para>
+
+<para>The <guilabel>Allow TCP timestamps</guilabel> check box lets you turn
+TCP timestamps on or off. Leaving TCP timestamps turned on makes it possible
+for outsiders to calculate how long your machine has been running since it
+was last booted. <command>nmap</command> <option>-O</option> can do this.
+Generally, unless you are connected to a high speed network connection chances
+are you have no good reason to have TCP timestamps turned on.</para>
+
+<para>The <guilabel>Restore to factory defaults</guilabel> clears the
+firewall configuration and resets it back to how it was the first time
+&kappname; was run.</para>
+
+<sect2>
+<title>Local Dynamic Port Range</title>
+<para>The two input fields next to <guilabel>Local Dynamic Port Range</guilabel>
+allow you to specify the range of port numbers used by the operating system
+for the source port of new out-going connections. When a connection is made to
+a port on an external machine, the source port of the connection is usually
+not specified by the application. It is left up to the operating system to choose
+a suitable free source port number. The local dynamic port range is just a range
+of port numbers that the operating system will use when looking for an
+available source port.</para>
+
+<para>Generally, there is little reason to change this. It might only become
+important on machines that need to have an unusually high number of
+connections active at the same time.</para>
+</sect2>
+
+<sect2 id='dhcp'>
+<title>DHCP (Dynamic Host Configuration Protocol)</title>
+
+<para>If you are using DHCP to configure a network interface, then you will
+need to specify the name of the interface(s) in the <guilabel>Enable DHCP on
+interfaces:</guilabel> widget.</para>
+ 
+<para>If you are running a DHCP server on a network interface, then you will
+need to specify the name of the interface(s) in the <guilabel>Enable DHCP server
+on interfaces:</guilabel> widget.</para>
+ 
+<para>When entering multiple interface names, separate them using a comma ",".</para>
+
+</sect2>
+
+<sect2>
+<title>Import/Export</title>
+<para><guilabel>Import</guilabel> and <guilabel>Export</guilabel> allow you
+to save the current configuration to a file, and read it back into &kappname;
+again. When you click on either of these buttons, a file dialog appears and
+you can choose the file to import from, or export to.</para>
+
+<para>The <guilabel>Description</guilabel> text box allows you enter a short
+note about the current firewall configuration.</para>
+
+<tip><para><guilabel>Export</guilabel> doesn't just export the current
+firewall configuration, it actually outputs an entire firewall script.
+The firewall script can then be moved onto another machine and manually
+installed and run.</para></tip>
+
+</sect2>
+
+<sect2>
+<title>User Defined Protocols</title>
+
+<para>In addition to all the protocols that &kappname; supports, it is also
+possible to specify your own custom protocols.</para>
+
+<para>In the middle of the <guilabel>User Defined Protocols</guilabel>
+group is the current list of user defined protocols. Use the <guilabel>New
+Protocol</guilabel> button to create a new blank protocol. The <guilabel>Delete
+Protocol</guilabel> button naturally deletes the currently selected user
+defined protocol.</para>
+
+<para>After creating a new protocol you can give it a name using the
+<guilabel>Name</guilabel> text field. The <guilabel>Type</guilabel> widget lets
+you specify which IP protocol, TCP or UDP, your user defined protocol uses.
+With the <guilabel>Port</guilabel> widgets you can specifiy the port or 
+range of ports on the server or remote machine that the protocol must connect
+to.  For UDP protocols use the <guilabel>bidirectional</guilabel> check box to
+specify if the protocol is
+bidirectional and requires packets to travel in both directions. Once a
+user defined protocol has been specified here, it becomes available on the
+<guilabel>Protocol</guilabel> tab under the <guilabel>User Defined</guilabel>
+category. There it can be turned on or off just like any other
+built-in protocol.</para>
+
+<tip><para>This feature is intended for simple protocols where a server is
+just serving from a single TCP or UDP port. If you feel that you need to
+specify a more complex protocol, consider contacting the author so that
+direct support for it can be added in a future &kappname; release.</para></tip>
+
+</sect2>
+</sect1>
+
+</chapter>
+
+<!--
+<chapter id="developers">
+<title>Developer's Guide to Guarddog</title>
+
+<para>
+Programming &guarddog; plugins is a joy to behold. Just read through the next
+66 pages of API's to learn how!
+</para>
+
+<refentry id="re-1007-unmanagechildren-1">
+<refmeta>
+<refentrytitle>XtUnmanageChildren</refentrytitle>
+<refmiscinfo>Xt - Geometry Management</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>XtUnmanageChildren
+</refname>
+<refpurpose>remove a list of children from a parent widget's managed list.
+</refpurpose>
+<indexterm id="ix-1007-unmanagechildren-1"><primary>widgets</primary><secondary>removing</secondary></indexterm>
+<indexterm id="ix-1007-unmanagechildren-2"><primary>XtUnmanageChildren</primary></indexterm>
+</refnamediv>
+<refsynopsisdiv>
+<refsynopsisdivinfo>
+<date>4 March 1996</date>
+</refsynopsisdivinfo>
+<synopsis>
+void XtUnmanageChildren(<replaceable parameter>children</replaceable>, <replaceable parameter>num_children</replaceable>)
+    WidgetList <replaceable parameter>children</replaceable>;
+    Cardinal <replaceable parameter>num_children</replaceable>;
+</synopsis>
+
+<refsect2 id="r2-1007-unmanagechildren-1">
+<title>Inputs</title>
+<variablelist>
+<varlistentry>
+<term><replaceable parameter>children</replaceable>
+</term>
+<listitem>
+<para>Specifies an array of child widgets. Each child must be of
+class RectObj or any subclass thereof.
+</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><replaceable parameter>num_children</replaceable>
+</term>
+<listitem>
+<para>Specifies the number of elements in <replaceable parameter>children</replaceable>.
+</para>
+</listitem>
+</varlistentry>
+</variablelist>
+</refsect2></refsynopsisdiv>
+
+<refsect1 id="r1-1007-unmanagechildren-1">
+<title>Description
+</title>
+<para><function>XtUnmanageChildren()</function> unmaps the specified widgets
+and removes them from their parent's geometry management.
+The widgets will disappear from the screen, and (depending
+on its parent) may no longer have screen space allocated for
+them.
+</para>
+<para>Each of the widgets in the <replaceable parameter>children</replaceable> array must have
+the same parent.
+</para>
+<para>See the &ldquo;Algorithm&rdquo; section below for full details of the
+widget unmanagement procedure.
+</para>
+</refsect1>
+
+<refsect1 id="r1-1007-unmanagechildren-2">
+<title>Usage</title>
+<para>Unmanaging widgets is the usual method for temporarily
+making them invisible.  They can be re-managed with
+<function>XtManageChildren()</function>.
+</para>
+<para>You can unmap a widget, but leave it under geometry
+management by calling <function>XtUnmapWidget()</function>.  You can
+destroy a widget's window without destroying the widget by
+calling <function>XtUnrealizeWidget()</function>.  You can destroy a
+widget completely with <function>XtDestroyWidget()</function>.
+</para>
+<para>If you are only going to unmanage a single widget, it is
+more convenient to call <function>XtUnmanageChild()</function>.  It is
+often more convenient to call <function>XtUnmanageChild()</function>
+several times than it is to declare and initialize an array
+of widgets to pass to <function>XtUnmanageChildren()</function>.  Calling
+<function>XtUnmanageChildren()</function> is more efficient, however,
+because it only calls the parent's <function>change_managed()</function>
+method once.
+</para>
+</refsect1>
+
+<refsect1 id="r1-1007-unmanagechildren-3">
+<title>Algorithm
+</title>
+<para><function>XtUnmanageChildren()</function> performs the following:
+</para>
+<variablelist>
+<varlistentry>
+<term>-
+</term>
+<listitem>
+<para>Ignores the child if it already is unmanaged or is being
+destroyed.
+</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>-
+</term>
+<listitem>
+<para>Otherwise, if the child is realized, it makes it nonvisible
+by unmapping it.
+</para>
+</listitem>
+</varlistentry>
+</variablelist>
+<para>
+</para>
+</refsect1>
+
+<refsect1 id="r1-1007-unmanagechildren-4">
+<title>Structures</title>
+<para>The <type>WidgetList</type> type is simply an array of widgets:
+</para>
+<screen id="sc-1007-unmanagechildren-1">typedef Widget *WidgetList;
+</screen>
+</refsect1>
+</refentry>
+
+</chapter>
+-->
+
+<chapter id="faq">
+<title>Questions and Answers</title>
+
+&reporting.bugs;
+&updating.documentation;
+
+<qandaset id="faqlist">
+<qandaentry>
+<question>
+<para>Does &kappname; need to be running for it to protect my computer?</para>
+</question>
+<answer>
+<para>&kappname; provides a user friendly way of configuring your computer's
+built-in firewalling capabilities. &kappname; itself doesn't need to be
+running continously to protect your computer.</para>
+</answer>
+</qandaentry>
+
+<qandaentry>
+<question>
+<para>How can I see which ports a given protocol uses? or How can I see which ports
+a given protocol opens up?</para>
+</question>
+<answer>
+<para>Go to the <guilabel>Advanced</guilabel> tab and tick the checkbox at
+<guilabel>Show advanced protocol help</guilabel>. Now when you
+go back to the <guilabel>Protocol</guilabel> tab and click on the name of a
+protocol in the middle of the window, the protocol on the left side of the
+tab will show the information about the protocol and also what TCP/UDP ports
+it uses.</para>
+</answer>
+</qandaentry>
+
+<qandaentry>
+<question>
+<para>Why are my FTP/Mail/IRC connections slow?</para>
+</question>
+<answer>
+<para>
+Many mail and IRC servers, when connected to, use the "ident" protocol to try
+to find out the owner of the incoming connection, and don't respond to the
+incoming connection until they have tried "ident". This problem shows up,
+for example, as delays when connecting to mail servers. The connection will
+be made with the mail server, but there will be a noticeable delay before any
+mail is retrieved. This is because the server tries to make an "ident"
+connection back, but has wait and time out before realising that it won't
+work. The solution is to just make sure that "ident" is being rejected for
+connections coming from the zone containing the mail server.
+</para>
+</answer>
+</qandaentry>
+
+</qandaset>
+</chapter>
+
+<chapter id="credits">
+
+<title>Credits and License</title>
+
+<para>
+&kappname;
+</para>
+<para>
+Program copyright 2000-2003 Simon Edwards <email>simon@simonzone.com</email>
+</para>
+
+<para>
+Documentation copyright 2000-2003 Simon Edwards <email>simon@simonzone.com</email>
+</para>
+
+&underFDL;               <!-- FDL: do not remove -->
+
+<!-- Determine which license your application is licensed under, 
+     and delete all the remaining licenses below:
+
+     (NOTE:  All documentation are licensed under the FDL, 
+     regardless of what license the application uses) -->
+
+&underGPL;        	 <!-- GPL License -->
+
+<para>
+Thanks go to the following people:
+</para>
+
+<itemizedlist>
+<listitem><para>J F Gratton (Help with a little bit of network code.)</para></listitem>
+<listitem><para>Joerg Buchland (Help with sorting out what /dev interface ISDN uses.)</para></listitem>
+<listitem><para>Ludovic Lange (Bug fixes, DHCP help.)</para></listitem>
+<listitem><para>Jason L. Buberel (Feedback, protocol info.)</para></listitem>
+<listitem><para>Carsten Pfeiffer (Feedback, help with KDE3)</para></listitem>
+<listitem><para>Gunner Poulsen (Danish translation)</para></listitem>
+<listitem><para>Adam Kreuschner (SuSE RPMs)</para></listitem>
+<listitem><para>Matthew Schick (Redhat RPMs)</para></listitem>
+<listitem><para>Daniele Medri (Italian translation)</para></listitem>
+<listitem><para>Stephan Johach (German translation)</para></listitem>
+<listitem><para>Pascal Billery Schneider (French translation)</para></listitem>
+<listitem><para>Anyone else who has provided help or bug reports or support.</para></listitem>
+</itemizedlist>
+
+</chapter>
+
+<appendix id="installation">
+<title>Installation</title>
+
+<sect1 id="getting-guarddog">
+<title>How to obtain Guarddog</title>
+
+<para>
+&kappname; can be found a
+<ulink url="http://www.simonzone.com/software/guarddog/">http://www.simonzone.com/software/guarddog/</ulink>.</para>
+</sect1>
+<!--
+<sect1 id="requirements">
+<title>Requirements</title>
+
+<para>
+In order to successfully use &kappname;, you need KDE 2.0. Foobar.lib is required
+in order to support the advanced &kappname; features. &kappname; uses about 5 megs of
+memory to run, but this may vary depending on your platform and
+configuration.
+</para>
+
+<para>
+All required libraries as well as &guarddog; itself can be found
+on <ulink url="ftp://ftp.guarddog.org">The &guarddog; home page</ulink>.
+</para>
+
+<para>
+You can find a list of changes at <ulink
+url="http://apps.kde.org/guarddog">http://apps.kde.org/guarddog</ulink>.
+</para>
+</sect1>
+
+<sect1 id="compilation">
+<title>Compilation and installation</title>
+
+<para>
+In order to compile and install KApp on your system, type the following in the base
+directory of the Icon Editor distribution:
+<screen width="40">
+<prompt>%</prompt> <userinput>./configure</userinput>
+<prompt>%</prompt> <userinput>make</userinput>
+<prompt>%</prompt> <userinput>make install</userinput>
+</screen>
+</para>
+
+<para>Since KApp uses autoconf and automake you should have not trouble compiling it.
+Should you run into problems please report them to the KDE mailing lists.</para>
+
+</sect1>
+
+<sect1 id="configuration">
+<title>Configuration</title>
+
+<para>Don't forget to tell your system to start the <filename>dtd</filename>
+dicer-toaster daemon first, or KApp won't work !</para>
+
+</sect1>
+-->
+</appendix>
+
+&documentation.index;
+</book>
+<!--
+Local Variables:
+mode: sgml
+sgml-minimize-attributes: nil
+sgml-general-insert-case: lower
+End:
+-->

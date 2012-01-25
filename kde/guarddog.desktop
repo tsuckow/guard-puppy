@@ -1,0 +1,14 @@
+[Desktop Entry]
+Comment=Firewall utility
+DocPath=guarddog/index.html
+Exec=guarddog
+Icon=guarddog
+Name=Guarddog
+SwallowExec=
+SwallowTitle=
+Terminal=false
+TerminalOptions=
+Type=Application
+X-KDE-RootOnly=true
+X-KDE-SubstituteUID=true
+X-KDE-Username=root
