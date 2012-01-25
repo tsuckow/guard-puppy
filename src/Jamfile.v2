@@ -1,0 +1,21 @@
+
+loadqt4 ;
+
+exe guarddog
+    : 
+      checktablelistitem.cpp
+      commandrunner.cpp
+      guarddog.cpp
+      guarddogdoc.cpp
+      iprange.cpp
+      main.cpp
+      protocoldb.cpp
+      simelineedit.cpp
+      userdefinedprotocol.cpp
+
+      /qt//QtCore
+      /qt//QtGui
+      /qt//QtWebKit
+    : 
+    ;
+

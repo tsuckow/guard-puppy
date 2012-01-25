@@ -1,0 +1,47 @@
+path-constant GUARDDOG_ROOT : . ;
+
+project : requirements # <threading>multi 
+          <include>../boost
+        ;
+
+#
+# Loads the qt4 library for use
+#
+using qt4 : ../qt32 ;
+rule loadqt4 ( )
+{
+    import qt4 ;
+    import cast ;
+
+    if ! [ qt4.initialized ]
+    {
+        ECHO "Warning: Qt4 not initialized in site-config.jam or user-config.jam" ;
+        ECHO "This is very likely won't work for you." ;
+        path-constant qt4-path : ../qt32 ;
+        using qt4 : $(qt4-path) ;
+        ECHO "Assuming:  using qt4 : " $(qt4-path) ";" ;
+    }
+}
+
+#
+# Places compiled things in the right place
+# Provides a consistant experience in our environment
+#
+rule bininstall ( name : projects + )
+{
+    install $(name)
+        :
+          $(projects)
+        : 
+          <location>$(GUARDDOG_ROOT)/bin
+
+          <install-dependencies>on
+            <install-type>EXE
+            <install-type>LIB
+          <dll-path>.
+          <hardcode-dll-paths>true
+        ;
+}
+
+build-project src ;
+
