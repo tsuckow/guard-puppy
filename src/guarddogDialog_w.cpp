@@ -2,12 +2,18 @@
 #include "guarddogAboutDialog_w.h"
 #include <iostream>
 
+unsigned int Zone::nextId = 0;
+
 void GuardDogFireWall::buildGUI() 
 {
     if ( gui != 0 )
         gui->rebuildGui();
 }
 
+void GuardDogDialog_w::on_tabWidget_currentChanged( int index )
+{
+    rebuildGui();
+}
 
 void GuardDogDialog_w::on_aboutPushButton_clicked()
 {
@@ -38,14 +44,82 @@ void GuardDogDialog_w::on_aboutPushButton_clicked()
 #endif
 }
 
-///////////////////////////////////////////////////////////////////////////
-void GuardDogDialog_w::on_okayPushButton_clicked() {
-    firewall.save();
+void GuardDogDialog_w::on_protocolTreeWidget_itemClicked( QTreeWidgetItem * item, int column )
+{
+    std::string protocol = item->text( column ).toStdString();
+
+//    std::cout << "TreeWidget item text: " << protocol << std::endl;
+    protocolTextEdit->setText( firewall.getProtocolText( protocol ).c_str() );
 }
 
-void GuardDogDialog_w::on_cancelPushButton_clicked() {
-    if (firewall.cancel() )
-        close();
+void GuardDogDialog_w::on_protocolTreeWidget_itemChanged( QTreeWidgetItem * item, int column )
+{
+    std::string protocol = item->text( column ).toStdString();
+
+//    std::cout << "TreeWidget item changed text: " << protocol << std::endl;
+}
+
+
+///////////////////////////////////////////////////////////////////////////
+void GuardDogDialog_w::on_okayPushButton_clicked() 
+{
+    firewall.save();
+    close();
+}
+
+void GuardDogDialog_w::on_cancelPushButton_clicked() 
+{
+#if 0
+        std::string errorstring;
+
+        if ( waspreviousfirewall && systemfirewallmodified) 
+        {
+            // This is where things become complex.
+            // Should we try to restore things to how they were before this program started?
+            switch(QMessageBox::question(0, "Question", 
+                        ("The system's firewall settings have been modified.\n\n"
+                         "Shall I restore them to the previous settings?\n\n"
+                         "These changes may disrupt current network connections."), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Cancel )) {
+                // "Yes, revert to the previous settings."
+                case QMessageBox::Yes:
+                    // Restore from the backup.
+                    copyFile(SYSTEM_RC_FIREWALL "~", SYSTEM_RC_FIREWALL);
+
+                    openDefault();
+                    if(applyFirewall(false)) {
+                        saveOptions();
+                        return true;
+                        //                    accept();
+                    }
+                    break;
+
+                    // "Just leave the settings alone and piss off!!"
+                case QMessageBox::No:
+                    saveOptions();
+                    return true;
+                    //                accept();
+                    break;
+
+                    // "Forget I ever pressed the Cancel button."
+                case QMessageBox::Cancel:
+                    return false;
+                    break;
+                default:
+                    break;
+                    return false;
+
+            }
+        } 
+        else 
+        {
+            // Simple Cancel.
+            saveOptions();
+            return true;
+            //        accept();
+        }
+#endif
+
+    close();
 }
 
 void GuardDogDialog_w::on_applyPushButton_clicked() 
@@ -70,29 +144,131 @@ void GuardDogDialog_w::on_applyPushButton_clicked()
 #endif
 }
 
+void GuardDogDialog_w::on_protocolZoneListWidget_currentItemChanged( QListWidgetItem * current, QListWidgetItem * previous )
+{
+    std::string str = "Protocols served frm zone '";
+    str += currentProtocolZoneName();
+    str += "' to clients in zones:";
+
+    protocolZoneLabel->setText( str.c_str() );
+    createProtocolPages();
+}
+
+void GuardDogDialog_w::on_zoneListWidget_currentItemChanged( QListWidgetItem * current, QListWidgetItem * previous )
+{
+    std::cout << "currentZone is " << currentZoneName() << std::endl;
+
+    if ( currentZoneName() != "" )
+    {
+        setZoneGUI( firewall.getZone( currentZoneName() ) );
+        setZoneAddressGUI( firewall.getZone( currentZoneName() ) );
+        setZoneConnectionGUI( firewall.getZone( currentZoneName() ) );
+    }
+}
+
+void GuardDogDialog_w::on_zoneNameLineEdit_textChanged( QString const & text )
+{
+    firewall.setNewZoneName( currentZoneName(), text.toStdString() );
+
+    if ( zoneListWidget->currentItem() )
+    {
+        zoneListWidget->currentItem()->setText( text );
+//        protocolZoneListWidget->currentItem()->setText( text );
+    }
+
+    if ( currentZoneName() != "" )
+    {
+        setZoneGUI( firewall.getZone( currentZoneName() ) );
+        setZoneAddressGUI( firewall.getZone( currentZoneName() ) );
+        setZoneConnectionGUI( firewall.getZone( currentZoneName() ) );
+    }
+
+}
+
+void GuardDogDialog_w::on_zoneAddressListBox_currentItemChanged( QListWidgetItem * current, QListWidgetItem * previous )
+{
+    if ( current )
+        zoneAddressLineEdit->setText( current->text() );
+}
+
+void GuardDogDialog_w::on_zoneAddressLineEdit_textChanged( QString const & text )
+{
+    firewall.setNewMachineName( currentZoneName(), currentMachineName(), text.toStdString() );
+
+    if ( zoneAddressListBox->currentItem() )
+        zoneAddressListBox->currentItem()->setText( text );
+}
+
+void GuardDogDialog_w::on_newZonePushButton_clicked()
+{
+    firewall.addZone( "new zone" );
+    zoneListWidget->addItem( "new zone" );
+//    protocolZoneListWidget->addItem( "new zone" );
+    zoneListWidget->setCurrentRow( zoneListWidget->count() - 1 );
+//    protocolZoneListWidget->setCurrentRow( protocolZoneListWidget->count() - 1 );
+}
+
+void GuardDogDialog_w::on_deleteZonePushButton_clicked()
+{
+    firewall.deleteZone( currentZoneName() );
+    QListWidgetItem * item = zoneListWidget->takeItem( zoneListWidget->currentRow() );
+    if ( item )
+    {
+        delete item;
+    }
+//    QListWidgetItem * item2 = protocolZoneListWidget->takeItem( protocolZoneListWidget->currentRow() );
+//    if ( item2 )
+//    {
+//        delete item2;
+//    }
+}
+
+
+void GuardDogDialog_w::on_newZoneAddressPushButton_clicked()
+{
+    firewall.addNewMachine( currentZoneName(), "addr" );
+
+    zoneAddressListBox->addItem( "addr" );
+    zoneAddressListBox->setCurrentRow( zoneAddressListBox->count() - 1 );
+}
+
+void GuardDogDialog_w::on_deleteZoneAddressPushButton_clicked()
+{
+    firewall.deleteMachine( currentZoneName(), currentMachineName() );
+
+    QListWidgetItem * item = zoneAddressListBox->takeItem( zoneAddressListBox->currentRow() );
+    if ( item )
+    {
+        delete item;
+    }
+}
+
 
 void GuardDogDialog_w::rebuildGui()
 {
     if ( guiReady )
     {
+        checkBox_3->setCheckState( Qt::PartiallyChecked );
 //    updatinggui = true;
         zoneListWidget->clear();
+        protocolZoneListWidget->clear();
         std::vector< std::string > zones = firewall.getZoneList();
         BOOST_FOREACH( std::string const & s, zones )
         {
             zoneListWidget->addItem( QString( s.c_str() ) );
-            std::cout << "zones: " << s << std::endl;
+            protocolZoneListWidget->addItem( QString( s.c_str() ) );
         }
         zoneListWidget->setCurrentRow( 0 );
+        protocolZoneListWidget->setCurrentRow( 0 );
 
         buildConnectionGUI();
 
 //        zit->toFirst();
-        if ( firewall.zoneCount() > 0 )
+        if ( firewall.zoneCount() > 0 && currentZoneName() != "" )
         {
-            setZoneGUI( firewall.currentZone() );
-            setZoneAddressGUI( firewall.currentZone() );
-            setZoneConnectionGUI( firewall.currentZone() );
+            setZoneGUI( firewall.getZone( currentZoneName() ) );
+            setZoneAddressGUI( firewall.getZone( currentZoneName() ) );
+            setZoneConnectionGUI( firewall.getZone( currentZoneName() ) );
         }
 //        setUserDefinedProtocolGUI( UserDefinedProtocol const & userprotocol) 
 
@@ -149,8 +325,8 @@ void GuardDogDialog_w::rebuildGui()
         createProtocolPages();
         setProtocolPagesEnabled(!firewall.isDisabled());
         setAdvancedPageEnabled(!firewall.isDisabled());
-        if ( firewall.zoneCount() > 0 )
-            setZonePageEnabled(firewall.currentZone(), !firewall.isDisabled());
+        if ( firewall.zoneCount() > 0 && currentZoneName() != "" )
+            setZonePageEnabled(firewall.getZone( currentZoneName() ), !firewall.isDisabled());
         setLoggingPageEnabled(!firewall.isDisabled());
 
         descriptionEdit->setText(firewall.description.c_str());
@@ -265,25 +441,80 @@ void GuardDogDialog_w::setProtocolPagesEnabled(bool enabled) {
 //    protocolwidgetstack->setEnabled(enabled);
 }
 
+//Qt::CheckState itemState = qobject_cast<QCheckBox*>(treeWidget->itemWidget(item, 0))->checkState();
+
+void ProtocolCheckBox::stateChanged( int state )
+{
+    std::map< int, Zone::ProtocolState> buttonToProtocolStates;
+    buttonToProtocolStates[ Qt::Unchecked ]        = Zone::DENY;
+    buttonToProtocolStates[ Qt::PartiallyChecked ] = Zone::REJECT;
+    buttonToProtocolStates[ Qt::Checked ]          = Zone::PERMIT;
+    std::cout << "ProtocolCheckBox stateChanged " << zoneTo << " " << protocol << " " << state << std::endl;
+    emit protocolStateChanged( zoneTo, protocol, buttonToProtocolStates[ state ] );
+}
+
+void GuardDogDialog_w::on_protocolStateChanged( std::string const & zoneTo, std::string const & protocol, Zone::ProtocolState state )
+{
+    firewall.setProtocolState( currentProtocolZoneName(), zoneTo, protocol, state );
+}
+
 void GuardDogDialog_w::createProtocolPages() 
 {
-#if 0
-    QListIterator<GuarddogDoc::Zone> *zit;
-    int i;
+    protocolTreeWidget->clear();
 
-    zit = doc->newZonesIterator();
-    for(i=0; zit->current(); ++(*zit), i++) {
-        servingzonelistbox->insertItem(zit->current()->name);
-        addProtocolPage(zit->current(),i);
+    QTreeWidgetItem * categoryList[10];
+
+    categoryList[0] = new QTreeWidgetItem( protocolTreeWidget, QStringList( "Unknown" ) );
+    categoryList[1] = new QTreeWidgetItem( protocolTreeWidget, QStringList( "Mail" ) );
+    categoryList[2] = new QTreeWidgetItem( protocolTreeWidget, QStringList( "Chat" ) );
+    categoryList[3] = new QTreeWidgetItem( protocolTreeWidget, QStringList( "File" ) );
+    categoryList[4] = new QTreeWidgetItem( protocolTreeWidget, QStringList( "Game" ) );
+    categoryList[5] = new QTreeWidgetItem( protocolTreeWidget, QStringList( "Session" ) );
+    categoryList[6] = new QTreeWidgetItem( protocolTreeWidget, QStringList( "Data" ) );
+    categoryList[7] = new QTreeWidgetItem( protocolTreeWidget, QStringList( "Media" ) );
+    categoryList[8] = new QTreeWidgetItem( protocolTreeWidget, QStringList( "Net" ) );
+    categoryList[9] = new QTreeWidgetItem( protocolTreeWidget, QStringList( "Custom" ) );
+
+    protocolTreeWidget->setColumnCount( 1 );
+
+    std::vector< std::string > connectedZones = firewall.getConnectedZones( currentProtocolZoneName() );
+    QStringList columns;
+    columns += "Network Protocol";
+    BOOST_FOREACH( std::string const & col, connectedZones )
+    {
+        columns += col.c_str();
     }
-    delete zit;
 
-    servingzonelistbox->setSelected(0,true);
-    servinglabel->setText(i18n("Protocols served from zone '%1' to clients in zones:")
-        .arg((doc->zoneAt(0))->name));
-    protocolwidgetstack->raiseWidget(0);
-#endif
+    protocolTreeWidget->setHeaderLabels( columns );
+
+    std::vector< ProtocolEntry > const & protocolDB = firewall.getProtocolDataBase();
+    std::cout << "Adding " << protocolDB.size() << " protocols" << std::endl;
+    BOOST_FOREACH( ProtocolEntry const & pe, protocolDB )
+    {
+        QTreeWidgetItem *item = new QTreeWidgetItem( categoryList[pe.classification], QStringList( pe.longname.c_str() ) );
+        item->setFlags( item->flags() | Qt::ItemIsUserCheckable );
+
+        for ( size_t i = 0; i < connectedZones.size(); i++ )
+        {
+            ProtocolCheckBox * itemCheckBox = new ProtocolCheckBox(connectedZones[i], pe.name, protocolTreeWidget);
+            itemCheckBox->setTristate();
+            Zone::ProtocolState ps = firewall.getProtocolState( currentProtocolZoneName(), connectedZones[i], pe.name );
+            if ( ps == Zone::DENY )
+                itemCheckBox->setCheckState( Qt::Unchecked );
+            else if ( ps == Zone::REJECT )
+                itemCheckBox->setCheckState( Qt::PartiallyChecked );
+            else
+                itemCheckBox->setCheckState( Qt::Checked );
+
+            protocolTreeWidget->setItemWidget(item, i+1, itemCheckBox);
+            connect( itemCheckBox, SIGNAL( stateChanged(int) ), itemCheckBox, SLOT( stateChanged(int)) );
+            connect( itemCheckBox, SIGNAL( protocolStateChanged(std::string const&, std::string const &, Zone::ProtocolState) ), this, SLOT( on_protocolStateChanged(std::string const &, std::string const &, Zone::ProtocolState)) );
+        }
+    }
+
+    protocolTreeWidget->header()->setResizeMode( QHeaderView::ResizeToContents );
 }
+
 void GuardDogDialog_w::setZoneGUI( ::Zone const & zone ) 
 {
     zoneNameLineEdit->setText( zone.getName().c_str());
@@ -381,35 +612,33 @@ void GuardDogDialog_w::setZonePageEnabled(::Zone const & thisZone, bool enabled)
     }
 }
 
+void GuardDogDialog_w::on_zoneConnectionTableWidget_itemChanged( QTableWidgetItem * item )
+{
+    std::cout << "on_zoneConnectionTableWidget_itemChanged " << item->text().toStdString() << " " << item->checkState() << std::endl;
+    std::string fromZone = item->text().toStdString();
+    firewall.updateZoneConnection( currentZoneName(), fromZone, item->checkState() == Qt::Checked);
+}
+
 void GuardDogDialog_w::setZoneConnectionGUI(::Zone const & zone) 
 {
-    zoneConnectionTableWidget->clearContents();
+    zoneConnectionTableWidget->setRowCount( 0 );
+//    zoneConnectionTableWidget->clearContents();
 
     std::vector< std::string > const & zoneList = firewall.getZoneList();
+    std::string zoneFrom = zone.getName(); 
 
-    BOOST_FOREACH( std::string const & s, zoneList )
+    BOOST_FOREACH( std::string const & zoneTo, zoneList )
     {
         zoneConnectionTableWidget->insertRow( zoneConnectionTableWidget->rowCount() );
-        QTableWidgetItem * item = new QTableWidgetItem( s.c_str() );
-        item->setCheckState( Qt::Unchecked );
+        QTableWidgetItem * item = new QTableWidgetItem( zoneTo.c_str() );
+        bool connected = firewall.areZonesConnected( zoneFrom, zoneTo );
+        if ( connected )
+            item->setCheckState( Qt::Checked );
+        else 
+            item->setCheckState( Qt::Unchecked );
+
         zoneConnectionTableWidget->setItem( zoneConnectionTableWidget->rowCount()-1, 0, item );
     }
-    
-#if 0
-    QListIterator<GuardDogFirewall::Zone> *zit;
-    QListViewItem *kid;
-
-    zit = firewall.newZonesIterator();
-    kid = connectionslistview->firstChild();
-    for(; zit->current(); ++(*zit)) {
-        ASSERT(kid!=0);
-        ((QCheckListItem *)kid)->setOn(zone.isConnected(zit->current()));
-        ((QCheckListItem *)kid)->setEnabled(zone.isConnectionMutable(zit->current()));
-        kid->repaint();
-        kid = kid->nextSibling();
-    }
-    delete zit;
-#endif
 }
 
 void GuardDogDialog_w::setUserDefinedProtocolGUI( UserDefinedProtocol const & userprotocol) 

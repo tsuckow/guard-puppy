@@ -3285,20 +3285,20 @@
   <reference href="http://www.robertgraham.com/pubs/firewall-seen.html">FAQ: Firewall Forensics (What am I seeing?)</reference>
 </protocol>
 <protocol name="smtps">
- Â <longname>SMTP - Simple Mail Transfer Protocol over SSL</longname>
-Â  <description>SMTP is used to transfer and deliver email across the network.
-Â  It is the standard for transmitting email across the Internet. This enables
-Â  the SSL (secure socket layer) SMTP transmission. Note that this method
-Â  for mail transmission is deprecated and you should use TLS instead which
-Â  uses the normal port 25 instead.
+  <longname>SMTPS - Simple Mail Transfer Protocol over SSL</longname>
+  <description>SMTP is used to transfer and deliver email across the network.
+  It is the standard for transmitting email across the Internet. This enables
+  the SSL (secure socket layer) SMTP transmission. Note that this method
+  for mail transmission is deprecated and you should use TLS instead which
+  uses the normal port 25 instead.
   </description>
- Â <classification class="mail"/>
-Â  <network>
-Â   Â <tcp source="client" dest="server">
-Â   Â  Â <source><port portnum="dynamic"/></source>
-Â   Â  Â <dest><port portnum="465"/></dest>
-Â   Â </tcp>
-Â  </network>
-Â  <security threat="low" falsepos="low"/>
+  <classification class="mail"/>
+  <network>
+    <tcp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="465"/></dest>
+    </tcp>
+  </network>
+  <security threat="low" falsepos="low"/>
 </protocol>
 </protocoldb>

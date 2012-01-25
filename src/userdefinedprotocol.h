@@ -25,139 +25,131 @@ email                : simon@simonzone.com
 //
 // This class is basically a facade over the Protocol DB classes.
 //
-class UserDefinedProtocol {
+class UserDefinedProtocol 
+{
+    uint id;
+    //    ProtocolDB *db;
 public:
-    //UserDefinedProtocol(ProtocolDB *database, uint newid) {
-    UserDefinedProtocol(uint newid) 
+    ProtocolEntry entry;
+    ProtocolNetUse       netuse;
+    ProtocolNetUseDetail destdetail;
+public:
+//    UserDefinedProtocol(ProtocolDB *database, uint newid) {
+    UserDefinedProtocol(std::string const & tmpstring, uchar udptype, uint udpstartport, uint udpendport, bool udpbidirectional, ProtocolDB & database, uint newid) 
     {
-
         //    db = database;
 
-        entry = ProtocolDB::ProtocolEntry() ;
-        entry.classification = ProtocolDB::CLASS_CUSTOM;
+        entry = ProtocolEntry() ;
+        entry.classification = CLASS_CUSTOM;
         setID(newid);
-        netuse =  ProtocolDB::ProtocolNetUse();
+        netuse =  ProtocolNetUse();
         netuse.type = IPPROTO_TCP;
         netuse.bidirectional = true;
-        netuse.source = ProtocolDB::ENTITY_CLIENT;
-        netuse.dest = ProtocolDB::ENTITY_SERVER;
-        entry.networkuse.push_back(netuse);
+        netuse.source = ENTITY_CLIENT;
+        netuse.dest = ENTITY_SERVER;
+        entry.addNetwork( netuse);
 
-        ProtocolDB::ProtocolNetUseDetail sourcedetail;
-        sourcedetail.alternate = false;
-        sourcedetail.rangetype = ProtocolDB::PORTRANGE_ANY;
-        sourcedetail.start = 1024;
-        sourcedetail.end = 65535;
-        netuse.sourcedetaillist.push_back(sourcedetail);
+        ProtocolNetUseDetail sourcedetail;
+        sourcedetail.setAlternate( false );
+        sourcedetail.setRangeType( PORTRANGE_ANY );
+        sourcedetail.setStart( 1024 );
+        sourcedetail.setEnd( 65535 );
+        netuse.addSource(sourcedetail);
 
-        destdetail = ProtocolDB::ProtocolNetUseDetail();
-        destdetail.alternate = false;
-        destdetail.rangetype = ProtocolDB::PORTRANGE_RANGE;
-        destdetail.start = 0;
-        destdetail.end = 0;
-        netuse.destdetaillist.push_back(destdetail);
+        destdetail = ProtocolNetUseDetail();
+        destdetail.setAlternate( false );
+        destdetail.setRangeType( PORTRANGE_RANGE );
+        destdetail.setStart( 0 );
+        destdetail.setEnd( 0 );
+        netuse.addDest(destdetail);
 
-        //    db->insertEntry(entry);
+        setName(tmpstring);
+        setType((uchar)udptype);
+        setStartPort(udpstartport);
+        setEndPort(udpendport);
+        setBidirectional(udpbidirectional);
+
+        database.addProtocolEntry(entry);
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    ~UserDefinedProtocol() {
+    ~UserDefinedProtocol() 
+    {
         //    db->takeEntry(entry);
         //    delete entry;
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    void setID(uint newid) {
+    void setID(uint newid) 
+    {
         id = newid;
         std::stringstream ss;
         ss << "userdefined" << id;
         entry.name = ss.str();
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    uint getID() const {
+    uint getID() const 
+    {
         return id;
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    void setName(const std::string &n) {
+    void setName(const std::string &n) 
+    {
         entry.longname = n;
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    std::string getRangeString() const {
-        std::stringstream result;
-        if (destdetail.start == destdetail.end)
-            result << destdetail.start;
-        else
-            result << destdetail.start << ":" << destdetail.end;
-        return result.str();
+    std::string getRangeString() const 
+    {
+        return destdetail.getRangeString();
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    std::string getName() const {
+    std::string getName() const 
+    {
         return entry.longname;
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    void setType(uchar t) {
+    void setType(uchar t) 
+    {
         netuse.type = t;
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-
-    uchar getType() const {
+    uchar getType() const 
+    {
         return netuse.type;
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    void setBidirectional(bool on) {
+    void setBidirectional(bool on) 
+    {
         netuse.bidirectional = on;
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    bool isBidirectional() const {
-        return (netuse.type==IPPROTO_TCP) || netuse.bidirectional;
+    bool isBidirectional() const 
+    {
+        return netuse.isBidirectional();
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    void setStartPort(uint p) {
-        destdetail.start = p;
-        if(destdetail.start > destdetail.end) {
-            destdetail.end = p;
-        }
+    void setStartPort(uint p) 
+    {
+        destdetail.setStartPort( p );
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    void setEndPort(uint p) {
-        destdetail.end = p;
-        if(destdetail.start > destdetail.end) {
-            destdetail.start = p;
-        }
+    void setEndPort(uint p) 
+    {
+        destdetail.setEndPort( p );
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    uint getStartPort() const {
-        return destdetail.start;
+    uint getStartPort() const 
+    {
+        return destdetail.getStart();
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    uint getEndPort() const {
-        return destdetail.end;
+    uint getEndPort() const 
+    {
+        return destdetail.getEnd();
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    ProtocolDB::ProtocolEntry const & getProtocolEntry() const {
+    ProtocolEntry const & getProtocolEntry() const 
+    {
         return entry;
     }    
-private:
-    uint id;
-    //    ProtocolDB *db;
-public:
-    ProtocolDB::ProtocolEntry entry;
-private:
-    ProtocolDB::ProtocolNetUse netuse;
-    ProtocolDB::ProtocolNetUseDetail destdetail;
 };
 
 #endif

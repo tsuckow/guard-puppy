@@ -1,4 +1,5 @@
 #include <QDialog>
+#include <QCheckBox>
 #include "ui_guarddog.h"
 
 #include <iostream>
@@ -7,6 +8,24 @@
 #include "guardDogFirewall.h"
 
 #include "zone.h"
+
+class ProtocolCheckBox : public QCheckBox
+{
+    Q_OBJECT;
+
+    std::string zoneTo;
+    std::string protocol;
+public:
+    ProtocolCheckBox( std::string const & _zoneTo, std::string const & _protocol, QWidget * parent )
+     : QCheckBox( parent ), zoneTo( _zoneTo ), protocol( _protocol )
+    {
+    }
+signals:
+    void protocolStateChanged( std::string const & , std::string const & , Zone::ProtocolState );
+public slots:
+    void stateChanged(int);
+};
+
 
 class GuardDogDialog_w : public QDialog, Ui::GuardDogDialog
 {
@@ -47,6 +66,43 @@ private slots:
     void on_okayPushButton_clicked();
     void on_cancelPushButton_clicked();
     void on_applyPushButton_clicked();
+
+    void on_protocolZoneListWidget_currentItemChanged( QListWidgetItem * current, QListWidgetItem * previous );
+    void on_zoneListWidget_currentItemChanged( QListWidgetItem * current, QListWidgetItem * previous );
+    void on_zoneNameLineEdit_textChanged( QString const & text );
+    void on_zoneAddressListBox_currentItemChanged( QListWidgetItem * current, QListWidgetItem * previous );
+    void on_zoneAddressLineEdit_textChanged( QString const & text );
+    void on_newZoneAddressPushButton_clicked();
+    void on_deleteZoneAddressPushButton_clicked();
+    void on_newZonePushButton_clicked();
+    void on_deleteZonePushButton_clicked();
+    void on_tabWidget_currentChanged( int index );
+    void on_protocolTreeWidget_itemClicked( QTreeWidgetItem * item, int column );
+    void on_protocolTreeWidget_itemChanged( QTreeWidgetItem * item, int column );
+    void on_protocolStateChanged( std::string const & zoneTo, std::string const & protocol, Zone::ProtocolState state );
+    void on_zoneConnectionTableWidget_itemChanged( QTableWidgetItem * item );
+
+private:
+    std::string currentZoneName() const
+    {
+        if ( zoneListWidget->currentItem() )
+            return zoneListWidget->currentItem()->text().toStdString();
+        return "";
+    }
+    std::string currentProtocolZoneName() const
+    {
+        if ( protocolZoneListWidget->currentItem() )
+            return protocolZoneListWidget->currentItem()->text().toStdString();
+        return "";
+    }
+    std::string currentMachineName() const
+    {
+        if ( zoneAddressListBox->currentItem() )
+            return zoneAddressListBox->currentItem()->text().toStdString();
+        return "";
+    }
+
+
 
 };
 

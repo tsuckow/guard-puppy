@@ -16,6 +16,7 @@ exe guarddog
     guarddog.ui guarddogDialog_w.cpp guarddogDialog_w.h
     AboutDialog.ui guarddogAboutDialog_w.cpp guarddogAboutDialog_w.h
     myGuardDog.cpp
+      /boost//regex 
 
       /qt//QtCore
       /qt//QtGui

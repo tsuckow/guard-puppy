@@ -19,7 +19,15 @@ int main(int argc, char *argv[])
     }
 
 
-
-    guardDogDialog.show();
-    return app.exec();
+    int rc = 0;
+    try
+    {
+        guardDogDialog.show();
+        rc = app.exec();
+    }
+    catch ( std::string const & msg )
+    {
+        std::cout << "Caught: " << msg << std::endl;
+    }
+    return rc;
 }

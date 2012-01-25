@@ -17,213 +17,249 @@
 #ifndef IPRANGE_H
 #define IPRANGE_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-#include <qstring.h>
+#include <boost/regex.hpp>
 
 enum IPRangeType {invalid,domainname,ip,iprange};
-class IPRange {
+class IPRange 
+{
 public:
 
-IPRange() {
-    digested = false;
-}
-
-IPRange(const std::string &a) {
-    setAddress(a);
-}
-        
-~IPRange() {
-
-}
-
-void setAddress(const std::string &a) {
-    address = a;
-    digested = false;
-}
-
-///////////////////////////////////////////////////////////////////////////
-std::string getAddress() const {
-    return address;
-}
-
-///////////////////////////////////////////////////////////////////////////
-IPRangeType getType() {
-    if(!digested) {
-        digest();
-        digested = true;
+    IPRange() 
+    {
+        digested = false;
     }
-    return type;
-}
 
-///////////////////////////////////////////////////////////////////////////
-void digest() {
-#if 0
-    KRegExp sanity("^[0-9a-zA-Z./-]*$");
-    KRegExp domainnametest("^([a-zA-Z0-9-]+\\.)+[a-zA-Z0-9-]+$");
-    KRegExp iptest("^([0-9]+)\\.([0-9]+)\\.([0-9]+)\\.([0-9]+)$");
-    KRegExp ipmaskedtest("^([0-9]+)\\.([0-9]+)\\.([0-9]+)\\.([0-9]+)/([0-9]+)$");
-    KRegExp ipmasked2test("^([0-9]+)\\.([0-9]+)\\.([0-9]+)\\.([0-9]+)/([0-9]+)\\.([0-9]+)\\.([0-9]+)\\.([0-9]+)$");
-    
-    long ipbyte;
-    uint bitmask;
-    mask = 32;
+    IPRange(std::string const & a) 
+    {
+        setAddress(a);
+    }
+
+    ~IPRange() {
+
+    }
+
+    void setAddress(const std::string &a) 
+    {
+        address = a;
+        digest();
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    std::string getAddress() const 
+    {
+        return address;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    IPRangeType getType() {
+        if(!digested) {
+            digest();
+            digested = true;
+        }
+        return type;
+    }
+
+    long toLong( std::string const & s )
+    {
+        return boost::lexical_cast<long>(s);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    void digest() 
+    {
+        boost::regex sanity("^[0-9a-zA-Z./-]*$");
+        boost::regex domainnametest("^([a-zA-Z0-9-]+\\.)+[a-zA-Z0-9-]+$");
+        boost::regex iptest("^([0-9]+)\\.([0-9]+)\\.([0-9]+)\\.([0-9]+)$");
+        boost::regex ipmaskedtest("^([0-9]+)\\.([0-9]+)\\.([0-9]+)\\.([0-9]+)/([0-9]+)$");
+        boost::regex ipmasked2test("^([0-9]+)\\.([0-9]+)\\.([0-9]+)\\.([0-9]+)/([0-9]+)\\.([0-9]+)\\.([0-9]+)\\.([0-9]+)$");
+
+        long ipbyte;
+        uint bitmask;
+        mask = 32;
 
         // Smoke text
-    if(sanity.match((const char *)address)==false) {
-        type = invalid;
-        return;
-    }
+        if(boost::regex_match( address, sanity )==false) 
+        {
+            type = invalid;
+            return;
+        }
 
-    if(address.length()==0) {
-        type = invalid;
-        return;
-    }
+        if(address.length()==0) 
+        {
+            type = invalid;
+            return;
+        }
 
         // Test against the domainname regexp.
-    if(domainnametest.match((const char *)address)) {
-        type = domainname;
-        mask = 32;
-        return;
-    }
-    
-        // Ok, now lets try the IP address regexp.
-    if(iptest.match((const char *)address)==true) {
-        ipbyte = atol(iptest.group(1));    // Yep, it returns char *.
-        if(ipbyte<0 || ipbyte>255) {
-            type = invalid;
+        if(boost::regex_match(address, domainnametest)) 
+        {
+            type = domainname;
+            mask = 32;
             return;
         }
-        ipbyte = atol(iptest.group(2));
-        if(ipbyte<0 || ipbyte>255) {
-            type = invalid;
-            return;
-        }
-        ipbyte = atol(iptest.group(3));
-        if(ipbyte<0 || ipbyte>255) {
-            type = invalid;
-            return;
-        }
-        ipbyte = atol(iptest.group(4));
-        if(ipbyte<0 || ipbyte>255) {
-            type = invalid;
-            return;
-        }
-        type = ip;
-        mask = 32;
-        return;
-    }
 
         // Ok, now lets try the IP address regexp.
-    if(ipmaskedtest.match((const char *)address)==true) {
-        ipbyte = atol(ipmaskedtest.group(1));    // Yep, it returns char *.
-        if(ipbyte<0 || ipbyte>255) {
-            type = invalid;
+        boost::smatch what;
+        if(boost::regex_match(address, what, iptest)==true) 
+        {
+            ipbyte = toLong(what[1]);    // Yep, it returns char *.
+            if(ipbyte<0 || ipbyte>255) 
+            {
+                type = invalid;
+                return;
+            }
+            ipbyte = toLong(what[2]);
+            if(ipbyte<0 || ipbyte>255) 
+            {
+                type = invalid;
+                return;
+            }
+            ipbyte = toLong(what[3]);
+            if(ipbyte<0 || ipbyte>255) 
+            {
+                type = invalid;
+                return;
+            }
+            ipbyte = toLong(what[4]);
+            if(ipbyte<0 || ipbyte>255) 
+            {
+                type = invalid;
+                return;
+            }
+            type = ip;
+            mask = 32;
             return;
         }
-        ipbyte = atol(ipmaskedtest.group(2));
-        if(ipbyte<0 || ipbyte>255) {
-            type = invalid;
-            return;
-        }
-        ipbyte = atol(ipmaskedtest.group(3));
-        if(ipbyte<0 || ipbyte>255) {
-            type = invalid;
-            return;
-        }
-        ipbyte = atol(ipmaskedtest.group(4));
-        if(ipbyte<0 || ipbyte>255) {
-            type = invalid;
-            return;
-        }
+
+        // Ok, now lets try the IP address regexp.
+        if(boost::regex_match(address, what, ipmaskedtest)==true) 
+        {
+            ipbyte = toLong( what[1] );
+            if(ipbyte<0 || ipbyte>255) 
+            {
+                type = invalid;
+                return;
+            }
+            ipbyte = toLong( what[2] );
+            if(ipbyte<0 || ipbyte>255) 
+            {
+                type = invalid;
+                return;
+            }
+            ipbyte = toLong( what[3] );
+            if(ipbyte<0 || ipbyte>255) 
+            {
+                type = invalid;
+                return;
+            }
+            ipbyte = toLong( what[4] );
+            if(ipbyte<0 || ipbyte>255) 
+            {
+                type = invalid;
+                return;
+            }
             // Mask byte.
-        ipbyte = atol(ipmaskedtest.group(5));
-        if(ipbyte<0 || ipbyte>32) {
-            type = invalid;
+            ipbyte = toLong( what[5] );
+            if(ipbyte<0 || ipbyte>32) 
+            {
+                type = invalid;
+                return;
+            }
+            mask = ipbyte;
+            type = iprange;
             return;
         }
-        mask = ipbyte;
-        type = iprange;
-        return;
-    }
-    
-    bitmask = 0;
-    if(ipmasked2test.match((const char *)address)==true) {
-        ipbyte = atol(ipmasked2test.group(1));    // Yep, it returns char *.
-        if(ipbyte<0 || ipbyte>255) {
-            type = invalid;
-            return;
-        }
-        ipbyte = atol(ipmasked2test.group(2));
-        if(ipbyte<0 || ipbyte>255) {
-            type = invalid;
-            return;
-        }
-        ipbyte = atol(ipmasked2test.group(3));
-        if(ipbyte<0 || ipbyte>255) {
-            type = invalid;
-            return;
-        }
-        ipbyte = atol(ipmasked2test.group(4));
-        if(ipbyte<0 || ipbyte>255) {
-            type = invalid;
-            return;
-        }
-        ipbyte = atol(ipmasked2test.group(5));
-        if(ipbyte<0 || ipbyte>255) {
-            type = invalid;
-            return;
-        }
+
+        bitmask = 0;
+        if(boost::regex_match(address, what, ipmasked2test)==true) 
+        {
+            ipbyte = toLong( what[1] );
+            if(ipbyte<0 || ipbyte>255) 
+            {
+                type = invalid;
+                return;
+            }
+            ipbyte = toLong( what[2] );
+            if(ipbyte<0 || ipbyte>255) 
+            {
+                type = invalid;
+                return;
+            }
+            ipbyte = toLong( what[3] );
+            if(ipbyte<0 || ipbyte>255) 
+            {
+                type = invalid;
+                return;
+            }
+            ipbyte = toLong( what[4] );
+            if(ipbyte<0 || ipbyte>255) 
+            {
+                type = invalid;
+                return;
+            }
+            ipbyte = toLong( what[5] );
+            if(ipbyte<0 || ipbyte>255) 
+            {
+                type = invalid;
+                return;
+            }
             // Build up the bit mask.
-        bitmask = ((uint)ipbyte)<<24;
-        ipbyte = atol(ipmasked2test.group(6));
-        if(ipbyte<0 || ipbyte>255) {
-            type = invalid;
-            return;
-        }
-        bitmask |= ((uint)ipbyte)<<16;
-        ipbyte = atol(ipmasked2test.group(7));
-        if(ipbyte<0 || ipbyte>255) {
-            type = invalid;
-            return;
-        }
-        bitmask |= ((uint)ipbyte)<<8;
-        ipbyte = atol(ipmasked2test.group(8));
-        if(ipbyte<0 || ipbyte>255) {
-            type = invalid;
-            return;
-        }
-        bitmask |= ((uint)ipbyte);
-        type = iprange;
-        if(bitmask==0) {
-            mask = 0;
-        } else {
+            bitmask = ((uint)ipbyte)<<24;
+            ipbyte = toLong( what[6] );
+            if(ipbyte<0 || ipbyte>255) 
+            {
+                type = invalid;
+                return;
+            }
+            bitmask |= ((uint)ipbyte)<<16;
+            ipbyte = toLong( what[7] );
+            if(ipbyte<0 || ipbyte>255) 
+            {
+                type = invalid;
+                return;
+            }
+            bitmask |= ((uint)ipbyte)<<8;
+            ipbyte = toLong( what[8] );
+            if(ipbyte<0 || ipbyte>255) 
+            {
+                type = invalid;
+                return;
+            }
+            bitmask |= ((uint)ipbyte);
+            type = iprange;
+            if(bitmask==0) 
+            {
+                mask = 0;
+            } 
+            else 
+            {
                 // Convert the 255.255.0.0 style mask in bitmask
                 // to a simple number (like 16 here)
-            mask = 32;
-            while((bitmask&1)==0) {
-                bitmask >>= 1;
-                mask--;
+                mask = 32;
+                while((bitmask&1)==0) 
+                {
+                    bitmask >>= 1;
+                    mask--;
+                }
             }
-        }
-        
-        return;
-    }
-    type = invalid;
-#endif
-}
 
-///////////////////////////////////////////////////////////////////////////
-uint getMask() {
-    if(!digested) {
-        digest();
-        digested = true;
+            return;
+        }
+        type = invalid;
     }
-    return mask;
-}    
+
+    ///////////////////////////////////////////////////////////////////////////
+    uint getMask() const
+    {
+       return mask;
+    }    
+
+    bool operator==( IPRange const & rhs ) const
+    {
+        return address == rhs.address;
+    }
 private:
-    std::string     address;
+    std::string address;
     bool        digested;
     IPRangeType type;
     uint        mask;

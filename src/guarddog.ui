@@ -17,7 +17,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>3</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="Zone">
       <attribute name="title">
@@ -56,7 +56,7 @@
          <item>
           <widget class="QLabel" name="label_6">
            <property name="text">
-            <string>Defined Network Zones:</string>
+            <string>Defined Network Zones (From):</string>
            </property>
           </widget>
          </item>
@@ -83,7 +83,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_9">
+          <widget class="QPushButton" name="newZonePushButton">
            <property name="text">
             <string>&amp;New Zone</string>
            </property>
@@ -216,7 +216,7 @@
              <widget class="QTableWidget" name="zoneConnectionTableWidget">
               <column>
                <property name="text">
-                <string>Connection</string>
+                <string>Connection (To)</string>
                </property>
               </column>
              </widget>
@@ -272,10 +272,10 @@
             </layout>
            </item>
            <item>
-            <widget class="QListView" name="listView"/>
+            <widget class="QListWidget" name="protocolZoneListWidget"/>
            </item>
            <item>
-            <widget class="QTextEdit" name="textEdit_2"/>
+            <widget class="QTextEdit" name="protocolTextEdit"/>
            </item>
           </layout>
          </item>
@@ -286,40 +286,25 @@
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_6">
             <item>
-             <widget class="QLabel" name="label_7">
+             <widget class="QLabel" name="protocolZoneLabel">
               <property name="text">
                <string>Protocols served frm zone 'Internet' to clients in zones:</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QTreeWidget" name="treeWidget">
+             <widget class="QTreeWidget" name="protocolTreeWidget">
+              <property name="editTriggers">
+               <set>QAbstractItemView::AllEditTriggers</set>
+              </property>
+              <property name="alternatingRowColors">
+               <bool>true</bool>
+              </property>
               <column>
                <property name="text">
                 <string>Network Protocol</string>
                </property>
               </column>
-              <column>
-               <property name="text">
-                <string>Local</string>
-               </property>
-              </column>
-              <item>
-               <property name="text">
-                <string>Chat</string>
-               </property>
-               <property name="flags">
-                <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable|ItemIsEnabled|ItemIsTristate</set>
-               </property>
-               <item>
-                <property name="text">
-                 <string>IRC</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-               </item>
-              </item>
              </widget>
             </item>
             <item>
@@ -348,6 +333,9 @@
                 </property>
                 <property name="text">
                  <string>Protocol is rejected</string>
+                </property>
+                <property name="checkable">
+                 <bool>true</bool>
                 </property>
                 <property name="checked">
                  <bool>true</bool>

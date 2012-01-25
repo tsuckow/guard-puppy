@@ -4,6 +4,12 @@
 #include <vector>
 #include <map>
 
+#include <boost/spirit/home/phoenix/core.hpp>
+#include <boost/spirit/home/phoenix/operator.hpp>
+#include <boost/spirit/home/phoenix/bind.hpp>
+
+#include <boost/foreach.hpp>
+
 
 class Zone 
 {
@@ -13,15 +19,55 @@ public:
 private:
     std::string name;
     std::string comment;
+    ZoneType    zonetype;
     std::vector<IPRange> memberMachine;
-    ZoneType             zonetype;
-    std::map< std::string, std::map< std::string, ProtocolState > > protocols;
+    std::map< std::string, std::map< std::string, ProtocolState > > protocols;  // [toZone][protocolName] = state
     std::vector< std::string > connections;          // List of zone names this zone is connected to
+    unsigned int id;
+    static unsigned int nextId;
 public:
 
     Zone( Zone const & rhs )
     {
         *this = rhs;
+    }
+
+    Zone( ZoneType zt ) 
+    {
+        zonetype = zt;
+        id = nextId++;
+    }
+
+    Zone( std::string const & zoneName, ZoneType zt = UserZone )
+     : name( zoneName ), zonetype( zt )
+    {
+        id = nextId++;
+    }
+
+    ~Zone() 
+    {
+    }
+
+    Zone & operator=( Zone const & rhs )
+    {
+        name          = rhs.name;
+        comment       = rhs.comment;
+        memberMachine = rhs.memberMachine;
+        zonetype      = rhs.zonetype;
+        protocols     = rhs.protocols;
+        id            = rhs.id;
+
+        return *this;
+    }
+
+    unsigned int getId() const { return id; }
+
+    void renameMachine( std::string const & oldMachineName, std::string const & newMachineName )
+    {
+        std::vector< IPRange >::iterator i = std::find_if( memberMachine.begin(), memberMachine.end(), boost::phoenix::bind( &IPRange::getAddress, boost::phoenix::arg_names::arg1) == oldMachineName );    
+
+        if ( i != memberMachine.end() )
+            i->setAddress( newMachineName );
     }
 
     void setComment( std::string const & c )
@@ -47,20 +93,17 @@ public:
     {
         return memberMachine;
     }
+
     void addMemberMachine( IPRange const & ip )
     {
         memberMachine.push_back( ip );
     }
 
-    Zone & operator=( Zone const & rhs )
+    void deleteMemberMachine( IPRange const & ip )
     {
-        name          = rhs.name;
-        comment       = rhs.comment;
-        memberMachine = rhs.memberMachine;
-        zonetype      = rhs.zonetype;
-        protocols     = rhs.protocols;
-
-        return *this;
+        std::vector<IPRange>::iterator i = std::find( memberMachine.begin(), memberMachine.end(), ip );
+        if ( i != memberMachine.end() )
+            memberMachine.erase( i );
     }
 
     bool operator!=( Zone const & rhs ) const 
@@ -68,27 +111,16 @@ public:
         return name != rhs.name; 
     }
 
-    void setProtocolState( Zone const & clientzone, ProtocolDB::ProtocolEntry const & proto, Zone::ProtocolState state) 
+    void setProtocolState( std::string const & zoneTo, std::string const & protocol, Zone::ProtocolState state) 
     {
-        //    ProtocolState currentstate;
-        //QHash< void *, ProtocolDB::ProtocolEntry * >::const_iterator zoneinfo;
-        //    QHash<void *, QHash<void *,ProtocolDB::ProtocolEntry *> >::iterator zoneinfo; 
-        if ( isConnected( clientzone ) == false ) 
-        {
-            return;
-        }
+        std::cout << "setProtocolState " << name << " to " << zoneTo << " for " << protocol << " " << state << std::endl;
+        protocols[ zoneTo ][ protocol ] = state;
+    }
 
-        //BTS new stuff...
+    void setProtocolState( Zone const & clientzone, ProtocolEntry const & proto, Zone::ProtocolState state) 
+    {
+        std::cout << "setProtocolState " << name << " to " << clientzone.name << " for " << proto.name << " " << state << std::endl;
         protocols[clientzone.name][proto.name] = state;
-    }
-
-    Zone(ZoneType zt) 
-    {
-        zonetype = zt;
-    }
-
-    ~Zone() 
-    {
     }
 
     bool editable() const 
@@ -102,8 +134,42 @@ public:
                 return true;
         }
     }
+
+    ProtocolState getProtocolState( std::string const & toZone, std::string const & protocolName ) const
+    {
+        std::map< std::string, std::map< std::string, ProtocolState > >::const_iterator zit;
+        zit = protocols.find( toZone );
+        if ( zit == protocols.end() )
+            return DENY;
+        std::map< std::string, ProtocolState >::const_iterator pit;
+        pit = zit->second.find( protocolName );
+        if ( pit == zit->second.end() )
+            return DENY;
+        return pit->second;
+
+    }
+
+    std::vector< std::string > getConnectedZoneProtocols( std::string const & toZone, ProtocolState state ) const
+    {
+        std::cout << "Looking for protocols from " << name << " to " << toZone << " in state " << state << std::endl;
+        std::vector< std::string > protocolsNames;
+        typedef std::map< std::string, ProtocolState > map_t;
+
+        std::map< std::string, map_t >::const_iterator zit;
+        zit = protocols.find( toZone );
+        if ( zit != protocols.end() )
+        {
+            BOOST_FOREACH( map_t::value_type const & mapEntry, zit->second )
+            {
+                if ( mapEntry.second == state )
+                    protocolsNames.push_back( mapEntry.first );
+            }
+        }
+        return protocolsNames;
+    }
     
-    ProtocolState getProtocolState(Zone const & clientzone, ProtocolDB::ProtocolEntry const & proto) 
+#if 0
+    ProtocolState getProtocolState(Zone const & clientzone, ProtocolEntry const & proto) 
     {
         if ( protocols.find( clientzone.name ) != protocols.end() )
         {
@@ -114,32 +180,13 @@ public:
         }
         return DENY;
     }
-
+#endif
     void denyAllProtocols( Zone const & clientzone ) 
     {
         if ( protocols.find( clientzone.name ) != protocols.end() )
         {
             protocols[ clientzone.name ].clear();
         }
-    }
-
-//    void deleteZone(Zone const & clientzone) 
-//    {
-//        disconnect(clientzone);
-//    }
-
-    ///////////////////////////////////////////////////////////////////////////
-    void deleteProtocol(ProtocolDB::ProtocolEntry const & proto) 
-    {
-#if 0
-        QPtrDictIterator< QPtrDict<ProtocolDB::ProtocolEntry> > *it;
-
-        it = new QPtrDictIterator< QPtrDict<ProtocolDB::ProtocolEntry> >(servedprotocols);
-        for(;it->current(); ++(*it)) {
-            setProtocolState((Zone *)it->currentKey(),proto,DENY);
-        }
-        delete it;
-#endif
     }
 
     bool isLocal() const
@@ -152,25 +199,28 @@ public:
         return zonetype==InternetZone;
     }
 
-    void connect( Zone const & clientzone ) 
+    void connect( std::string const & zoneTo ) 
     {
-        // BTS  check for zone already in connection...
-        connections.push_back( clientzone.getName() );
-        //    if ( isConnected(clientzone) ) {
-        //        return;
-        //    }
-        //    servedprotocols.insert((void *)clientzone, QHash<void *, ProtocolDB::ProtocolEntry *>());
-        //    rejectedprotocols.insert((void *)clientzone, QHash<void *, ProtocolDB::ProtocolEntry *>());
+        std::cout << "Connecting zone " << name << " to " << zoneTo << std::endl;
+        if ( !isConnected( zoneTo ) )
+        {
+            connections.push_back( zoneTo );
+        }
     }
 
-    void disconnect(Zone const & clientzone) 
+    void disconnect( std::string const & zoneTo )
     {
-        //    protocols.erase(clientzone.name);
+        std::cout << "Disconnecting zone " << name << " to " << zoneTo << std::endl;
+        std::vector< std::string >::iterator i = std::find( connections.begin(), connections.end(), zoneTo );
+        if ( i != connections.end() )
+        {
+            connections.erase( i );
+        }
     }
 
-    bool isConnected(Zone const & clientzone) 
+    bool isConnected( std::string const & zoneName ) const
     {
-        return protocols.find( clientzone.name ) != protocols.end();
+        return std::find( connections.begin(), connections.end(), zoneName ) != connections.end();
     }
 
     bool isConnectionMutable(Zone const & clientzone) 

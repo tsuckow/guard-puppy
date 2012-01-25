@@ -1,5 +1,8 @@
 path-constant GUARDDOG_ROOT : . ;
 
+use-project /boost : ../boost/ ;
+
+
 project : requirements # <threading>multi 
           <include>../boost
         ;
