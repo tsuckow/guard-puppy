@@ -12,7 +12,7 @@ INCLUDEPATH += . src
 # Assume there are boost-dev files in /usr/include
 # and the regex library is in /usr/lib/libboost_regex
 
-LIBS += "/usr/lib/libboost_regex.so.1.46.1"
+LIBS += -L/usr/lib -L/usr/lib64 -lboost_regex
 
 QT += core
 QT += gui
