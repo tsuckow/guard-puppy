@@ -2,7 +2,7 @@
 
 #include <QDialog>
 #include <QMessageBox>
-#include "ui_AboutDialog.h"
+#include "ui_aboutDialog.h"
 
 class GuardDogAboutDialog_w : public QDialog, Ui::GuardDogAboutDialog
 {

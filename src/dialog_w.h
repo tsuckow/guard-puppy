@@ -1,11 +1,11 @@
 #include <QDialog>
 #include <QCheckBox>
-#include "ui_guarddog.h"
+#include "ui_guardPuppy.h"
 
 #include <iostream>
 #include <boost/foreach.hpp>
 
-#include "guardDogFirewall.h"
+#include "firewall.h"
 
 #include "zone.h"
 

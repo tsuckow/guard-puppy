@@ -19,27 +19,12 @@ QT += gui
 QT += xml
 
 # Input
-# HEADERS += src/checktablelistitem.h
-# HEADERS += src/commandrunner.h
-# HEADERS += src/guarddog.h
-HEADERS += src/guarddogAboutDialog_w.h
-HEADERS += src/guarddogDialog_w.h
-# HEADERS += src/guarddogdoc.h
-# HEADERS += src/guardDogFirewall.h
-# HEADERS += src/iprange.h
-# HEADERS += src/protocoldb.h
-# HEADERS += src/simelineedit.h
-# HEADERS += src/userdefinedprotocol.h
-# HEADERS += src/zone.h
+HEADERS += src/aboutDialog_w.h
+HEADERS += src/dialog_w.h
 
-FORMS += src/AboutDialog.ui 
-FORMS += src/guarddog.ui
+FORMS += src/aboutDialog.ui 
+FORMS += src/guardPuppy.ui
 
-# SOURCES += src/checktablelistitem.cpp
-# SOURCES += src/commandrunner.cpp
-# SOURCES += src/guarddog.cpp
-SOURCES += src/guarddogAboutDialog_w.cpp
-SOURCES += src/guarddogDialog_w.cpp
-# SOURCES += src/main.cpp
-SOURCES += src/myGuardDog.cpp
-# SOURCES += src/simelineedit.cpp
+SOURCES += src/aboutDialog_w.cpp
+SOURCES += src/dialog_w.cpp
+SOURCES += src/guardPuppy.cpp

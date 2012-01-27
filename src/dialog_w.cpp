@@ -1,5 +1,5 @@
-#include "guarddogDialog_w.h"
-#include "guarddogAboutDialog_w.h"
+#include "dialog_w.h"
+#include "aboutDialog_w.h"
 #include <iostream>
 
 unsigned int Zone::nextId = 0;
@@ -781,7 +781,7 @@ void GuardDogDialog_w::buildConnectionGUI()
 #include <string.h>
 
 // application specific includes
-#include "guarddogdoc.h"
+#include "doc.h"
 #include "zone.h"
 
 #include <boost/foreach.hpp>

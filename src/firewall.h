@@ -1,6 +1,6 @@
 #pragma once
 
-#include "guarddogdoc.h"
+#include "doc.h"
 #include "protocoldb.h"
 
 #include <iostream>

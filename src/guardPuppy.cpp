@@ -3,7 +3,7 @@
 #include <QMessageBox>
 #include "unistd.h"
 
-#include "guarddogDialog_w.h"
+#include "dialog_w.h"
 
 int main(int argc, char *argv[])
 {
