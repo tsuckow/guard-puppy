@@ -486,6 +486,10 @@ void GuardPuppyDialog_w::createProtocolPages()
 
     protocolTreeWidget->setHeaderLabels( columns );
 
+    //  TODO This widget is calling getProtocolDataBase which should be calling
+    //  a function in firewall to do the work needed (traversal of the protocolDB)
+    //  to get the items for this list.  When this is moved, then getProtocolDataBase()
+    //  can be deleted from firewall.h
     std::vector< ProtocolEntry > const & protocolDB = firewall.getProtocolDataBase();
     std::cout << "Adding " << protocolDB.size() << " protocols" << std::endl;
     BOOST_FOREACH( ProtocolEntry const & pe, protocolDB )

@@ -67,6 +67,8 @@ class GuardPuppyFireWall
 public:
     std::string description;
 
+    //  TODO delete this once the FOREACH code in dialog_w.cpp is
+    //  ported to a function here.
     std::vector< ProtocolEntry > const & getProtocolDataBase() const
     {
         return pdb.getProtocolDataBase();
@@ -397,7 +399,7 @@ public:
     }
 
 
-    bool applyFirewall(bool warnfirst) 
+    bool applyFirewall(bool /* warnfirst */) 
     {
 #if 0
         std::string errorstring;
