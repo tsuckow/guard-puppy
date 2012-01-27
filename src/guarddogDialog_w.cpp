@@ -10,7 +10,7 @@ void GuardDogFireWall::buildGUI()
         gui->rebuildGui();
 }
 
-void GuardDogDialog_w::on_tabWidget_currentChanged( int index )
+void GuardDogDialog_w::on_tabWidget_currentChanged( int /* index */ )
 {
     rebuildGui();
 }
@@ -144,9 +144,9 @@ void GuardDogDialog_w::on_applyPushButton_clicked()
 #endif
 }
 
-void GuardDogDialog_w::on_protocolZoneListWidget_currentItemChanged( QListWidgetItem * current, QListWidgetItem * previous )
+void GuardDogDialog_w::on_protocolZoneListWidget_currentItemChanged( QListWidgetItem * /* current */, QListWidgetItem * /* previous  */)
 {
-    std::string str = "Protocols served frm zone '";
+    std::string str = "Protocols served from zone '";
     str += currentProtocolZoneName();
     str += "' to clients in zones:";
 
@@ -154,7 +154,7 @@ void GuardDogDialog_w::on_protocolZoneListWidget_currentItemChanged( QListWidget
     createProtocolPages();
 }
 
-void GuardDogDialog_w::on_zoneListWidget_currentItemChanged( QListWidgetItem * current, QListWidgetItem * previous )
+void GuardDogDialog_w::on_zoneListWidget_currentItemChanged( QListWidgetItem * /* current */, QListWidgetItem * /* previous */ )
 {
     std::cout << "currentZone is " << currentZoneName() << std::endl;
 
@@ -185,7 +185,7 @@ void GuardDogDialog_w::on_zoneNameLineEdit_textChanged( QString const & text )
 
 }
 
-void GuardDogDialog_w::on_zoneAddressListBox_currentItemChanged( QListWidgetItem * current, QListWidgetItem * previous )
+void GuardDogDialog_w::on_zoneAddressListBox_currentItemChanged( QListWidgetItem * current, QListWidgetItem * /* previous */ )
 {
     if ( current )
         zoneAddressLineEdit->setText( current->text() );
@@ -436,7 +436,11 @@ void GuardDogDialog_w::setLoggingPageEnabled(bool enabled)
 
 
 ///////////////////////////////////////////////////////////////////////////
-void GuardDogDialog_w::setProtocolPagesEnabled(bool enabled) {
+void GuardDogDialog_w::setProtocolPagesEnabled(bool enabled) 
+{
+    protocolZoneListWidget->setEnabled( enabled );
+    protocolTextEdit->setEnabled( enabled );
+    protocolTreeWidget->setEnabled( enabled );
 //    servingzonelistbox->setEnabled(enabled);
 //    protocolwidgetstack->setEnabled(enabled);
 }

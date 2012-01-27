@@ -13,6 +13,8 @@
 #include <boost/spirit/home/phoenix/operator.hpp>
 #include <boost/spirit/home/phoenix/bind.hpp>
 
+#include <boost/filesystem.hpp>
+
 #include "zone.h"
 
 #define SYSTEM_RC_FIREWALL "/etc/rc.firewall" 
@@ -472,12 +474,9 @@ public:
         return false;
     }
     // true if application should close
-    void copyFile(const char *src, const char *dest) {
-        //    KProcess *proc = new KProcess();
-        //    *proc<<"/bin/cp";
-        //    *proc<<src<<dest;
-        //    proc->start(KProcess::Block);
-        //    delete proc;
+    void copyFile( std::string const & src,  std::string const & dest ) 
+    {
+        boost::filesystem::copy_file( src, dest, boost::filesystem::copy_option::overwrite_if_exists );
     }
     void openDefault() 
     {
