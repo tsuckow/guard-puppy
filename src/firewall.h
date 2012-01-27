@@ -20,11 +20,11 @@
 #define SYSTEM_RC_FIREWALL "/etc/rc.firewall" 
 #define SYSTEM_RC_FIREWALL2 "/etc/rc2.firewall" 
 
-class GuardDogDialog_w;
+class GuardPuppyDialog_w;
 
 enum { LOG_WARNING };
 
-class GuardDogFireWall
+class GuardPuppyFireWall
 {
     ProtocolDB  pdb;    // The protocol database we are using.
     //    GuarddogDoc doc;    // Holds all the info about the firewall we are building.
@@ -37,7 +37,7 @@ class GuardDogFireWall
     // to be undone.
 
     bool superUserMode;
-    GuardDogDialog_w * gui;
+    GuardPuppyDialog_w * gui;
 
 
     enum LogRateUnit {SECOND=0, MINUTE, HOUR, DAY};
@@ -297,7 +297,7 @@ public:
     {
         return userdefinedprotocols;
     }
-    GuardDogFireWall( bool superuser, GuardDogDialog_w * _gui = 0 )
+    GuardPuppyFireWall( bool superuser, GuardPuppyDialog_w * _gui = 0 )
         : pdb( "protocoldb/networkprotocoldb.xml" ), superUserMode( superuser ), gui( _gui )
     {
         //        std::string protocollocation = "protocoldb/networkprotocoldb.xml";

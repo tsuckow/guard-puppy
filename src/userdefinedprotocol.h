@@ -14,8 +14,8 @@ email                : simon@simonzone.com
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#ifndef USERDEFINEDPROTOCOL_H
-#define USERDEFINEDPROTOCOL_H
+
+#pragma once
 
 #include <netinet/in.h>
 #include <qstring.h>
@@ -151,5 +151,3 @@ public:
         return entry;
     }    
 };
-
-#endif

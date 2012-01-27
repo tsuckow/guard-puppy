@@ -14,8 +14,8 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#ifndef IPRANGE_H
-#define IPRANGE_H
+
+#pragma once
 
 #include <boost/regex.hpp>
 
@@ -264,6 +264,4 @@ private:
     IPRangeType type;
     uint        mask;
 };
-
-#endif
 

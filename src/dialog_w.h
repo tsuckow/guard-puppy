@@ -1,3 +1,5 @@
+#pragma once
+
 #include <QDialog>
 #include <QCheckBox>
 #include "ui_guardPuppy.h"
@@ -27,14 +29,14 @@ public slots:
 };
 
 
-class GuardDogDialog_w : public QDialog, Ui::GuardDogDialog
+class GuardPuppyDialog_w : public QDialog, Ui::GuardPuppyDialog
 {
     Q_OBJECT;
     bool guiReady;
-    GuardDogFireWall firewall;
+    GuardPuppyFireWall firewall;
 
 public:
-    GuardDogDialog_w( bool god )
+    GuardPuppyDialog_w( bool god )
         : guiReady( false ), firewall( god, this )
     {
         setupUi( this );

@@ -8,7 +8,7 @@
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-    GuardDogDialog_w guardDogDialog( getuid() == 0 );
+    GuardPuppyDialog_w guardPuppyDialog( getuid() == 0 );
 
 
     if ( getuid()!=0 ) {
@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
     int rc = 0;
     try
     {
-        guardDogDialog.show();
+        guardPuppyDialog.show();
         rc = app.exec();
     }
     catch ( std::string const & msg )

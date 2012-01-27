@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>GuardDogDialog</class>
- <widget class="QDialog" name="GuardDogDialog">
+ <class>GuardPuppyDialog</class>
+ <widget class="QDialog" name="GuardPuppyDialog">
   <property name="geometry">
    <rect>
     <x>0</x>

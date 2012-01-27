@@ -4,11 +4,11 @@
 #include <QMessageBox>
 #include "ui_aboutDialog.h"
 
-class GuardDogAboutDialog_w : public QDialog, Ui::GuardDogAboutDialog
+class GuardPuppyAboutDialog_w : public QDialog, Ui::GuardPuppyAboutDialog
 {
     Q_OBJECT
 public:
-    GuardDogAboutDialog_w()
+    GuardPuppyAboutDialog_w()
     {
         setupUi( this );
         connect( closePushButton, SIGNAL( clicked() ), this, SLOT(accept() ) );

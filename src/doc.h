@@ -15,28 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GUARDDOGDOC_H
-#define GUARDDOGDOC_H
-
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
-// include files for QT
-#ifndef QT_LITE
-//#include <qstring.h>
-//#include <qptrlist.h>
-//#include <qptrdict.h>
-//#include <qstringlist.h>
-//#include <qtextstream.h>
-#else
-//#include "qstring.h"
-//#include "qptrlist.h"
-//#include "qptrdict.h"
-//#include "qstringlist.h"
-//#include "qtextstream.h"
-//#include "dummylocale.h"
-#endif
+#pragma once
 
 #include <map>
 #include <boost/foreach.hpp>
@@ -45,8 +24,7 @@
 #include "userdefinedprotocol.h"
 #include "iprange.h"
 
-class GuarddogDoc {
+class GuarddogDoc 
+{
 
 };
-
-#endif // GUARDDOGDOC_H
