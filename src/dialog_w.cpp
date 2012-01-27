@@ -1,14 +1,9 @@
-#include "dialog_w.h"
-#include "aboutDialog_w.h"
 #include <iostream>
 
-unsigned int Zone::nextId = 0;
+#include "dialog_w.h"
+#include "aboutDialog_w.h"
 
-void GuardPuppyFireWall::buildGUI() 
-{
-    if ( gui != 0 )
-        gui->rebuildGui();
-}
+unsigned int Zone::nextId = 0;
 
 void GuardPuppyDialog_w::on_tabWidget_currentChanged( int /* index */ )
 {
@@ -727,101 +722,3 @@ void GuardPuppyDialog_w::buildConnectionGUI()
     }
 #endif
 }
-
-/***************************************************************************
-                          guarddogdoc.cpp  -  description
-                             -------------------
-    begin                : Thu Feb 10 20:57:36 EST 2000
-    copyright            : (C) 2000-2006 by Simon Edwards
-    email                : simon@simonzone.com
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-// include files for Qt
-#ifndef QT_LITE
-//#include <qdir.h>
-//#include <qfileinfo.h>
-//#include <qwidget.h>
-// include files for KDE
-//#include <kapp.h>
-//#include <kmessagebox.h>
-//#include <kprocess.h>
-//#include <kglobal.h>
-//#include <kstddirs.h>
-//#include <klocale.h>
-//#include <ksavefile.h>
-//#include <ktempfile.h>
-#else
-    // Console version stuff.
-//#include "qdir.h"
-//#include "qfileinfo.h"
-
-#endif
-
-#include <iostream>
-
-#include <errno.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <stdlib.h>
-
-#include <sys/ioctl.h>
-#include <net/if.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <syslog.h>
-#include <string.h>
-
-// application specific includes
-#include "doc.h"
-#include "zone.h"
-
-#include <boost/foreach.hpp>
-#include <QStringList>
-
-///////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////
-//GuardPuppyFirewall::GuardPuppyFirewall(ProtocolDB & database) 
-//    : pdb( database )
-//{
-//    zones.setAutoDelete(true);
-//    userdefinedprotocols.setAutoDelete(true);
-//	factoryDefaults();
-//}
-
-///////////////////////////////////////////////////////////////////////////
-//GuardPuppyFirewall::~GuardPuppyFirewall() {
-//    while(countUserDefinedProtocols()!=0) {
-//        deleteUserDefinedProtocol(userDefinedProtocolAt(0));
-//    }
-//}
-
-///////////////////////////////////////////////////////////////////////////
-//void GuardPuppyFirewall::deleteZone(GuardPuppyFirewall::Zone *thiszone) {
-#if 0
-    QList<Zone*>::iterator zit;
-
-    zones.find(thiszone);
-    zones.take();
-    
-    zit = zones.begin();
-    
-    for(;zit->current(); ++(*zit)) {
-        zit->current()->deleteZone(thiszone);
-    }
-    delete zit;
-    delete thiszone;
-#endif
-//}
-
-

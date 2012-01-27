@@ -36,8 +36,8 @@ class GuardPuppyDialog_w : public QDialog, Ui::GuardPuppyDialog
     GuardPuppyFireWall firewall;
 
 public:
-    GuardPuppyDialog_w( bool god )
-        : guiReady( false ), firewall( god, this )
+    GuardPuppyDialog_w( bool superuser )
+        : guiReady( false ), firewall( superuser )
     {
         setupUi( this );
         if ( firewall.isSuperUserMode() == false )

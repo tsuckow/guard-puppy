@@ -19,26 +19,22 @@ email                : simon@simonzone.com
 
 #include <netinet/in.h>
 #include <qstring.h>
-#include "protocoldb.h"
-
 #include <sstream>
+
+#include "protocoldb.h"
 //
 // This class is basically a facade over the Protocol DB classes.
 //
 class UserDefinedProtocol 
 {
     uint id;
-    //    ProtocolDB *db;
 public:
     ProtocolEntry entry;
     ProtocolNetUse       netuse;
     ProtocolNetUseDetail destdetail;
 public:
-//    UserDefinedProtocol(ProtocolDB *database, uint newid) {
     UserDefinedProtocol(std::string const & tmpstring, uchar udptype, uint udpstartport, uint udpendport, bool udpbidirectional, ProtocolDB & database, uint newid) 
     {
-        //    db = database;
-
         entry = ProtocolEntry() ;
         entry.classification = CLASS_CUSTOM;
         setID(newid);
@@ -151,3 +147,4 @@ public:
         return entry;
     }    
 };
+

@@ -4,12 +4,12 @@
 #include <vector>
 #include <map>
 
+#include <boost/foreach.hpp>
 #include <boost/spirit/home/phoenix/core.hpp>
 #include <boost/spirit/home/phoenix/operator.hpp>
 #include <boost/spirit/home/phoenix/bind.hpp>
 
-#include <boost/foreach.hpp>
-
+#include "iprange.h"
 
 class Zone 
 {

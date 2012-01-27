@@ -51,7 +51,8 @@ public:
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    IPRangeType getType() {
+    IPRangeType getType() 
+    {
         if(!digested) {
             digest();
             digested = true;

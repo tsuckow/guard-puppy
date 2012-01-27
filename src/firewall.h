@@ -1,48 +1,40 @@
 #pragma once
 
-#include "doc.h"
-#include "protocoldb.h"
-
-#include <iostream>
 #include <fstream>
+#include <iostream>
+
+#include <boost/algorithm/string.hpp>
+#include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
-#include <boost/algorithm/string.hpp>
-
 #include <boost/spirit/home/phoenix/core.hpp>
 #include <boost/spirit/home/phoenix/operator.hpp>
 #include <boost/spirit/home/phoenix/bind.hpp>
 
-#include <boost/filesystem.hpp>
-
+#include "protocoldb.h"
+#include "userdefinedprotocol.h"
 #include "zone.h"
 
 #define SYSTEM_RC_FIREWALL "/etc/rc.firewall" 
 #define SYSTEM_RC_FIREWALL2 "/etc/rc2.firewall" 
 
-class GuardPuppyDialog_w;
-
 enum { LOG_WARNING };
 
 class GuardPuppyFireWall
 {
-    ProtocolDB  pdb;    // The protocol database we are using.
-    //    GuarddogDoc doc;    // Holds all the info about the firewall we are building.
+    ProtocolDB  pdb;                // The protocol database we are using.
     bool modified;
     bool waspreviousfirewall;       // True if there was a previous Guarddog firewall active/available
-    // at program startup.
+                                    // at program startup.
     bool systemfirewallmodified;    // True if the current state of the system has been modified
-    // since program startup. This is needed at 'Cancel' time when
-    // we need to decide if we have any 'Apply'ed changes that need
-    // to be undone.
+                                    // since program startup. This is needed at 'Cancel' time when
+                                    // we need to decide if we have any 'Apply'ed changes that need
+                                    // to be undone.
 
     bool superUserMode;
-    GuardPuppyDialog_w * gui;
-
 
     enum LogRateUnit {SECOND=0, MINUTE, HOUR, DAY};
 
-    //    ProtocolDB & pdb;
     std::vector< Zone > zones;
 
     uint localPortRangeStart;
@@ -297,8 +289,8 @@ public:
     {
         return userdefinedprotocols;
     }
-    GuardPuppyFireWall( bool superuser, GuardPuppyDialog_w * _gui = 0 )
-        : pdb( "protocoldb/networkprotocoldb.xml" ), superUserMode( superuser ), gui( _gui )
+    GuardPuppyFireWall( bool superuser )
+        : pdb( "protocoldb/networkprotocoldb.xml" ), superUserMode( superuser ) //, gui( _gui )
     {
         //        std::string protocollocation = "protocoldb/networkprotocoldb.xml";
 
@@ -485,10 +477,8 @@ public:
         std::string errorstring;
         std::ifstream fileinfo( SYSTEM_RC_FIREWALL );
 
-        unbuildGUI();
         if ( superUserMode==false ) 
         {
-            buildGUI();
             return; // Sorry, if you are not root then you get no default firewall.
         }
 
@@ -519,20 +509,8 @@ public:
                 waspreviousfirewall = true;
             }
         }
-        buildGUI();
-
         // Backup the firewall.
         copyFile(SYSTEM_RC_FIREWALL,SYSTEM_RC_FIREWALL "~");
-    }
-    void buildGUI();
-    void unbuildGUI() {
-        //    updatinggui = true;
-        //    zonelistbox->clear();
-        //    zoneaddresslistbox->clear();
-        //    unbuildConnectionGUI();
-        //    userdefinedprotocolslistview->clear();
-        //    deleteProtocolPages();
-        //    updatinggui = false;
     }
 
     std::vector< ProtocolNetUse > getNetworkUse( std::string const & protocolName ) const
