@@ -11,20 +11,30 @@
 
 #include "iprange.h"
 
+/*
+**  Each zone maintains a list of IPaddress that define this zone and
+**  a list of zone-protocol pairs this zone can communicate with.
+*/
+
 class Zone 
 {
 public:
     enum ZoneType {LocalZone, InternetZone, UserZone};
     enum ProtocolState { PERMIT, DENY, REJECT };
 private:
-    std::string name;
-    std::string comment;
-    ZoneType    zonetype;
-    std::vector<IPRange> memberMachine;
+    std::string                name;
+    std::string                comment;
+    ZoneType                   zonetype;
+    std::vector<IPRange>       memberMachine;
     std::map< std::string, std::map< std::string, ProtocolState > > protocols;  // [toZone][protocolName] = state
-    std::vector< std::string > connections;          // List of zone names this zone is connected to
-    unsigned int id;
-    static unsigned int nextId;
+    std::vector< std::string > connections;          // List of zone names this zone is connected to, in theory, these are keys of protocols
+                                                     // Though it's possible that zones are connected in name before any protocols are associated
+                                                     // with them.  
+                                                     //! \todo Might be something to examine in the future.
+    //  id, nextId are used to assign integers to zones.  Probably not needed
+    //  as zone name could be used instead.  Too early to remove though.
+    unsigned int               id;
+    static unsigned int        nextId;
 public:
 
     Zone( Zone const & rhs )
@@ -123,6 +133,10 @@ public:
         protocols[clientzone.name][proto.name] = state;
     }
 
+    /*!
+    **  \todo This is debatable whether it's a valid function or not.
+    **       At a minimum, it's poorly named or in the wrong place.
+    */
     bool editable() const 
     {
         switch ( zonetype ) 
@@ -201,7 +215,6 @@ public:
 
     void connect( std::string const & zoneTo ) 
     {
-        std::cout << "Connecting zone " << name << " to " << zoneTo << std::endl;
         if ( !isConnected( zoneTo ) )
         {
             connections.push_back( zoneTo );
@@ -210,7 +223,6 @@ public:
 
     void disconnect( std::string const & zoneTo )
     {
-        std::cout << "Disconnecting zone " << name << " to " << zoneTo << std::endl;
         std::vector< std::string >::iterator i = std::find( connections.begin(), connections.end(), zoneTo );
         if ( i != connections.end() )
         {
@@ -225,10 +237,12 @@ public:
 
     bool isConnectionMutable(Zone const & clientzone) 
     {
-        if(isLocal() && clientzone.isInternet()) {
+        if(isLocal() && clientzone.isInternet())
+        {
             return false;
         }
-        if(isInternet() && clientzone.isLocal()) {
+        if(isInternet() && clientzone.isLocal())
+        {
             return false;
         }
         return true;

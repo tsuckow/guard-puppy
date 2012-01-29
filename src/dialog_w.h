@@ -33,12 +33,13 @@ class GuardPuppyDialog_w : public QDialog, Ui::GuardPuppyDialog
 {
     Q_OBJECT;
     bool guiReady;
-    GuardPuppyFireWall firewall;
+    GuardPuppyFireWall & firewall;
 
 public:
-    GuardPuppyDialog_w( bool superuser )
-        : guiReady( false ), firewall( superuser )
+    GuardPuppyDialog_w( GuardPuppyFireWall & _firewall )
+        : guiReady( false ), firewall( _firewall )
     {
+        //! \todo Read program options, i.e window geometery
         setupUi( this );
         if ( firewall.isSuperUserMode() == false )
         {

@@ -59,6 +59,7 @@ void GuardPuppyDialog_w::on_protocolTreeWidget_itemChanged( QTreeWidgetItem * it
 void GuardPuppyDialog_w::on_okayPushButton_clicked() 
 {
     firewall.save();
+    //! \todo also save program state, i.e. what the current window size, position is, saveOptions()
     close();
 }
 
@@ -163,7 +164,7 @@ void GuardPuppyDialog_w::on_zoneListWidget_currentItemChanged( QListWidgetItem *
 
 void GuardPuppyDialog_w::on_zoneNameLineEdit_textChanged( QString const & text )
 {
-    firewall.setNewZoneName( currentZoneName(), text.toStdString() );
+    firewall.zoneRename( currentZoneName(), text.toStdString() );
 
     if ( zoneListWidget->currentItem() )
     {
@@ -486,7 +487,7 @@ void GuardPuppyDialog_w::createProtocolPages()
 
     protocolTreeWidget->setHeaderLabels( columns );
 
-    //  TODO This widget is calling getProtocolDataBase which should be calling
+    //! \todo This widget is calling getProtocolDataBase which should be calling
     //  a function in firewall to do the work needed (traversal of the protocolDB)
     //  to get the items for this list.  When this is moved, then getProtocolDataBase()
     //  can be deleted from firewall.h

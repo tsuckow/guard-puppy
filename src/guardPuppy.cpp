@@ -8,8 +8,8 @@
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-    GuardPuppyDialog_w guardPuppyDialog( getuid() == 0 );
-
+    GuardPuppyFireWall firewall( getuid() == 0 );
+    GuardPuppyDialog_w guardPuppyDialog( firewall );
 
     if ( getuid()!=0 ) {
         QMessageBox::information(0,QString::null,QString("MORTALMODEWARNING"), QObject::tr(

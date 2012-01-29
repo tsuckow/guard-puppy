@@ -694,6 +694,10 @@ public:
             languagelist.push_back( l.substr(0,2) );
         }
 
+        /*!
+        **  \todo Need to eliminate the dependence on QFile
+        **       for the XML parsing.
+        */
         QFile xmlfile( filename.c_str() );
         if(!xmlfile.open(QIODevice::ReadOnly)) {
             errorstate = PROTOCOL_ERROR_OPEN_ERROR;

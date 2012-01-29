@@ -19,9 +19,20 @@
 
 #include <boost/regex.hpp>
 
-enum IPRangeType {invalid,domainname,ip,iprange};
+enum IPRangeType 
+{
+    invalid,
+    domainname,
+    ip,
+    iprange
+};
+
 class IPRange 
 {
+    std::string address;
+    bool        digested;
+    IPRangeType type;
+    uint        mask;
 public:
 
     IPRange() 
@@ -259,10 +270,5 @@ public:
     {
         return address == rhs.address;
     }
-private:
-    std::string address;
-    bool        digested;
-    IPRangeType type;
-    uint        mask;
 };
 

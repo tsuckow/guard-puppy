@@ -1,5 +1,16 @@
 #pragma once
 
+/*!
+**  This file and the accompanying GuardPuppyFirewall class implement
+**  the structures needed to generate a iptables script.
+**
+**  The core abstraction in the firewall is that communication happens
+**  between two zones.  This is a directional relationship.
+**
+**  Each zone maintains a list of zone-protocol pairs that it is allowed
+**  to communicate with.
+*/
+
 #include <fstream>
 #include <iostream>
 
@@ -16,22 +27,24 @@
 #include "zone.h"
 
 #define SYSTEM_RC_FIREWALL "/etc/rc.firewall" 
-#define SYSTEM_RC_FIREWALL2 "/etc/rc2.firewall" 
+#define SYSTEM_RC_FIREWALL2 "/etc/rc2.firewall"   //  This is temporary during development so that guardpuppy doesn't actually overwrite rc.firewall
 
-enum { LOG_WARNING };
+//! \todo These are values of logging.  However, there is a whole matching mechanism
+//  in iptables for logging filters and rules that could be implemented.
+enum { LOG_ALL_OR_UNMATCHED, LOG_FIRST, LOG_ALL_KNOWN_MATCHED };
 
 class GuardPuppyFireWall
 {
     ProtocolDB  pdb;                // The protocol database we are using.
     bool modified;
     bool waspreviousfirewall;       // True if there was a previous Guarddog firewall active/available
-                                    // at program startup.
+    // at program startup.
     bool systemfirewallmodified;    // True if the current state of the system has been modified
-                                    // since program startup. This is needed at 'Cancel' time when
-                                    // we need to decide if we have any 'Apply'ed changes that need
-                                    // to be undone.
+    // since program startup. This is needed at 'Cancel' time when
+    // we need to decide if we have any 'Apply'ed changes that need
+    // to be undone.
 
-    bool superUserMode;
+    bool superUserMode;             // True if GuardPuppy is running as root
 
     enum LogRateUnit {SECOND=0, MINUTE, HOUR, DAY};
 
@@ -67,13 +80,16 @@ class GuardPuppyFireWall
 public:
     std::string description;
 
-    //  TODO delete this once the FOREACH code in dialog_w.cpp is
+    //! \todo delete this once the FOREACH code in dialog_w.cpp is
     //  ported to a function here.
     std::vector< ProtocolEntry > const & getProtocolDataBase() const
     {
         return pdb.getProtocolDataBase();
     }
 
+    /*!
+    ** \brief Get the protocol description given a name of a protocol
+    */
     std::string getProtocolText( std::string const & protocol )
     {
         std::string text = "Not found";
@@ -87,6 +103,7 @@ public:
         return text;
     }
 
+    //! \todo My guess is none of the checkboxes on the GUI are connected to these calls yet
     void setLogDrop(bool on) { logdrop = on; }
     bool isLogDrop() { return logdrop; }
     void setLogReject(bool on) { logreject = on; }
@@ -122,65 +139,59 @@ public:
     void setAllowTCPTimestamps(bool on) { allowtcptimestamps = on; }
     bool isAllowTCPTimestamps() { return allowtcptimestamps; }
 
+    /*!
+    **  \brief add an ipAddress to a zone
+    */
     void addNewMachine( std::string const & zoneName, std::string const & ipAddress )
     {
-        std::vector< Zone >::iterator zit = std::find_if( zones.begin(), zones.end(), boost::phoenix::bind( &Zone::getName, boost::phoenix::arg_names::arg1) == zoneName );    
-        if ( zit == zones.end() )
-        {
-            std::cout << "Didn't find zone name: " << zoneName << std::endl;
-            throw std::string("Zone not found");
-        }
-        zit->addMemberMachine( IPRange( ipAddress ) );
+        Zone & zone = getZone( zoneName );
+
+        zone.addMemberMachine( IPRange( ipAddress ) );
     }
+
+    /*!
+    **  \brief  Delete an ipaddress from a zone
+    */
     void deleteMachine( std::string const & zoneName, std::string const & ipAddress )
     {
-        std::vector< Zone >::iterator zit = std::find_if( zones.begin(), zones.end(), boost::phoenix::bind( &Zone::getName, boost::phoenix::arg_names::arg1) == zoneName );    
-        if ( zit == zones.end() )
-        {
-            std::cout << "Didn't find zone name: " << zoneName << std::endl;
-            throw std::string("Zone not found");
-        }
-        zit->deleteMemberMachine( IPRange( ipAddress ) );
+        Zone & zone = getZone( zoneName );
+
+        zone.deleteMemberMachine( IPRange( ipAddress ) );
     }
+
+    /*!
+    **  \brief Change the name associated with an ipaddress in a given zone
+    */
     void setNewMachineName( std::string const & zoneName, std::string const & oldMachineName, std::string const & newMachineName )
     {
-        std::vector< Zone >::iterator zit = std::find_if( zones.begin(), zones.end(), boost::phoenix::bind( &Zone::getName, boost::phoenix::arg_names::arg1) == zoneName );    
-        if ( zit == zones.end() )
-        {
-            std::cout << "Didn't find zone name: " << zoneName << std::endl;
-            throw std::string("Zone not found");
-        }
-        zit->renameMachine( oldMachineName, newMachineName );
+        Zone & zone = getZone( zoneName );
 
+        zone.renameMachine( oldMachineName, newMachineName );
     }
 
-    void setProtocolState( std::string const & fromZone, std::string const & toZone, std::string const & protocolName, Zone::ProtocolState state )
+    /*!
+    **  \brief For a zoneFrom->zoneTo protocol, set the state to PERMIT, DENY, or REJECT
+    */
+    void setProtocolState( std::string const & zoneFrom, std::string const & zoneTo, std::string const & protocolName, Zone::ProtocolState state )
     {
-        std::vector< Zone >::iterator zit = std::find_if( zones.begin(), zones.end(), boost::phoenix::bind( &Zone::getName, boost::phoenix::arg_names::arg1) == fromZone );    
-        if ( zit == zones.end() )
-        {
-            std::cout << "Didn't find zone name: " << fromZone << std::endl;
-            throw std::string("Zone not found");
-        }
+        Zone & zone = getZone( zoneFrom );
 
-        return zit->setProtocolState( toZone, protocolName, state );
-
+        return zone.setProtocolState( zoneTo, protocolName, state );
     }
 
-
-    Zone::ProtocolState getProtocolState( std::string const & fromZone, std::string const & toZone, std::string const & protocolName )
+    /*!
+    **  \brief  Get the protocol state for a given zoneFrom->zoneTo protocol
+    */
+    Zone::ProtocolState getProtocolState( std::string const & zoneFrom, std::string const & zoneTo, std::string const & protocolName )
     {
-        std::vector< Zone >::const_iterator zit = std::find_if( zones.begin(), zones.end(), boost::phoenix::bind( &Zone::getName, boost::phoenix::arg_names::arg1) == fromZone );    
-        if ( zit == zones.end() )
-        {
-            std::cout << "Didn't find zone name: " << fromZone << std::endl;
-            throw std::string("Zone not found");
-        }
+        Zone & zone = getZone( zoneFrom );
 
-        return zit->getProtocolState( toZone, protocolName );
-
+        return zone.getProtocolState( zoneTo, protocolName );
     }
 
+    /*!
+    **  \brief Get a list of all the zones
+    */
     std::vector< std::string > getZoneList() const
     {
         std::vector< std::string > names;
@@ -191,14 +202,25 @@ public:
         return names;
     }
 
+    /*!
+    **  \brief  Return number of zones
+    **
+    **  \todo My guess is that places that use this could be rewritten more intelligently and this function could be removed
+    */
     size_t zoneCount() const { return zones.size(); }
 
 
+    /*!
+    **  \brief  Add a new zone to the firewall
+    */
     void addZone( std::string const & zoneName )
     {
         zones.push_back( Zone( zoneName ) );
     }
 
+    /*!
+    **  \brief  Delete a named zone from the firewall
+    */
     void deleteZone( std::string const & zoneName )
     {
         std::vector< Zone >::iterator zit = std::find_if( zones.begin(), zones.end(), boost::phoenix::bind( &Zone::getName, boost::phoenix::arg_names::arg1) == zoneName );    
@@ -210,7 +232,10 @@ public:
         zones.erase( zit );
     }
 #if 1
-    Zone const & getZone( std::string const & name = "" ) const
+    /*!
+    **  \brief get a constant reference to a zone given a name
+    */
+    Zone const & getZone( std::string const & name ) const
     {
         std::vector< Zone >::const_iterator zit = std::find_if( zones.begin(), zones.end(), boost::phoenix::bind( &Zone::getName, boost::phoenix::arg_names::arg1) == name );    
         if ( zit == zones.end() )
@@ -220,7 +245,10 @@ public:
         }
         return *zit;
     }
-    Zone & getZone( std::string const & name = "" )
+    /*!
+    **  \brief get a reference to a zone given a name
+    */
+    Zone & getZone( std::string const & name )
     {
         std::vector< Zone >::iterator zit = std::find_if( zones.begin(), zones.end(), boost::phoenix::bind( &Zone::getName, boost::phoenix::arg_names::arg1) == name );    
         if ( zit == zones.end() )
@@ -231,6 +259,10 @@ public:
         return *zit;
     }
 #endif
+
+    /*!
+    **  \brief Get a list of zones connected to this one, zoneFrom->*
+    */
     std::vector< std::string > getConnectedZones( std::string const & zoneFrom ) const
     {
         std::vector< std::string > connectedZones;
@@ -246,63 +278,72 @@ public:
         return connectedZones;
     }
 
-    void updateZoneConnection( std::string const & fromZone, std::string const & toZone, bool connected )
+    /*!
+    **  \brief  update teh connection state between zoneFrom and zoneTo
+    */
+    void updateZoneConnection( std::string const & zoneFrom, std::string const & zoneTo, bool connected )
     {
-        std::cout << "updateZoneConnection " << fromZone << " to " << toZone << " " << connected << std::endl;
+        std::cout << "updateZoneConnection " << zoneFrom << " to " <<
+        zoneTo << " " << connected << std::endl;
         if ( connected )
         {
-            getZone( fromZone ).connect( toZone );
+            getZone( zoneFrom ).connect( zoneTo );
         }
         else
         {
-            getZone( fromZone ).disconnect( toZone );
+            getZone( zoneFrom ).disconnect( zoneTo );
         }
     }
 
-    std::vector< std::string > getConnectedZoneProtocols( std::string const & fromZone, std::string const & toZone, Zone::ProtocolState state ) const
+    /*!
+    **  \brief get a list of protocols that between zoneFrom->zoneTo
+    */
+    std::vector< std::string > getConnectedZoneProtocols( std::string const & zoneFrom, std::string const & zoneTo, Zone::ProtocolState state ) const
     {
-        return getZone( fromZone ).getConnectedZoneProtocols( toZone, state );
+        return getZone( zoneFrom ).getConnectedZoneProtocols( zoneTo, state );
     }
 
+    /*!
+    **  \brief boolean whether zoneFrom is connected to zoneTo
+    */
     bool areZonesConnected( std::string const & zoneFrom, std::string const & zoneTo ) const
     {
-        std::vector< Zone >::const_iterator zit = std::find_if( zones.begin(), zones.end(), boost::phoenix::bind( &Zone::getName, boost::phoenix::arg_names::arg1) == zoneFrom );    
-        if ( zit == zones.end() )
-        {
-            std::cout << "Didn't find zone name: " << zoneFrom << std::endl;
-            return false;
-        }
-        return zit->isConnected( zoneTo );
+        Zone const & zone = getZone( zoneFrom );
+        return zone.isConnected( zoneTo );
     }
 
-    void setNewZoneName( std::string const & oldZoneName, std::string const & newZoneName )
+    /*!
+    **  \brief  Rename a zone name
+    **
+    **  This 
+    */
+    void zoneRename( std::string const & oldZoneName, std::string const & newZoneName )
     {
-        std::vector< Zone >::iterator zit = std::find_if( zones.begin(), zones.end(), boost::phoenix::bind( &Zone::getName, boost::phoenix::arg_names::arg1) == oldZoneName );    
-        if ( zit == zones.end() )
-        {
-            std::cout << "Didn't find zone name: " << oldZoneName << std::endl;
-            throw ( "setNewZoneName" );
-        }
-        zit->setName( newZoneName );
+        Zone & zone = getZone( oldZoneName );
+        zone.setName( newZoneName );
     }
 
 public:
+    /*!
+    **  \brief return list of user defined protocols
+    **
+    **  \todo Generally, these types of functions are indicators there needs to be more refactoring
+    */
     std::vector< UserDefinedProtocol > const & getUserDefinedProtocols() const
     {
         return userdefinedprotocols;
     }
-    GuardPuppyFireWall( bool superuser )
-        : pdb( "protocoldb/networkprotocoldb.xml" ), superUserMode( superuser ) //, gui( _gui )
-    {
-        //        std::string protocollocation = "protocoldb/networkprotocoldb.xml";
 
-        //        if(!pdb->loadDB(protocollocation, QStringList("English") )) {
-        //            QMessageBox::critical(0,"networkprotocoldb",tr("An error occured while reading the protocol database.\n\nDetails: \"%1\"").arg(pdb->errorString()));
-        //            throw "terminating";
-        //        }
+    /*!
+    **
+    ** \todo Need to throw exception if things don't work.  One case would
+    **      be if the networkprotocol database file cannot be loaded.
+    */
+    GuardPuppyFireWall( bool superuser )
+        : pdb( "protocoldb/networkprotocoldb.xml" ), superUserMode( superuser )
+    {
         try 
         {
-            readOptions();
             factoryDefaults();
             openDefault();
         }
@@ -311,36 +352,46 @@ public:
             std::cout << "Exception: " << msg << std::endl;
         }
     }
-    void setDisabled(bool on) {
+
+    void setDisabled(bool on) 
+    {
         disabled = on;
     }
 
-    bool isDisabled() {
+    bool isDisabled() 
+    {
         return disabled;
     }
-    void setLocalDynamicPortRange(uint start,uint end) {
+
+    void setLocalDynamicPortRange(uint start,uint end) 
+    {
         localPortRangeStart = start;
         localPortRangeEnd = end;
     }
 
-    void getLocalDynamicPortRange(uint &start,uint &end) {
+    void getLocalDynamicPortRange(uint &start,uint &end) 
+    {
         start = localPortRangeStart;
         end = localPortRangeEnd;
     }
 
-    void setDHCPcInterfaceName(const std::string &ifacename) {
+    void setDHCPcInterfaceName(const std::string &ifacename) 
+    {
         dhcpcinterfacename = ifacename;
     }
 
-    std::string getDHCPcInterfaceName() {
+    std::string getDHCPcInterfaceName() 
+    {
         return dhcpcinterfacename;
     }
 
-    void setDHCPdInterfaceName(const std::string &ifacename) {
+    void setDHCPdInterfaceName(const std::string &ifacename) 
+    {
         dhcpdinterfacename = ifacename;
     }
 
-    std::string getDHCPdInterfaceName() {
+    std::string getDHCPdInterfaceName() 
+    {
         return dhcpdinterfacename;
     }
 
@@ -349,55 +400,54 @@ public:
         return superUserMode;
     }
 
+    /*!
+    **  \brief if the current firewall state is modified, save the
+    **         new rc.firewall file and apply it.
+    */
     void save() 
     {
         std::string errorstring;
+        //! \todo Restore this in the real version, once we know the produced script is correct
         //        std::string filename( SYSTEM_RC_FIREWALL );
         std::string filename( SYSTEM_RC_FIREWALL2 );
         std::cout << "Saving firewall " << filename << std::endl;
 
-        if ( modified ) 
+//        if ( modified ) 
         {
             saveFirewall( filename );
             applyFirewall(true);
-            saveOptions();
-            saveOptions();
         }
     }
 
-    void saveOptions() 
-    {
-        //    KConfig *config;
-        //    config = kapp->config();
-
-        //    config->setGroup("General");
-        //    config->writeEntry("Geometry", size());
-        //    config->writeEntry("CommandrunnerGeometry",commandrunnersize);
-        //    config->writeEntry("ShowAdvancedHelp",showadvancedhelp);
-        //    config->sync();
-    }
     ///////////////////////////////////////////////////////////////////////////
-    void readOptions() 
+
+    /*!
+    **  \brief  Write the firewall to a temporary file and execute it.
+    */
+    bool applyFirewall()
     {
 #if 0
-        KConfig *config;
-        config = kapp->config();
+        KTempFile tmpfile(0,0,0700);
+        tmpfile.setAutoDelete(true);
+        if(tmpfile.status()!=0) {
+            errorstring = ("An error occurred while applying the firewall.\nThe operating system has this to report about the error: %1")
+                .arg(strerror(tmpfile.status()));
+            return false;
+        }
 
-        config->setGroup("General");
-        QSize size = config->readSizeEntry("Geometry");
-        if(!size.isEmpty()) {
-            resize(size);
+        if(writeFirewall(*(tmpfile.textStream()),errorstring)==false) {
+            return false;
         }
-        commandrunnersize = config->readSizeEntry("CommandrunnerGeometry");
-        if(commandrunnersize.isEmpty()) {
-            commandrunnersize.setWidth(400);
-            commandrunnersize.setHeight(300);
+        if(!tmpfile.close()) {
+            errorstring = ("An error occurred while applying the firewall.\nThe operating system has this to report about the error: %1")
+                .arg(strerror(tmpfile.status()));
+            return false;
         }
-        showadvancedhelp = config->readBoolEntry("ShowAdvancedHelp");
-        showadvancedhelpcheckbox->setChecked(showadvancedhelp);
+
+        return runFirewall(tmpfile.name(), errorstring);
 #endif
+        return false;
     }
-
 
     bool applyFirewall(bool /* warnfirst */) 
     {
@@ -470,13 +520,21 @@ public:
     // true if application should close
     void copyFile( std::string const & src,  std::string const & dest ) 
     {
+#if BOOST_FILESYSTEM_VERSION < 3
+        //! \todo Not sure what this behavior is, i.e. over write or not.  Probably remove in final version and
+        //  require v3
+        boost::filesystem::copy_file( src, dest );
+#else
         boost::filesystem::copy_file( src, dest, boost::filesystem::copy_option::overwrite_if_exists );
+#endif
     }
+
+    /*!
+    **  \brief  Open the /etc/rc.firewall script if executing as superuser
+    */
     void openDefault() 
     {
-        std::cout << "openDefault" << std::endl;
         std::string filename(SYSTEM_RC_FIREWALL);
-        std::string errorstring;
         std::ifstream fileinfo( SYSTEM_RC_FIREWALL );
 
         if ( superUserMode==false ) 
@@ -495,7 +553,7 @@ public:
         } 
         else 
         {
-            if ( openFirewall(filename,errorstring)==false) 
+            if ( openFirewall(filename)==false) 
             {
                 factoryDefaults();
                 // We were unable to open the guarddog firewall.
@@ -503,8 +561,7 @@ public:
                         "This probably means that this file in not actually a Guarddog firewall.\n"
                         "This is not a problem, but please note that if you exit Guarddog via the 'Ok' button this file will be overwritten.\n"
                         "If you do not want this to happen, then after closing this message, immediately quit Guarddog using the 'Cancel' button.\n"
-                        "Also please be aware that the firewall settings shown may not represent the system's current firewalling configuration.\n\n"
-                        "(Detailed message \"" + errorstring + "\")");
+                        "Also please be aware that the firewall settings shown may not represent the system's current firewalling configuration.\n\n");
             } 
             else 
             {
@@ -512,7 +569,7 @@ public:
             }
         }
         // Backup the firewall.
-        copyFile(SYSTEM_RC_FIREWALL,SYSTEM_RC_FIREWALL "~");
+        copyFile( SYSTEM_RC_FIREWALL, SYSTEM_RC_FIREWALL "~" );
     }
 
     std::vector< ProtocolNetUse > getNetworkUse( std::string const & protocolName ) const
@@ -525,23 +582,9 @@ public:
         return protos;
     }
 
-//    void deleteUserDefinedProtocol(UserDefinedProtocol *thisudp) 
-//    {
-#if 0
-        //    QList<Zone *>::iterator zit;
-
-        // We have to tell the Zones not to reference this protocol
-        // before we delete it out from under them.
-        //    zit = zones.begin();
-        //    for(;zit->current(); ++(*zit)) {
-        BOOST_FOREACH( Zone & zit, zones ) {
-            zit.deleteProtocol(thisudp->getProtocolEntry());
-        }
-        //    delete zit;
-
-        userdefinedprotocols.removeAt(userdefinedprotocols.find(thisudp));
-#endif
-//    }
+    //    void deleteUserDefinedProtocol(UserDefinedProtocol *thisudp) 
+    //    {
+    //    }
 
     ///////////////////////////////////////////////////////////////////////////
 #if 0
@@ -572,7 +615,10 @@ public:
         return newudp;
         }
 #endif
-
+private:
+        /*!
+        **  \brief save the current firewall state to a stream
+        */
         bool writeFirewall( std::ostream & stream )
         {
             std::vector<Zone>::iterator zit,zit2;
@@ -640,10 +686,10 @@ public:
             }
 
             // Output the User Defined Protocols
-//            for(size_t i=0; i<userdefinedprotocols.size(); i++) 
+            //            for(size_t i=0; i<userdefinedprotocols.size(); i++) 
             BOOST_FOREACH( UserDefinedProtocol const & currentudp, getUserDefinedProtocols() )
             {
-//                UserDefinedProtocol & currentudp = userdefinedprotocols.at(i);
+                //                UserDefinedProtocol & currentudp = userdefinedprotocols.at(i);
                 stream<<"# [UserDefinedProtocol]\n";
                 stream<<"# ID="<<(currentudp.getID())<<"\n";
                 stream<<"# NAME="<<(currentudp.getName())<<"\n";
@@ -764,14 +810,17 @@ public:
             return true;
         }
 
+        /*!
+        **  \brief Helper function for writing firewall
+        */
         void writeIPTablesFirewall(std::ostream &stream) 
         {
             //                            QList<Zone*>::iterator zit,zit2;
             PortRangeInfo localPRI;
             //                            QPtrDictIterator<ProtocolEntry> *protodictit;
             //                            IPRange *addy;
-//            uint i,j;
-//            int mask;
+            //            uint i,j;
+            //            int mask;
             //                            QStringList::Iterator pragmanameit;
             //                            QStringList::Iterator pragmavalueit;
             //                            QStringList::Iterator moduleit;
@@ -925,15 +974,19 @@ public:
             // Rate limited logging rules.
             // The drop rule first.
             stream<<"iptables -N logdrop2\n";
-            if(logdrop) {
+            if(logdrop) 
+            {
                 stream<<"iptables -A logdrop2 -j LOG --log-prefix \"DROPPED \" --log-level "<<loglevel<<" ";
-                if(logipoptions) {
+                if(logipoptions) 
+                {
                     stream<<"--log-ip-options ";
                 }
-                if(logtcpoptions) {
+                if(logtcpoptions) 
+                {
                     stream<<"--log-tcp-options ";
                 }
-                if(logtcpsequence) {
+                if(logtcpsequence) 
+                {
                     stream<<"--log-tcp-sequence ";
                 }
                 stream<<"\n";
@@ -1341,8 +1394,8 @@ public:
                     {
                         if ( zit != zit2 && !zit2.isLocal() && !zit2.isInternet()) 
                         {
-//                            zoneptr = zit2->current();
-//                            for(addy=zoneptr->membermachine.first(); addy!=0; addy=zoneptr->membermachine.next()) 
+                            //                            zoneptr = zit2->current();
+                            //                            for(addy=zoneptr->membermachine.first(); addy!=0; addy=zoneptr->membermachine.next()) 
                             BOOST_FOREACH( IPRange const & addy, zit2.getMemberMachineList() ) 
                             {
                                 if ( addy.getMask()==(uint)mask) 
@@ -1628,8 +1681,14 @@ public:
             }
         }
 
-        bool readFirewall(std::istream & stream,std::string &errorstring) 
+        /*!
+        **  \brief  Read in firewall from stream and initialize firewall state
+        **
+        **  \todo the whole errorstring, parsing, etc need to be redone
+        */
+        bool readFirewall(std::istream & stream ) 
         {
+            std::string errorstring;  // Temp hack 
             std::cout << "readFirewall" << std::endl;
             std::string s;
             std::vector<Zone>::iterator zit;
@@ -2045,11 +2104,11 @@ public:
 
                 // Create and fill in the new User Defined Protocol object.
                 UserDefinedProtocol udp(tmpstring, udptype, udpstartport, udpendport, udpbidirectional, pdb, udpid);
-//                udp.setName(tmpstring);
-//                udp.setType((uchar)udptype);
-//                udp.setStartPort(udpstartport);
-//                udp.setEndPort(udpendport);
-//                udp.setBidirectional(udpbidirectional);
+                //                udp.setName(tmpstring);
+                //                udp.setType((uchar)udptype);
+                //                udp.setStartPort(udpstartport);
+                //                udp.setEndPort(udpendport);
+                //                udp.setBidirectional(udpbidirectional);
 
                 userdefinedprotocols.push_back( udp );
 
@@ -2121,7 +2180,7 @@ public:
                                             }
                                             catch ( ... )
                                             {
-                                            std::cout << "Shouldn't see this anymore..." << std::endl;
+                                                std::cout << "Shouldn't see this anymore..." << std::endl;
                                                 ProtocolEntry pe( s.substr(11) );
                                                 pdb.addProtocolEntry( pe );
                                                 zit->setProtocolState(*zit2,pe,Zone::PERMIT);
@@ -2204,31 +2263,30 @@ error:
             return false;
         }
 
-        ///////////////////////////////////////////////////////////////////////////
-        bool openFirewall(const std::string &filename,std::string &errorstring) {
-            std::cout << "openFirewall" << std::endl;
+        /*!
+        **  \brief  Open a file and read it as a firewall
+        **  
+        **  \todo For now, we don't allow arbitrary files, hence openDefault calls
+        **       this function and it can remain private.
+        */
+        bool openFirewall( std::string const & filename )
+        {
             std::ifstream in( filename.c_str() );
 
             if ( !in )
             {
-                errorstring = ("Unable to open the firewall from reading.");
                 return false;
             }
-            return readFirewall(in, errorstring);
+            return readFirewall( in );
         }
 
-        ///////////////////////////////////////////////////////////////////////////
-        void clearFirewall() 
-        {
-            zones.clear();
-        }
-
-        ///////////////////////////////////////////////////////////////////////////
+        /*!
+        **  \brief Set firewall to known "good" defaults
+        **
+        */
         void factoryDefaults() 
         {
-            std::cout << "factoryDefaults()" << std::endl;
-
-            clearFirewall();
+            zones.clear();
             disabled = false;
             logreject = true;
 
@@ -2256,7 +2314,7 @@ error:
             logipoptions = true;
             logtcpoptions = true;
             logtcpsequence = true;
-            loglevel = LOG_WARNING;
+            loglevel = LOG_ALL_OR_UNMATCHED;
             logratelimit = true;
             lograte = 1;
             lograteunit = SECOND;
@@ -2273,56 +2331,39 @@ error:
             description = "";
         }
 
-        ///////////////////////////////////////////////////////////////////////////
-        void saveFirewall(const std::string &filename ) 
+        /*!
+        **  \brief Save firewall to filename
+        **
+        **  \todo I don't really see any reason to keep the stream and string interface
+        **       and they should be merged into one.
+        */
+        void saveFirewall( std::string const & filename ) 
         {
             std::ofstream f( filename.c_str() );
             writeFirewall( f );
             //chmod 0700 ?
         }
 
-        bool runFirewall(const std::string &filename )
+        /*!
+        **  \brief  Execute the filename as a shell command
+        */
+        bool runFirewall( std::string const & filename )
         {
             std::string command;
 
             command = filename;
             command += ";read -p \"Press return to continue\"";
-            // From the command line this cunstruct looks something like:
+            // From the command line this construct looks something like:
             // /usr/bin/konsole -nowelcome -caption "Guarddog: Starting Firewall" -e /bin/bash -c "rc.firewall;read -p \"Press return to continue\""
 
             system( command.c_str() );
             return true;
         }
 
-        bool applyFirewall()
-        {
-#if 0
-            KTempFile tmpfile(0,0,0700);
-            tmpfile.setAutoDelete(true);
-            if(tmpfile.status()!=0) {
-                errorstring = ("An error occurred while applying the firewall.\nThe operating system has this to report about the error: %1")
-                    .arg(strerror(tmpfile.status()));
-                return false;
-            }
 
-            if(writeFirewall(*(tmpfile.textStream()),errorstring)==false) {
-                return false;
-            }
-            if(!tmpfile.close()) {
-                errorstring = ("An error occurred while applying the firewall.\nThe operating system has this to report about the error: %1")
-                    .arg(strerror(tmpfile.status()));
-                return false;
-            }
-
-            return runFirewall(tmpfile.name(), errorstring);
-#endif
-            return false;
-        }
-
-        ///////////////////////////////////////////////////////////////////////////
-        //
-        // This simples removes any firewall that maybe current in force on the system.
-        //
+        /*!
+        **  \brief This simples removes any firewall that maybe current in force on the system.
+        */
         bool resetSystemFirewall()
         {
 
@@ -2353,6 +2394,7 @@ error:
                 "read -p \"Press return to continue\"\n";
 
             system( command.c_str() );
+
             return true;
         }
 
