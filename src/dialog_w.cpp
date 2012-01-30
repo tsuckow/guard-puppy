@@ -117,6 +117,74 @@ void GuardPuppyDialog_w::on_cancelPushButton_clicked()
 
     close();
 }
+#if 0
+    bool applyFirewall(bool /* warnfirst */) 
+    {
+        std::string errorstring;
+        KTempFile tmpfile(0,0,0700);
+        CommandRunner cr(this);
+
+        tmpfile.setAutoDelete(true);
+
+        if(doc->isDisabled()==false) {
+            // Normal firewall apply.
+            if(warnfirst==false || KMessageBox::warningContinueCancel(this,
+                        i18n("You are about to modify the system's firewall configuration.\n"
+                            "These changes may disrupt current network connections.\n\n"
+                            "Do you wish to continue?"),0,i18n("Continue"))==KMessageBox::Continue) {
+
+                // Is our temp file working?
+                if(tmpfile.status()!=0) {
+                    KMessageBox::error(this,i18n("An error occurred while trying to modify system's firewall configuration.\nThe operating system has this to report about the error: %1")
+                            .arg(strerror(tmpfile.status())));
+                    return false;
+                }
+                // Write the firewall script into the temp file.
+                if(doc->writeFirewall(*(tmpfile.textStream()),errorstring)==false) {
+                    return false;
+                }
+                // Close and flush the file.
+                if(!tmpfile.close()) {
+                    KMessageBox::error(this,i18n("An error occurred while applying the firewall.\nThe operating system has this to report about the error: %1")
+                            .arg(strerror(tmpfile.status())));
+                    return false;
+                }
+                // Now we run the tmp script in our super friendly firewall starter
+                // window.
+                if(!commandrunnersize.isEmpty()) {
+                    cr.resize(commandrunnersize);
+                }
+                cr.setPlainCaption(i18n("Starting firewall"));
+                cr.setHeading(i18n("Starting firewall...\n\nOutput:"));
+                cr.run(std::string("export GUARDDOG_VERBOSE=1;")+tmpfile.name());
+                systemfirewallmodified = true;
+                commandrunnersize = cr.size();
+                return true;
+            }
+            return false;
+        } else {
+            // If we are to actually disable the firewall because the user has set
+            // the Disable checkbox in the advanced section, then we use a different
+            // warning question and use a different method to reset the network stack.
+            if(warnfirst==false || KMessageBox::warningContinueCancel(this,
+                        i18n("You are about to disable the system's firewall.\n"
+                            "This will allow all network traffic and potentially leave your system vulnerable to attack.\n"
+                            "Unless you are an advanced user and know what you are doing I recommend that you cancel this action.\n"
+                            "These changes may also disrupt current network connections.\n\n"
+                            "Do you wish to continue?"),0,i18n("Continue"))==KMessageBox::Continue) {
+
+                if(resetSystemFirewall()) {
+                    systemfirewallmodified = true;
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+            return false;
+        }
+        return false;
+    }
+#endif
 
 void GuardPuppyDialog_w::on_applyPushButton_clicked() 
 {

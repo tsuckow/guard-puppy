@@ -185,7 +185,7 @@ public:
     int getCode() const { return code; }
 
     ///////////////////////////////////////////////////////////////////////////
-    uint getStart(const PortRangeInfo *ri ) const
+    uint getStart(PortRangeInfo const * ri ) const
     {
         switch(rangetype) {
             case PORTRANGE_RANGE:
