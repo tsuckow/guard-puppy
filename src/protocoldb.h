@@ -1753,7 +1753,7 @@ cleanup:
             if ( pit == protocolDataBase.end() )
             {
                 std::cout << "Didn't protocol database: " << name << std::endl;
-                throw std::string("Zone not found");
+                throw std::string("Zone not found 4");
             }
         }
         return *pit;
@@ -1769,7 +1769,7 @@ cleanup:
             if ( pit == protocolDataBase.end() )
             {
                 std::cout << "Didn't protocol database: " << name << std::endl;
-                throw std::string("Zone not found");
+                throw std::string("Zone not found 5");
             }
         }
         return *pit;

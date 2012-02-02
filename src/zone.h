@@ -123,14 +123,12 @@ public:
 
     void setProtocolState( std::string const & zoneTo, std::string const & protocol, Zone::ProtocolState state) 
     {
-        std::cout << "setProtocolState " << name << " to " << zoneTo << " for " << protocol << " " << state << std::endl;
         protocols[ zoneTo ][ protocol ] = state;
     }
 
     void setProtocolState( Zone const & clientzone, ProtocolEntry const & proto, Zone::ProtocolState state) 
     {
-        std::cout << "setProtocolState " << name << " to " << clientzone.name << " for " << proto.name << " " << state << std::endl;
-        protocols[clientzone.name][proto.name] = state;
+        protocols[ clientzone.name ][ proto.name ] = state;
     }
 
     /*!
@@ -165,7 +163,6 @@ public:
 
     std::vector< std::string > getConnectedZoneProtocols( std::string const & toZone, ProtocolState state ) const
     {
-        std::cout << "Looking for protocols from " << name << " to " << toZone << " in state " << state << std::endl;
         std::vector< std::string > protocolsNames;
         typedef std::map< std::string, ProtocolState > map_t;
 

@@ -7,6 +7,8 @@ TARGET =
 DEPENDPATH += . src
 INCLUDEPATH += . src
 
+CONFIG += debug
+
 # This is hacked in, but I don't care right now
 # but it shouldn't be this way
 # Assume there are boost-dev files in /usr/include
