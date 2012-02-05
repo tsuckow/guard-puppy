@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "dialog_w.h"
 #include "aboutDialog_w.h"
 
@@ -43,15 +41,12 @@ void GuardPuppyDialog_w::on_protocolTreeWidget_itemClicked( QTreeWidgetItem * it
 {
     std::string protocol = item->text( column ).toStdString();
 
-//    std::cout << "TreeWidget item text: " << protocol << std::endl;
     protocolTextEdit->setText( firewall.getProtocolText( protocol ).c_str() );
 }
 
 void GuardPuppyDialog_w::on_protocolTreeWidget_itemChanged( QTreeWidgetItem * item, int column )
 {
     std::string protocol = item->text( column ).toStdString();
-
-//    std::cout << "TreeWidget item changed text: " << protocol << std::endl;
 }
 
 
@@ -220,8 +215,6 @@ void GuardPuppyDialog_w::on_protocolZoneListWidget_currentItemChanged( QListWidg
 
 void GuardPuppyDialog_w::on_zoneListWidget_currentItemChanged( QListWidgetItem * /* current */, QListWidgetItem * /* previous */ )
 {
-    std::cout << "currentZone is " << currentZoneName() << std::endl;
-
     if ( currentZoneName() != "" )
     {
         setZoneGUI( firewall.getZone( currentZoneName() ) );
@@ -517,7 +510,6 @@ void ProtocolCheckBox::stateChanged( int state )
     buttonToProtocolStates[ Qt::Unchecked ]        = Zone::DENY;
     buttonToProtocolStates[ Qt::PartiallyChecked ] = Zone::REJECT;
     buttonToProtocolStates[ Qt::Checked ]          = Zone::PERMIT;
-    std::cout << "ProtocolCheckBox stateChanged " << zoneTo << " " << protocol << " " << state << std::endl;
     emit protocolStateChanged( zoneTo, protocol, buttonToProtocolStates[ state ] );
 }
 
@@ -560,7 +552,6 @@ void GuardPuppyDialog_w::createProtocolPages()
     //  to get the items for this list.  When this is moved, then getProtocolDataBase()
     //  can be deleted from firewall.h
     std::vector< ProtocolEntry > const & protocolDB = firewall.getProtocolDataBase();
-    std::cout << "Adding " << protocolDB.size() << " protocols" << std::endl;
     BOOST_FOREACH( ProtocolEntry const & pe, protocolDB )
     {
         QTreeWidgetItem *item = new QTreeWidgetItem( categoryList[pe.classification], QStringList( pe.longname.c_str() ) );
@@ -686,7 +677,6 @@ void GuardPuppyDialog_w::setZonePageEnabled(::Zone const & thisZone, bool enable
 
 void GuardPuppyDialog_w::on_zoneConnectionTableWidget_itemChanged( QTableWidgetItem * item )
 {
-    std::cout << "on_zoneConnectionTableWidget_itemChanged " << item->text().toStdString() << " " << item->checkState() << std::endl;
     std::string fromZone = item->text().toStdString();
     firewall.updateZoneConnection( currentZoneName(), fromZone, item->checkState() == Qt::Checked);
 }
@@ -738,11 +728,8 @@ void GuardPuppyDialog_w::setUserDefinedProtocolGUI( UserDefinedProtocol const & 
 #endif
 }
 
-void GuardPuppyDialog_w::setAdvancedPageEnabled(bool enabled) {
-
-//    UserDefinedProtocol *thisudp;
-//    QListViewItem *item,*ptr;
-        
+void GuardPuppyDialog_w::setAdvancedPageEnabled(bool enabled)
+{
     localPortRangeLowSpinBox->setEnabled(enabled);
     localPortRangeHighSpinBox->setEnabled(enabled);
 
@@ -795,3 +782,88 @@ void GuardPuppyDialog_w::buildConnectionGUI()
     }
 #endif
 }
+
+void GuardPuppyDialog_w::on_logDroppedPacketsCheckBox_stateChanged( int state )
+{
+    firewall.setLogDrop( state );
+}
+void GuardPuppyDialog_w::on_logRejectPacketsCheckBox_stateChanged( int state )
+{
+    firewall.setLogReject( state );
+}
+void GuardPuppyDialog_w::on_logAbortedTcpCheckBox_stateChanged( int state )
+{
+    firewall.setLogAbortedTCP( state );
+}
+void GuardPuppyDialog_w::on_logUserRateLimitCheckBox_stateChanged( int state )
+{
+    firewall.setLogRateLimit( state );
+}
+void GuardPuppyDialog_w::on_logWarnRateLimitCheckBox_stateChanged( int state )
+{
+    firewall.setLogWarnLimitRate( state );
+}
+void GuardPuppyDialog_w::on_logIpOptionsCheckBox_stateChanged( int state )
+{
+    firewall.setLogIPOptions( state );
+}
+void GuardPuppyDialog_w::on_logTcpSequenceCheckBox_stateChanged( int state )
+{
+    firewall.setLogTCPSequence( state );
+}
+void GuardPuppyDialog_w::on_logTcpOptionsCheckBox_stateChanged( int state )
+{
+    firewall.setLogTCPOptions( state );
+}
+
+void GuardPuppyDialog_w::on_disableFirewallCheckBox_stateChanged( int state )
+{
+    firewall.setDisabled( state );
+}
+void GuardPuppyDialog_w::on_allowTcpTimeStampsCheckBox_stateChanged( int state )
+{
+    firewall.setAllowTCPTimestamps( state );
+}
+void GuardPuppyDialog_w::on_enableDhcpCheckBox_stateChanged( int state )
+{
+    firewall.setDHCPcEnabled( state );
+}
+void GuardPuppyDialog_w::on_enableDhcpdCheckBox_stateChanged( int state )
+{
+    firewall.setDHCPdEnabled( state );
+}
+
+void GuardPuppyDialog_w::on_userDefinedProtocolBidirectionalCheckBox_stateChanged( int /* state */ )
+{
+    //! \todo implement with User Defined Protocol related functions
+}
+
+void GuardPuppyDialog_w::on_logRateSpinBox_valueChanged( int value )
+{
+    firewall.setLogRate( value );
+}
+void GuardPuppyDialog_w::on_logBurstSpinBox_valueChanged( int value )
+{
+    firewall.setLogRateBurst( value );
+}
+void GuardPuppyDialog_w::on_logWarnRateLimitSpinBox_valueChanged( int value )
+{
+    firewall.setLogWarnLimitRate( value );
+}
+void GuardPuppyDialog_w::on_localPortRangeLowSpinBox_valueChanged( int value )
+{
+    firewall.setLocalDynamicPortRangeStart( value );
+}
+void GuardPuppyDialog_w::on_localPortRangeHighSpinBox_valueChanged( int value )
+{
+    firewall.setLocalDynamicPortRangeEnd( value );
+}
+void GuardPuppyDialog_w::on_userDefinedProtocolPortStartSpinBox_valueChanged( int /* value */ )
+{
+    //! \todo implement with User Defined Protocol related functions
+}
+void GuardPuppyDialog_w::on_userDefinedProtocolPortEndSpinBox_valueChanged( int /* value */ )
+{
+    //! \todo implement with User Defined Protocol related functions
+}
+

@@ -4,7 +4,6 @@
 #include <QCheckBox>
 #include "ui_guardPuppy.h"
 
-#include <iostream>
 #include <boost/foreach.hpp>
 
 #include "firewall.h"
@@ -84,6 +83,34 @@ private slots:
     void on_protocolTreeWidget_itemChanged( QTreeWidgetItem * item, int column );
     void on_protocolStateChanged( std::string const & zoneTo, std::string const & protocol, Zone::ProtocolState state );
     void on_zoneConnectionTableWidget_itemChanged( QTableWidgetItem * item );
+
+    //  All the checkbox options
+    void on_logDroppedPacketsCheckBox_stateChanged( int state );
+    void on_logRejectPacketsCheckBox_stateChanged( int state );
+    void on_logAbortedTcpCheckBox_stateChanged( int state );
+    void on_logUserRateLimitCheckBox_stateChanged( int state );
+    void on_logWarnRateLimitCheckBox_stateChanged( int state );
+    void on_logIpOptionsCheckBox_stateChanged( int state );
+    void on_logTcpSequenceCheckBox_stateChanged( int state );
+    void on_logTcpOptionsCheckBox_stateChanged( int state );
+
+    void on_disableFirewallCheckBox_stateChanged( int state );
+    void on_allowTcpTimeStampsCheckBox_stateChanged( int state );
+    void on_enableDhcpCheckBox_stateChanged( int state );
+    void on_enableDhcpdCheckBox_stateChanged( int state );
+
+    void on_userDefinedProtocolBidirectionalCheckBox_stateChanged( int state );
+
+    //  The spinboxes
+    void on_logRateSpinBox_valueChanged( int value );
+    void on_logBurstSpinBox_valueChanged( int value );
+    void on_logWarnRateLimitSpinBox_valueChanged( int value );
+    void on_localPortRangeLowSpinBox_valueChanged( int value );
+    void on_localPortRangeHighSpinBox_valueChanged( int value );
+    void on_userDefinedProtocolPortStartSpinBox_valueChanged( int value );
+    void on_userDefinedProtocolPortEndSpinBox_valueChanged( int value );
+
+    //logLevelComboBox
 
 private:
     std::string currentZoneName() const

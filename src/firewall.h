@@ -366,11 +366,20 @@ class GuardPuppyFireWall
         return disabled;
     }
 
-    void setLocalDynamicPortRange(uint start,uint end) 
+    void setLocalDynamicPortRangeStart(uint start)
     {
         localPortRangeStart = start;
+    }
+    void setLocalDynamicPortRangeEnd( uint end ) 
+    {
         localPortRangeEnd = end;
     }
+
+//    void setLocalDynamicPortRange(uint start,uint end) 
+//    {
+//        localPortRangeStart = start;
+//        localPortRangeEnd = end;
+//    }
 
     void getLocalDynamicPortRange(uint &start,uint &end) 
     {
