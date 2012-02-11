@@ -53,7 +53,7 @@ void GuardPuppyDialog_w::on_protocolTreeWidget_itemChanged( QTreeWidgetItem * it
 ///////////////////////////////////////////////////////////////////////////
 void GuardPuppyDialog_w::on_okayPushButton_clicked() 
 {
-    firewall.save();
+    firewall.saveAndApply();
     //! \todo also save program state, i.e. what the current window size, position is, saveOptions()
     close();
 }
@@ -183,7 +183,7 @@ void GuardPuppyDialog_w::on_cancelPushButton_clicked()
 
 void GuardPuppyDialog_w::on_applyPushButton_clicked() 
 {
-//    firewall.apply();
+    firewall.apply();
 
 
 //  Move this to the firewall apply
@@ -245,7 +245,14 @@ void GuardPuppyDialog_w::on_zoneNameLineEdit_textChanged( QString const & text )
 void GuardPuppyDialog_w::on_zoneAddressListBox_currentItemChanged( QListWidgetItem * current, QListWidgetItem * /* previous */ )
 {
     if ( current )
+    {
         zoneAddressLineEdit->setText( current->text() );
+
+        if ( firewall.getZone( currentZoneName() ).editable() )
+            zoneAddressLineEdit->setEnabled( true );
+        else
+            zoneAddressLineEdit->setEnabled( false );
+    }
 }
 
 void GuardPuppyDialog_w::on_zoneAddressLineEdit_textChanged( QString const & text )
@@ -513,7 +520,7 @@ void ProtocolCheckBox::stateChanged( int state )
     emit protocolStateChanged( zoneTo, protocol, buttonToProtocolStates[ state ] );
 }
 
-void GuardPuppyDialog_w::on_protocolStateChanged( std::string const & zoneTo, std::string const & protocol, Zone::ProtocolState state )
+void GuardPuppyDialog_w::protocolStateChanged( std::string const & zoneTo, std::string const & protocol, Zone::ProtocolState state )
 {
     firewall.setProtocolState( currentProtocolZoneName(), zoneTo, protocol, state );
 }
@@ -571,7 +578,7 @@ void GuardPuppyDialog_w::createProtocolPages()
 
             protocolTreeWidget->setItemWidget(item, i+1, itemCheckBox);
             connect( itemCheckBox, SIGNAL( stateChanged(int) ), itemCheckBox, SLOT( stateChanged(int)) );
-            connect( itemCheckBox, SIGNAL( protocolStateChanged(std::string const&, std::string const &, Zone::ProtocolState) ), this, SLOT( on_protocolStateChanged(std::string const &, std::string const &, Zone::ProtocolState)) );
+            connect( itemCheckBox, SIGNAL( protocolStateChanged(std::string const&, std::string const &, Zone::ProtocolState) ), this, SLOT( protocolStateChanged(std::string const &, std::string const &, Zone::ProtocolState)) );
         }
     }
 
@@ -619,7 +626,8 @@ void GuardPuppyDialog_w::setZoneAddressGUI( ::Zone const & zone)
     
     newZoneAddressPushButton->setEnabled(zone.editable());
     
-    if(!zone.getMemberMachineList().empty() ) {
+    if(!zone.getMemberMachineList().empty() ) 
+    {
 //        zoneAddressLineEdit->setText((zone.membermachine.at(0)).getAddress().c_str());
         zoneAddressListBox->setCurrentRow(0); //,true);
         zoneAddressListBox->setEnabled(true);
@@ -648,11 +656,14 @@ void GuardPuppyDialog_w::setZonePageEnabled(::Zone const & thisZone, bool enable
         zoneNameLineEdit->setEnabled(true);
         zoneCommentLineEdit->setEnabled(true);
         
-        if(!thisZone.getMemberMachineList().empty()) {
+        if(!thisZone.getMemberMachineList().empty()) 
+        {
             zoneAddressListBox->setEnabled(true);
 //            deleteZoneAddressPushButton->setEnabled(true);
             zoneAddressLineEdit->setEnabled(true);
-        } else {
+        } 
+        else 
+        {
             zoneAddressListBox->setEnabled(false);
 //            deleteZoneAddressPushButton->setEnabled(false);
             zoneAddressLineEdit->setEnabled(false);

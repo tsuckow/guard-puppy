@@ -81,7 +81,7 @@ private slots:
     void on_tabWidget_currentChanged( int index );
     void on_protocolTreeWidget_itemClicked( QTreeWidgetItem * item, int column );
     void on_protocolTreeWidget_itemChanged( QTreeWidgetItem * item, int column );
-    void on_protocolStateChanged( std::string const & zoneTo, std::string const & protocol, Zone::ProtocolState state );
+    void protocolStateChanged( std::string const & zoneTo, std::string const & protocol, Zone::ProtocolState state );
     void on_zoneConnectionTableWidget_itemChanged( QTableWidgetItem * item );
 
     //  All the checkbox options

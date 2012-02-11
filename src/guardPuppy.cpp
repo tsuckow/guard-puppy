@@ -8,11 +8,13 @@
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-    GuardPuppyFireWall firewall( getuid() == 0 );
+    bool superUser = getuid() == 0;
+    GuardPuppyFireWall firewall( superUser );
     GuardPuppyDialog_w guardPuppyDialog( firewall );
 
-    if ( getuid()!=0 ) {
-        QMessageBox::information(0,QString::null,QString("MORTALMODEWARNING"), QObject::tr(
+    if ( !superUser )
+    {
+        QMessageBox::information(0, QString::null, QString("WARNING"), QObject::tr(
                 "Since you do not have superuser privileges, Guarddog is running with\n"
                 "reduced functionality. Firewall scripts may be Imported/Exported, but\n"
                 "the system's firewall settings may not be changed.\n"));

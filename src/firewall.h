@@ -26,24 +26,28 @@
 #include "userdefinedprotocol.h"
 #include "zone.h"
 
-#define SYSTEM_RC_FIREWALL "/etc/rc.firewall" 
+//#define SYSTEM_RC_FIREWALL "/etc/rc.firewall" 
 #define SYSTEM_RC_FIREWALL2 "/etc/rc2.firewall"   //  This is temporary during development so that guardpuppy doesn't actually overwrite rc.firewall
 
 //! \todo These are values of logging.  However, there is a whole matching mechanism
-//  in iptables for logging filters and rules that could be implemented.
+//!       in iptables for logging filters and rules that could be implemented.
+
+//! \todo For now, removing the "modified" detection mechanism.  It doesn't feel quite right to be at this level.
+
+//! \todo Read in existing iptables state to determine configuration rather than the rc.firewall script
+
 enum { LOG_ALL_OR_UNMATCHED, LOG_FIRST, LOG_ALL_KNOWN_MATCHED };
 
 class GuardPuppyFireWall
 {
     ProtocolDB  pdb;                // The protocol database we are using.
-    bool modified;
     bool waspreviousfirewall;       // True if there was a previous Guarddog firewall active/available
                                     // When GuardPuppy exists, know whether to restore rc.firewall from rc.firewall~ or not
-    // at program startup.
+                                    // at program startup.
     bool systemfirewallmodified;    // True if the current state of the system has been modified
-    // since program startup. This is needed at 'Cancel' time when
-    // we need to decide if we have any 'Apply'ed changes that need
-    // to be undone.
+                                    // since program startup. This is needed at 'Cancel' time when
+                                    // we need to decide if we have any 'Apply'ed changes that need
+                                    // to be undone.
 
     bool superUserMode;             // True if GuardPuppy is running as root
 
@@ -78,7 +82,7 @@ class GuardPuppyFireWall
 
     std::vector< UserDefinedProtocol > userdefinedprotocols;
 
-    public:
+public:
     std::string description;
 
     //! \todo delete this once the FOREACH code in dialog_w.cpp is
@@ -151,8 +155,8 @@ class GuardPuppyFireWall
     }
 
     /*!
-     **  \brief  Delete an ipaddress from a zone
-     */
+    **  \brief  Delete an ipaddress from a zone
+    */
     void deleteMachine( std::string const & zoneName, std::string const & ipAddress )
     {
         Zone & zone = getZone( zoneName );
@@ -161,8 +165,8 @@ class GuardPuppyFireWall
     }
 
     /*!
-     **  \brief Change the name associated with an ipaddress in a given zone
-     */
+    **  \brief Change the name associated with an ipaddress in a given zone
+    */
     void setNewMachineName( std::string const & zoneName, std::string const & oldMachineName, std::string const & newMachineName )
     {
         Zone & zone = getZone( zoneName );
@@ -171,8 +175,8 @@ class GuardPuppyFireWall
     }
 
     /*!
-     **  \brief For a zoneFrom->zoneTo protocol, set the state to PERMIT, DENY, or REJECT
-     */
+    **  \brief For a zoneFrom->zoneTo protocol, set the state to PERMIT, DENY, or REJECT
+    */
     void setProtocolState( std::string const & zoneFrom, std::string const & zoneTo, std::string const & protocolName, Zone::ProtocolState state )
     {
         Zone & zone = getZone( zoneFrom );
@@ -181,8 +185,8 @@ class GuardPuppyFireWall
     }
 
     /*!
-     **  \brief  Get the protocol state for a given zoneFrom->zoneTo protocol
-     */
+    **  \brief  Get the protocol state for a given zoneFrom->zoneTo protocol
+    */
     Zone::ProtocolState getProtocolState( std::string const & zoneFrom, std::string const & zoneTo, std::string const & protocolName )
     {
         Zone & zone = getZone( zoneFrom );
@@ -191,8 +195,8 @@ class GuardPuppyFireWall
     }
 
     /*!
-     **  \brief Get a list of all the zones
-     */
+    **  \brief Get a list of all the zones
+    */
     std::vector< std::string > getZoneList() const
     {
         std::vector< std::string > names;
@@ -204,24 +208,24 @@ class GuardPuppyFireWall
     }
 
     /*!
-     **  \brief  Return number of zones
-     **
-     **  \todo My guess is that places that use this could be rewritten more intelligently and this function could be removed
-     */
+    **  \brief  Return number of zones
+    **
+    **  \todo My guess is that places that use this could be rewritten more intelligently and this function could be removed
+    */
     size_t zoneCount() const { return zones.size(); }
 
 
     /*!
-     **  \brief  Add a new zone to the firewall
-     */
+    **  \brief  Add a new zone to the firewall
+    */
     void addZone( std::string const & zoneName )
     {
         zones.push_back( Zone( zoneName ) );
     }
 
     /*!
-     **  \brief  Delete a named zone from the firewall
-     */
+    **  \brief  Delete a named zone from the firewall
+    */
     void deleteZone( std::string const & zoneName )
     {
         std::vector< Zone >::iterator zit = std::find_if( zones.begin(), zones.end(), boost::phoenix::bind( &Zone::getName, boost::phoenix::arg_names::arg1) == zoneName );    
@@ -233,8 +237,8 @@ class GuardPuppyFireWall
     }
 #if 1
     /*!
-     **  \brief get a constant reference to a zone given a name
-     */
+    **  \brief get a constant reference to a zone given a name
+    */
     Zone const & getZone( std::string const & name ) const
     {
         std::vector< Zone >::const_iterator zit = std::find_if( zones.begin(), zones.end(), boost::phoenix::bind( &Zone::getName, boost::phoenix::arg_names::arg1) == name );    
@@ -245,8 +249,8 @@ class GuardPuppyFireWall
         return *zit;
     }
     /*!
-     **  \brief get a reference to a zone given a name
-     */
+    **  \brief get a reference to a zone given a name
+    */
     Zone & getZone( std::string const & name )
     {
         std::vector< Zone >::iterator zit = std::find_if( zones.begin(), zones.end(), boost::phoenix::bind( &Zone::getName, boost::phoenix::arg_names::arg1) == name );    
@@ -259,8 +263,8 @@ class GuardPuppyFireWall
 #endif
 
     /*!
-     **  \brief Get a list of zones connected to this one, zoneFrom->*
-     */
+    **  \brief Get a list of zones connected to this one, zoneFrom->*
+    */
     std::vector< std::string > getConnectedZones( std::string const & zoneFrom ) const
     {
         std::vector< std::string > connectedZones;
@@ -326,7 +330,7 @@ class GuardPuppyFireWall
         zone.setName( newZoneName );
     }
 
-    public:
+public:
     /*!
      **  \brief return list of user defined protocols
      **
@@ -416,18 +420,15 @@ class GuardPuppyFireWall
      **  \brief if the current firewall state is modified, save the
      **         new rc.firewall file and apply it.
      */
-    void save() 
+    void saveAndApply() 
     {
         //! \todo Restore this in the real version, once we know the produced script is correct
         //        std::string filename( SYSTEM_RC_FIREWALL );
         std::string filename( SYSTEM_RC_FIREWALL2 );
         std::cout << "Saving firewall " << filename << std::endl;
 
-        //        if ( modified ) 
-        {
-            saveFirewall( filename );
-            applyFirewall();
-        }
+        save( filename );
+        apply();
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -435,15 +436,18 @@ class GuardPuppyFireWall
     /*!
      **  \brief  Write the firewall to a temporary file and execute it.
      */
-    void applyFirewall()
+    void apply()
     {
         boost::filesystem::path tmpFile = boost::filesystem::unique_path(); 
-        saveFirewall( tmpFile.string() );
-        runFirewall( tmpFile.string());
-        boost::filesystem::remove( tmpFile );
+        std::string tmp( "/tmp/" );
+        tmp += tmpFile.string();
+        save( tmp );
+        std::string cmd = "chmod 0700 " + tmp;
+        system( cmd.c_str() );
+        runFirewall( tmp );
+        boost::filesystem::remove( tmp );
     }
 
-    // true if application should close
     void copyFile( std::string const & src,  std::string const & dest ) 
     {
 #if BOOST_FILESYSTEM_VERSION < 3
@@ -460,18 +464,18 @@ class GuardPuppyFireWall
     */
     void openDefault() 
     {
-        std::string filename(SYSTEM_RC_FIREWALL);
-        std::ifstream fileinfo( SYSTEM_RC_FIREWALL );
+        std::string filename( SYSTEM_RC_FIREWALL2 );
+        std::ifstream fileinfo( SYSTEM_RC_FIREWALL2  );
 
         if ( superUserMode==false ) 
         {
             return; // Sorry, if you are not root then you get no default firewall.
         }
 
-        if ( boost::filesystem::exists( SYSTEM_RC_FIREWALL ) )
+        if ( boost::filesystem::exists( SYSTEM_RC_FIREWALL2 ) )
         {
             // Backup the firewall.
-            copyFile( SYSTEM_RC_FIREWALL, SYSTEM_RC_FIREWALL "~" );
+            copyFile( SYSTEM_RC_FIREWALL2, SYSTEM_RC_FIREWALL2 "~" );
 
             //  There is an rc.firewall file, but don't know if it's in a format GuardPuppy knows
             waspreviousfirewall = true;
@@ -527,20 +531,22 @@ class GuardPuppyFireWall
         }
     }
 #endif
-private:
+
     /*!
-     **  \brief save the current firewall state to a stream
-     */
-    void writeFirewall( std::ostream & stream )
+    **  \brief Save firewall to filename
+    */
+    void save( std::string const & filename ) 
     {
+        std::ofstream stream( filename.c_str() );
+        //! \todo Update permissions to be secure chmod 0700 ?
+    
         int c,oldc;
 
         stream<<"#!/bin/bash\n"
-            "# [Guarddog2]\n"
+            "# [GuardPuppy]\n"
             "# DO NOT EDIT!\n"
-            "# This firewall script was generated by \"Guarddog\" by Simon Edwards\n"
-            "# http://www.simonzone.com/software/guarddog/ This script requires Linux\n"
-            "# kernel version 2.2.x and ipchains OR Linux kernel 2.4.x and iptables.\n"
+            "# This firewall script was generated by \"guard-puppy\" \n"
+            "# https://github.com/SamAxe/guard-puppy.  This script requires iptables\n"
             "#\n"
             "# [Description]\n";
         c = 0;
@@ -666,54 +672,32 @@ private:
             "PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/sbin\n"
             "# Detect which filter command we should use.\n"
             "FILTERSYS=0\n"
-            "# 0 = unknown, 1 = ipchains, 2 = iptables\n"
-            "# Check for ipchains.\n"
-            "if [ -e /sbin/ipchains ]; then\n"
-            "  FILTERSYS=1\n"
-            "fi;\n"
-            "if [ -e /usr/sbin/ipchains ]; then\n"
-            "  FILTERSYS=1\n"
-            "fi;\n"
-            "if [ -e /usr/local/sbin/ipchains ]; then\n"
-            "  FILTERSYS=1\n"
-            "fi;\n"
+            "# 0 = unknown, 2 = iptables\n"
             "# Check for iptables support.\n"
             "if [ -e /proc/sys/kernel/osrelease ]; then\n"
             "  KERNEL_VERSION=`sed \"s/^\\([0-9][0-9]*\\.[0-9][0-9]*\\).*\\$/\\1/\" < /proc/sys/kernel/osrelease`\n"
-            "  if [ $KERNEL_VERSION == \"2.6\" ]; then\n"
-            "    KERNEL_VERSION=\"2.4\"\n"
+            "  if [ -e /sbin/iptables ]; then\n"
+            "    FILTERSYS=2\n"
             "  fi;\n"
-            "  if [ $KERNEL_VERSION == \"2.5\" ]; then\n"
-            "    KERNEL_VERSION=\"2.4\"\n"
+            "  if [ -e /usr/sbin/iptables ]; then\n"
+            "    FILTERSYS=2\n"
             "  fi;\n"
-            "  if [ $KERNEL_VERSION == \"2.4\" ]; then\n"
-            "    if [ -e /sbin/iptables ]; then\n"
-            "      FILTERSYS=2\n"
-            "    fi;\n"
-            "    if [ -e /usr/sbin/iptables ]; then\n"
-            "      FILTERSYS=2\n"
-            "    fi;\n"
-            "    if [ -e /usr/local/sbin/iptables ]; then\n"
-            "      FILTERSYS=2\n"
-            "    fi;\n"
+            "  if [ -e /usr/local/sbin/iptables ]; then\n"
+            "    FILTERSYS=2\n"
             "  fi;\n"
             "fi;\n"
             "if [ $FILTERSYS -eq 0 ]; then\n"
-            "  logger -p auth.info -t guarddog \"ERROR Can't determine the firewall command! (Is ipchains or iptables installed?)\"\n"
-            "  [ $GUARDDOG_VERBOSE -eq 1 ] && echo \""<< ("ERROR Can't determine the firewall command! (Is ipchains or iptables installed?)")<<"\"\n"
+            "  logger -p auth.info -t guarddog \"ERROR Can't determine the firewall command! (Is iptables installed?)\"\n"
+            "  [ $GUARDDOG_VERBOSE -eq 1 ] && echo \""<< ("ERROR Can't determine the firewall command! (Is iptables installed?)")<<"\"\n"
             "  false\n"
             "fi;\n"
-            //                        "if [ $FILTERSYS -eq 1 ]; then\n";
-            //                    writeIPChainsFirewall(stream);
-            //                    stream<<"fi;\n"
             "if [ $FILTERSYS -eq 2 ]; then\n";
         writeIPTablesFirewall(stream);
         stream<<"fi;\n"
             "fi;\n" // Matches the disable firewall IF.
             "true\n";
-
     }
-
+private:
     /*!
      **  \brief Helper function for writing firewall
      */
@@ -1654,7 +1638,7 @@ private:
         {
             throw std::string( "Sorry, old Guarddog firewall files can not be read." );
         } 
-        else if ( s != "# [Guarddog2]" ) 
+        else if ( s != "# [GuardPuppy]" ) 
         {
             throw std::string("Error reading firewall file. This does not appear to be a Guarddog firewall file.");
         }    
@@ -2118,21 +2102,6 @@ private:
     }
 
     /*!
-    **  \brief Save firewall to filename
-    **
-    **  \todo I don't really see any reason to keep the stream and string interface
-    **       and they should be merged into one.  Maybe with the permissions it makes
-    **       sense to keep the methods seperate.  Makes the public function shorter 
-    **       anyway.
-    */
-    void saveFirewall( std::string const & filename ) 
-    {
-        std::ofstream f( filename.c_str() );
-        writeFirewall( f );
-        //! \todo Update permissions to be secure chmod 0700 ?
-    }
-
-    /*!
     **  \brief  Execute the filename as a shell command
     */
     void runFirewall( std::string const & filename )
@@ -2140,9 +2109,7 @@ private:
         std::string command;
 
         command = filename;
-        command += ";read -p \"Press return to continue\"";
         // From the command line this construct looks something like:
-        // /usr/bin/konsole -nowelcome -caption "Guarddog: Starting Firewall" -e /bin/bash -c "rc.firewall;read -p \"Press return to continue\""
 
         int rv = system( command.c_str() );
         if ( rv == -1 ) throw std::string( "System command failed" );
@@ -2157,18 +2124,11 @@ private:
         std::string command;
 
         command = "FILTERSYS=0\n"
-            "if [ -e /sbin/ipchains ]; then\n"
-            "FILTERSYS=1\n"
-            "fi;\n"
-            "if [ -e /proc/sys/kernel/osrelease ]; then\n"
-            "  if [ `sed \"s/^\\([0-9][0-9]*\\.[0-9][0-9]*\\).*\\$/\\1/\" < /proc/sys/kernel/osrelease` == \"2.4\" ]; then\n"
-            "    if [ -e /sbin/iptables ]; then\n"
-            "      FILTERSYS=2\n"
-            "    fi;\n"
-            "  fi;\n"
+            "if [ -e /sbin/iptables ]; then\n"
+            "  FILTERSYS=2\n"
             "fi;\n"
             "if [ $FILTERSYS -eq 0 ]; then\n"
-            "  /usr/bin/logger -p auth.info -t guarddog \"ERROR Can't determine the firewall command! (Is ipchains or iptables installed?)\"\n"
+            "  /usr/bin/logger -p auth.info -t guarddog \"ERROR Can't determine the firewall command! (Is iptables installed?)\"\n"
             "fi;\n"
             "if [ $FILTERSYS -eq 2 ]; then\n"
             "/sbin/iptables -P OUTPUT ACCEPT\n"

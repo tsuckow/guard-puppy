@@ -676,10 +676,18 @@
               </widget>
              </item>
              <item>
-              <widget class="QSpinBox" name="localPortRangeLowSpinBox"/>
+              <widget class="QSpinBox" name="localPortRangeLowSpinBox">
+               <property name="maximum">
+                <number>65535</number>
+               </property>
+              </widget>
              </item>
              <item>
-              <widget class="QSpinBox" name="localPortRangeHighSpinBox"/>
+              <widget class="QSpinBox" name="localPortRangeHighSpinBox">
+               <property name="maximum">
+                <number>65535</number>
+               </property>
+              </widget>
              </item>
             </layout>
            </item>
@@ -800,7 +808,11 @@
                </widget>
               </item>
               <item>
-               <widget class="QSpinBox" name="userDefinedProtocolPortStartSpinBox"/>
+               <widget class="QSpinBox" name="userDefinedProtocolPortStartSpinBox">
+                <property name="maximum">
+                 <number>56635</number>
+                </property>
+               </widget>
               </item>
               <item>
                <widget class="QLabel" name="label_21">
@@ -810,7 +822,11 @@
                </widget>
               </item>
               <item>
-               <widget class="QSpinBox" name="userDefinedProtocolPortEndSpinBox"/>
+               <widget class="QSpinBox" name="userDefinedProtocolPortEndSpinBox">
+                <property name="maximum">
+                 <number>65535</number>
+                </property>
+               </widget>
               </item>
               <item>
                <widget class="QCheckBox" name="userDefinedProtocolBidirectionalCheckBox">
