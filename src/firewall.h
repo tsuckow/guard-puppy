@@ -1,15 +1,15 @@
 #pragma once
 
 /*!
- **  This file and the accompanying GuardPuppyFirewall class implement
- **  the structures needed to generate a iptables script.
- **
- **  The core abstraction in the firewall is that communication happens
- **  between two zones.  This is a directional relationship.
- **
- **  Each zone maintains a list of zone-protocol pairs that it is allowed
- **  to communicate with.
- */
+**  This file and the accompanying GuardPuppyFirewall class implement
+**  the structures needed to generate a iptables script.
+**
+**  The core abstraction in the firewall is that communication happens
+**  between two zones.  This is a directional relationship.
+**
+**  Each zone maintains a list of zone-protocol pairs that it is allowed
+**  to communicate with.
+*/
 
 #include <fstream>
 #include <iostream>
@@ -35,6 +35,11 @@
 //! \todo For now, removing the "modified" detection mechanism.  It doesn't feel quite right to be at this level.
 
 //! \todo Read in existing iptables state to determine configuration rather than the rc.firewall script
+
+//! \todo There are two paradigms used throughout, the client/server and the from/to  Clients *ALWAYS* are from and servers are to.  This is quite
+//!       confusing and would benefit from switching completely to one or the other, probably from/to.
+//        server = to
+//        client = from
 
 enum { LOG_ALL_OR_UNMATCHED, LOG_FIRST, LOG_ALL_KNOWN_MATCHED };
 
@@ -93,8 +98,8 @@ public:
     }
 
     /*!
-     ** \brief Get the protocol description given a name of a protocol
-     */
+    ** \brief Get the protocol description given a name of a protocol
+    */
     std::string getProtocolText( std::string const & protocol )
     {
         std::string text = "Not found";
@@ -145,8 +150,8 @@ public:
     bool isAllowTCPTimestamps() { return allowtcptimestamps; }
 
     /*!
-     **  \brief add an ipAddress to a zone
-     */
+    **  \brief add an ipAddress to a zone
+    */
     void addNewMachine( std::string const & zoneName, std::string const & ipAddress )
     {
         Zone & zone = getZone( zoneName );
@@ -235,7 +240,7 @@ public:
         }
         zones.erase( zit );
     }
-#if 1
+
     /*!
     **  \brief get a constant reference to a zone given a name
     */
@@ -260,10 +265,9 @@ public:
         }
         return *zit;
     }
-#endif
 
     /*!
-    **  \brief Get a list of zones connected to this one, zoneFrom->*
+    **  \brief Get a list of zones connected to this one
     */
     std::vector< std::string > getConnectedZones( std::string const & zoneFrom ) const
     {
@@ -304,14 +308,14 @@ public:
     }
 
     /*!
-     **  \brief boolean whether zoneFrom is connected to zoneTo
-     */
+    **  \brief boolean whether zoneFrom is connected to zoneTo
+    */
     bool areZonesConnected( std::string const & zoneFrom, std::string const & zoneTo ) const
     {
         try
         {
             Zone const & zone = getZone( zoneFrom );
-            return zone.isConnected( zoneTo );
+            return zone.isConnectedTo( zoneTo );
         }
         catch (...)
         {
@@ -320,10 +324,9 @@ public:
     }
 
     /*!
-     **  \brief  Rename a zone name
-     **
-     **  This 
-     */
+    **  \brief  Rename a zone name
+    **
+    */
     void zoneRename( std::string const & oldZoneName, std::string const & newZoneName )
     {
         Zone & zone = getZone( oldZoneName );
@@ -332,20 +335,20 @@ public:
 
 public:
     /*!
-     **  \brief return list of user defined protocols
-     **
-     **  \todo Generally, these types of functions are indicators there needs to be more refactoring
-     */
+    **  \brief return list of user defined protocols
+    **
+    **  \todo Generally, these types of functions are indicators there needs to be more refactoring
+    */
     std::vector< UserDefinedProtocol > const & getUserDefinedProtocols() const
     {
         return userdefinedprotocols;
     }
 
     /*!
-     **
-     ** \todo Need to throw exception if things don't work.  One case would
-     **      be if the networkprotocol database file cannot be loaded.
-     */
+    **
+    ** \todo Need to throw exception if things don't work.  One case would
+    **      be if the networkprotocol database file cannot be loaded.
+    */
     GuardPuppyFireWall( bool superuser )
         : pdb( "protocoldb/networkprotocoldb.xml" ), superUserMode( superuser )
     {
@@ -379,12 +382,6 @@ public:
         localPortRangeEnd = end;
     }
 
-//    void setLocalDynamicPortRange(uint start,uint end) 
-//    {
-//        localPortRangeStart = start;
-//        localPortRangeEnd = end;
-//    }
-
     void getLocalDynamicPortRange(uint &start,uint &end) 
     {
         start = localPortRangeStart;
@@ -417,9 +414,9 @@ public:
     }
 
     /*!
-     **  \brief if the current firewall state is modified, save the
-     **         new rc.firewall file and apply it.
-     */
+    **  \brief if the current firewall state is modified, save the
+    **         new rc.firewall file and apply it.
+    */
     void saveAndApply() 
     {
         //! \todo Restore this in the real version, once we know the produced script is correct
@@ -434,8 +431,8 @@ public:
     ///////////////////////////////////////////////////////////////////////////
 
     /*!
-     **  \brief  Write the firewall to a temporary file and execute it.
-     */
+    **  \brief  Write the firewall to a temporary file and execute it.
+    */
     void apply()
     {
         boost::filesystem::path tmpFile = boost::filesystem::unique_path(); 
@@ -613,30 +610,30 @@ public:
         }
 
         // Go over each Zone and output which protocols are allowed to whom.
-        BOOST_FOREACH( Zone const & serverZone, zones ) 
+        BOOST_FOREACH( Zone const & toZone, zones ) 
         {
-            stream<<"# [ServerZone] "<<(serverZone.getName().c_str())<<"\n";
+            stream<<"# [ToZone] "<<(toZone.getName().c_str())<<"\n";
 
             // Iterate over each possible client zone.
-            BOOST_FOREACH( Zone const & clientZone, zones ) 
+            BOOST_FOREACH( Zone const & fromZone , zones ) 
             {
-                if ( serverZone != clientZone) 
+                if ( toZone != fromZone ) 
                 {
-                    stream << "# [ClientZone] " << clientZone.getName() <<"\n";
+                    stream << "# [FromZone] " << fromZone .getName() <<"\n";
 
-                    if ( areZonesConnected( serverZone.getName(), clientZone.getName()) ) 
+                    if ( areZonesConnected( fromZone.getName(), toZone.getName()) ) 
                     {
                         stream<<"# CONNECTED=1\n";
                         // Now we iterate over and output each enabled protocol.
-                        //                    protodictit = serverZone.newPermitProtocolZoneIterator(clientZone);
-                        std::vector< std::string > zones1 = getConnectedZoneProtocols( serverZone.getName(), clientZone.getName(), Zone::PERMIT );
+                        //                    protodictit = toZone.newPermitProtocolZoneIterator(fromZone );
+                        std::vector< std::string > zones1 = getConnectedZoneProtocols( fromZone.getName(), toZone .getName(), Zone::PERMIT );
                         BOOST_FOREACH( std::string const & p, zones1 )
                         {
                             stream << "# PROTOCOL=" << p << std::endl;
                         }
 
                         // Output each Rejected protocol.
-                        std::vector< std::string > zones2 = getConnectedZoneProtocols( serverZone.getName(), clientZone.getName(), Zone::REJECT );
+                        std::vector< std::string > zones2 = getConnectedZoneProtocols( fromZone.getName(), toZone .getName(), Zone::REJECT );
                         BOOST_FOREACH( std::string const & p, zones2 )
                         {
                             stream << "# REJECT=" << p << std::endl;
@@ -674,8 +671,6 @@ public:
             "FILTERSYS=0\n"
             "# 0 = unknown, 2 = iptables\n"
             "# Check for iptables support.\n"
-            "if [ -e /proc/sys/kernel/osrelease ]; then\n"
-            "  KERNEL_VERSION=`sed \"s/^\\([0-9][0-9]*\\.[0-9][0-9]*\\).*\\$/\\1/\" < /proc/sys/kernel/osrelease`\n"
             "  if [ -e /sbin/iptables ]; then\n"
             "    FILTERSYS=2\n"
             "  fi;\n"
@@ -685,7 +680,6 @@ public:
             "  if [ -e /usr/local/sbin/iptables ]; then\n"
             "    FILTERSYS=2\n"
             "  fi;\n"
-            "fi;\n"
             "if [ $FILTERSYS -eq 0 ]; then\n"
             "  logger -p auth.info -t guarddog \"ERROR Can't determine the firewall command! (Is iptables installed?)\"\n"
             "  [ $GUARDDOG_VERBOSE -eq 1 ] && echo \""<< ("ERROR Can't determine the firewall command! (Is iptables installed?)")<<"\"\n"
@@ -699,23 +693,12 @@ public:
     }
 private:
     /*!
-     **  \brief Helper function for writing firewall
-     */
+    **  \brief Helper function for writing firewall
+    */
     void writeIPTablesFirewall(std::ostream &stream) 
     {
-        //                            QList<Zone*>::iterator zit,zit2;
         PortRangeInfo localPRI;
-        //                            QPtrDictIterator<ProtocolEntry> *protodictit;
-        //                            IPRange *addy;
-        //            uint i,j;
-        //            int mask;
-        //                            QStringList::Iterator pragmanameit;
-        //                            QStringList::Iterator pragmavalueit;
-        //                            QStringList::Iterator moduleit;
-        //                            QStringList modules;
         const char *rateunits[] = {"second", "minute", "hour", "day" };
-        //                            zit = zones.begin();
-        //                            zit2 = zones.begin();
 
         uint localindex = 0;
         uint internetindex = 0;
@@ -980,9 +963,8 @@ private:
         {
             std::vector< std::string > dhcpclientinterfaces;
             boost::split(dhcpclientinterfaces, dhcpcinterfacename, boost::is_any_of(", "), boost::token_compress_on);
-            //                                QStringList dhcpclientinterfaces = QStringList::split(std::string(","),dhcpcinterfacename);
-            stream << "\n"
-                "# Allow DHCP clients.\n";
+
+            stream << "\n" "# Allow DHCP clients.\n";
             BOOST_FOREACH( std::string const & i, dhcpclientinterfaces )
             {
                 stream << "iptables -A INPUT -i "<< i <<" -p udp --dport 68 --sport 67 -j ACCEPT\n"
@@ -994,9 +976,8 @@ private:
         {
             std::vector< std::string > dhcpserverinterfaces;
             boost::split(dhcpserverinterfaces, dhcpdinterfacename, boost::is_any_of(", "), boost::token_compress_on);
-            //                                QStringList dhcpserverinterfaces = QStringList::split(std::string(","),dhcpdinterfacename);
-            stream<<"\n"
-                "# Allow DHCP servers.\n";
+
+            stream<<"\n" "# Allow DHCP servers.\n";
             BOOST_FOREACH( std::string const & i, dhcpserverinterfaces )
             {
                 stream << "iptables -A INPUT -i " << i << " -p udp --dport 67 --sport 68 -j ACCEPT\n"
@@ -1230,8 +1211,7 @@ private:
         }
 
         // Place DENY and log rules at the end of our filter chains
-        stream<<"\n"
-            "# Place DROP and log rules at the end of our filter chains.\n";
+        stream<<"\n" "# Place DROP and log rules at the end of our filter chains.\n";
         // 'From' zone loop
         BOOST_FOREACH( Zone const & fromZone, zones ) 
         {
@@ -1284,8 +1264,6 @@ private:
                 {
                     if ( zit != zit2 && !zit2.isLocal() && !zit2.isInternet()) 
                     {
-                        //                            zoneptr = zit2->current();
-                        //                            for(addy=zoneptr->membermachine.first(); addy!=0; addy=zoneptr->membermachine.next()) 
                         BOOST_FOREACH( IPRange const & addy, zit2.getMemberMachineList() ) 
                         {
                             if ( addy.getMask()==(uint)mask) 
@@ -1387,14 +1365,20 @@ private:
                             " --sport "<<(source.getStart(fromzonePRI))<<":"<<(source.getEnd(fromzonePRI))<<
                             " --dport "<<(dest.getStart(tozonePRI))<<":"<<(dest.getEnd(tozonePRI))<<
                             " -m state --state NEW";
-                        if(permit) {
+                        if(permit) 
+                        {
                             // Permitted
                             stream<<" -j ACCEPT\n";
-                        } else {
+                        } 
+                        else 
+                        {
                             // Not permitted.
-                            if(log) {
+                            if(log) 
+                            {
                                 stream<<" -j logreject\n";
-                            } else {
+                            } 
+                            else 
+                            {
                                 stream<<" -j REJECT --reject-with tcp-reset\n";
                             }
                         }
@@ -1410,14 +1394,20 @@ private:
                         stream<<"iptables -A f"<<fromzone<<"to"<<tozone<<" -p udp"
                             " --sport "<<(source.getStart(fromzonePRI))<<":"<<(source.getEnd(fromzonePRI))<<
                             " --dport "<<(dest.getStart(tozonePRI))<<":"<<(dest.getEnd(tozonePRI));
-                        if(permit) {
+                        if(permit) 
+                        {
                             // Permitted.
                             stream<<" -j ACCEPT\n";
-                        } else {
+                        } 
+                        else 
+                        {
                             // Not permitted.
-                            if(log) {
+                            if(log) 
+                            {
                                 stream<<" -j logreject\n";
-                            } else {
+                            } 
+                            else 
+                            {
                                 stream<<" -j REJECT --reject-with icmp-port-unreachable\n";
                             }
                         }
@@ -1533,23 +1523,33 @@ private:
                     }
 
                     stream<<"iptables -A f"<<fromzone<<"to"<<tozone<<" -p icmp --icmp-type ";
-                    if(icmpname!=0) {
+                    if(icmpname!=0) 
+                    {
                         stream<<(icmpname);
-                    } else {
+                    } 
+                    else 
+                    {
                         stream<<(source.getType());
-                        if(source.getCode()!=-1) {
+                        if(source.getCode()!=-1) 
+                        {
                             stream<<"/"<<(source.getCode());
                         }
                     }
 
-                    if(permit) {
+                    if(permit) 
+                    {
                         // Permitted.
                         stream<<" -j ACCEPT\n";
-                    } else {
+                    } 
+                    else 
+                    {
                         // Not permitted.
-                        if(log) {
+                        if(log) 
+                        {
                             stream<<" -j logreject\n";
-                        } else {
+                        } 
+                        else 
+                        {
                             stream<<" -j DROP\n";   // We can't REJECT icmp really. But
                             // we can't just ACCEPT it either.
                         }
@@ -1638,11 +1638,10 @@ private:
         {
             throw std::string( "Sorry, old Guarddog firewall files can not be read." );
         } 
-        else if ( s != "# [GuardPuppy]" ) 
+        else if ( s != "# [GuardPuppy]" && s != "# [GuardDog2]" ) 
         {
-            throw std::string("Error reading firewall file. This does not appear to be a Guarddog firewall file.");
+            throw std::string("Error reading firewall file. This does not appear to be a Guarddog or GuardPuppy firewall file.");
         }    
-        /*! \todo Consider a # [GuardPuppy v0.1] tag here, possibly with a rewrite of the parser */
 
         // Read past the boring human readable copperplate stuff.
         state = READSTATE_COPPERPLATE;
@@ -1759,14 +1758,14 @@ private:
                         }
                         break;
                     case 12:    // # LOGRATEUNIT=
-                        lograteunit = (LogRateUnit)boost::lexical_cast<uint>( rightpart ); //rightpart.toUInt(&ok);
+                        lograteunit = (LogRateUnit)boost::lexical_cast<uint>( rightpart );
                         if(lograteunit>3) 
                         {
                             throw std::string("Error the value in the LOGRATEUNIT section is out of range.");
                         }
                         break;
                     case 13:    // # LOGRATEBURST=
-                        lograteburst = boost::lexical_cast<uint>( rightpart ); //rightpart.toUInt(&ok);
+                        lograteburst = boost::lexical_cast<uint>( rightpart );
                         if(lograteburst > 65535) {
                             throw std::string("Error, the value in the LOGRATEBURST section is too big.");
                         }
@@ -1775,14 +1774,14 @@ private:
                         logwarnlimit = rightpart=="1";
                         break;
                     case 15:    // # LOGWARNRATE=
-                        logwarnrate = boost::lexical_cast<uint>( rightpart ); //rightpart.toUInt(&ok);
+                        logwarnrate = boost::lexical_cast<uint>( rightpart );
                         if(logwarnrate > 65535) 
                         {
                             throw std::string("Error, the value in the LOGWARNRATE section is too big (>65535).");
                         }
                         break;
                     case 16:    // # LOGWARNRATEUNIT=
-                        logwarnrateunit = (LogRateUnit)boost::lexical_cast<uint>( rightpart ); //rightpart.toUInt(&ok);
+                        logwarnrateunit = (LogRateUnit)boost::lexical_cast<uint>( rightpart );
                         if(logwarnrateunit>3) 
                         {
                             throw std::string("Error the value in the LOGWARNRATEUNIT section is out of range.");
@@ -1830,7 +1829,7 @@ private:
             {
                 throw std::string("Error parsing firewall [Zone] section. Expected '# NAME='");
             }
-            newzone.setName( s.substr(7) );  // strlen("# NAME=")==7
+            newzone.setName( s.substr(7) );
 
             // Parse the Zone comment.
             std::getline( stream, s );
@@ -1838,7 +1837,7 @@ private:
             {
                 throw std::string("Error parsing firewall [Zone] section. Expected '# COMMENT='");
             }
-            newzone.setComment( s.substr(10) );  // strlen("# COMMENT=") == 10
+            newzone.setComment( s.substr(10) );
 
             // Parse the Zone addresses.
             while(true) 
@@ -1846,7 +1845,7 @@ private:
                 std::getline( stream, s );
                 if(s.empty() || s.substr(0,10) == ("# ADDRESS=")) 
                 {
-                    newzone.addMemberMachine(IPRange(s.substr(10))); // strlen("# ADDRESS=") == 10
+                    newzone.addMemberMachine(IPRange(s.substr(10)));
                 } 
                 else 
                 {
@@ -1866,7 +1865,7 @@ private:
             {
                 throw std::string("Error parsing firewall [UserDefinedProtocol] section. Expected '# ID='");
             }
-            udpid = boost::lexical_cast<uint>( s.substr(5)); //.toUInt(); // strlen("# ID=") == 5
+            udpid = boost::lexical_cast<uint>( s.substr(5));
 
             // Snarf the NAME
             std::getline( stream, s );
@@ -1874,7 +1873,7 @@ private:
             {
                 throw std::string("Error parsing firewall [UserDefinedProtocol] section. Expected '# NAME='");
             }
-            std::string tmpstring = s.substr(7); // strlen("# NAME=") == 7
+            std::string tmpstring = s.substr(7);
 
             // Snarf the protocol type.
             std::getline( stream, s );
@@ -1908,12 +1907,12 @@ private:
             // if the colon is missing, it's file from an older version
             if (s.find(":") == std::string::npos) 
             {
-                udpstartport = udpendport = boost::lexical_cast<uint>(s.substr(7)); //.toUInt();
+                udpstartport = udpendport = boost::lexical_cast<uint>(s.substr(7));
             } 
             else 
             {
-                udpstartport = boost::lexical_cast<uint>(s.substr(7, s.find(":")-7)); //.toUInt(); // strlen("# PORT=") == 7
-                udpendport = boost::lexical_cast<uint>(s.substr(s.find(":")+1));//.toUInt();
+                udpstartport = boost::lexical_cast<uint>(s.substr(7, s.find(":")-7));
+                udpendport = boost::lexical_cast<uint>(s.substr(s.find(":")+1));
             }
 
             // Bidirectional or not?
@@ -1944,35 +1943,34 @@ private:
 
         state = READSTATE_PROTOCOLCONFIG;
 
-        std::vector<Zone>::const_iterator       serverZone = zones.begin();
-        std::vector<Zone>::iterator clientZone = zones.begin();
+        std::vector<Zone>::const_iterator       toZone = zones.begin();
+        std::vector<Zone>::iterator fromZone  = zones.begin();
         // Parse the protocol info.
         while ( true ) 
         {
-            //  If I follow this code corectly, the name after [ServerZone] should match serverZone.getName()
-            if ( s.substr(0,14) == ("# [ServerZone]") ) 
+            //  If I follow this code corectly, the name after [ToZone] should match toZone.getName()
+            if ( s.substr(0,10) == ("# [ToZone]") || s.substr( 0, 14 ) == "# [ServerZone]" ) 
             {
-                clientZone = zones.begin();
+                fromZone  = zones.begin();
 
                 std::getline( stream, s );
                 if ( s.empty() ) throw std::string( "Empty string read2" );
 
                 while ( true ) 
                 {
-                    if ( clientZone == serverZone ) 
+                    if ( fromZone  == toZone ) 
                     {
-                        ++clientZone;
+                        ++fromZone ;
                     }
-                    if ( s.substr(0,14) == ("# [ClientZone]") ) 
+                    if ( s.substr(0,12) == ("# [FromZone]") || s.substr(0,14) == ("# [ClientZone]" ) ) 
                     {
-                        //  If I follow this code corectly, the name after [ClientZone] should match clientZone.getName()
+                        //  If I follow this code corectly, the name after [FromZone] should match fromZone .getName()
                         std::getline( stream, s );
                         if(s.empty()) throw std::string( "Empty string read3" );
 
                         if ( s.substr(0,13) == ("# CONNECTED=1") ) 
                         {
-//                            updateZoneConnection( serverZone->getName(), clientZone->getName(), true );
-                            updateZoneConnection( clientZone->getName(), serverZone->getName(), true );
+                            updateZoneConnection( fromZone ->getName(), toZone->getName(), true );
 
                             while(true) 
                             {
@@ -1984,14 +1982,11 @@ private:
                                     try
                                     {
                                         ProtocolEntry & pe = pdb.lookup(s.substr(11));
-                                        clientZone->setProtocolState( *serverZone, pe, Zone::PERMIT );
+                                        fromZone->setProtocolState( *toZone, pe, Zone::PERMIT );
                                     }
                                     catch ( ... )
                                     {
                                         std::cout << "Shouldn't see this anymore..." << std::endl;
-                                        ProtocolEntry pe( s.substr(11) );
-                                        pdb.addProtocolEntry( pe );
-                                        clientZone->setProtocolState( *serverZone, pe, Zone::PERMIT );
                                     }
                                 } 
                                 else 
@@ -2001,16 +1996,12 @@ private:
                                         try
                                         {
                                             ProtocolEntry & pe = pdb.lookup(s.substr(9));
-                                            clientZone->setProtocolState( *serverZone, pe, Zone::REJECT );
+                                            fromZone->setProtocolState( *toZone, pe, Zone::REJECT );
                                         }
                                         catch ( ... )
                                         {
                                             std::cout << "Shouldn't see this anymore..." << std::endl;
-                                            ProtocolEntry pe( s.substr(11) );
-                                            pdb.addProtocolEntry( pe );
-                                            clientZone->setProtocolState( *serverZone, pe, Zone::REJECT );
                                         }
-
                                     } 
                                     else 
                                     {
@@ -2024,17 +2015,17 @@ private:
                             // This zone is disconnected.
                             if ( s.substr(0,13) != ("# CONNECTED=0")) 
                             {
-                                throw std::string("Error parsing firewall [ServerZone] section. Expected '# CONNECTED=0' or '# CONNECTED=1'");
+                                throw std::string("Error parsing firewall [ToZone] section. Expected '# CONNECTED=0' or '# CONNECTED=1'");
                             }
-                            clientZone->disconnect( serverZone->getName() );
+                            fromZone->disconnect( toZone->getName() );
                             std::getline( stream, s );
                             if ( s.empty() ) throw std::string( "Empty string read5" );
                         }
-                        ++clientZone;  // Take us to the next client zone in anticipation.
+                        ++fromZone ;  // Take us to the next client zone in anticipation.
                     } 
                     else 
                     {
-                        ++serverZone;
+                        ++toZone;
                         break;
                     }
                 }
@@ -2051,9 +2042,8 @@ private:
     }
 
     /*!
-     **  \brief Set firewall to known "good" defaults
-     **
-     */
+    **  \brief Set firewall to known "good" defaults
+    */
     void factoryDefaults() 
     {
         zones.clear();

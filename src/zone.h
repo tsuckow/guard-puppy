@@ -126,9 +126,9 @@ public:
         protocols[ zoneTo ][ protocol ] = state;
     }
 
-    void setProtocolState( Zone const & clientzone, ProtocolEntry const & proto, Zone::ProtocolState state) 
+    void setProtocolState( Zone const & toZone, ProtocolEntry const & proto, Zone::ProtocolState state) 
     {
-        protocols[ clientzone.name ][ proto.name ] = state;
+        protocols[ toZone.name ][ proto.name ] = state;
     }
 
     /*!
@@ -180,23 +180,23 @@ public:
     }
     
 #if 0
-    ProtocolState getProtocolState(Zone const & clientzone, ProtocolEntry const & proto) 
+    ProtocolState getProtocolState(Zone const & toZone, ProtocolEntry const & proto) 
     {
-        if ( protocols.find( clientzone.name ) != protocols.end() )
+        if ( protocols.find( toZone.name ) != protocols.end() )
         {
-            if ( protocols[clientzone.name].find( proto.name ) != protocols[clientzone.name].end() )
+            if ( protocols[toZone.name].find( proto.name ) != protocols[toZone.name].end() )
             {
-                return protocols[clientzone.name][proto.name];
+                return protocols[toZone.name][proto.name];
             }
         }
         return DENY;
     }
 #endif
-    void denyAllProtocols( Zone const & clientzone ) 
+    void denyAllProtocols( Zone const & toZone ) 
     {
-        if ( protocols.find( clientzone.name ) != protocols.end() )
+        if ( protocols.find( toZone.name ) != protocols.end() )
         {
-            protocols[ clientzone.name ].clear();
+            protocols[ toZone.name ].clear();
         }
     }
 
@@ -212,7 +212,7 @@ public:
 
     void connect( std::string const & zoneTo ) 
     {
-        if ( !isConnected( zoneTo ) )
+        if ( !isConnectedTo( zoneTo ) )
         {
             connections.push_back( zoneTo );
         }
@@ -227,18 +227,18 @@ public:
         }
     }
 
-    bool isConnected( std::string const & zoneName ) const
+    bool isConnectedTo( std::string const & zoneName ) const
     {
         return std::find( connections.begin(), connections.end(), zoneName ) != connections.end();
     }
 
-    bool isConnectionMutable(Zone const & clientzone) 
+    bool isConnectionMutable(Zone const & toZone) 
     {
-        if(isLocal() && clientzone.isInternet())
+        if(isLocal() && toZone.isInternet())
         {
             return false;
         }
-        if(isInternet() && clientzone.isLocal())
+        if(isInternet() && toZone.isLocal())
         {
             return false;
         }

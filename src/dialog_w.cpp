@@ -205,9 +205,9 @@ void GuardPuppyDialog_w::on_applyPushButton_clicked()
 
 void GuardPuppyDialog_w::on_protocolZoneListWidget_currentItemChanged( QListWidgetItem * /* current */, QListWidgetItem * /* previous  */)
 {
-    std::string str = "Protocols served from zone '";
+    std::string str = "Protocols served FROM zone '";
     str += currentProtocolZoneName();
-    str += "' to clients in zones:";
+    str += "' TO clients in zones: ";
 
     protocolZoneLabel->setText( str.c_str() );
     createProtocolPages();
@@ -611,16 +611,18 @@ void GuardPuppyDialog_w::setZoneAddressGUI( ::Zone const & zone)
     
     zoneAddressListBox->setEnabled( zone.editable());
     
-    BOOST_FOREACH( IPRange const & it, zone.getMemberMachineList() ) {
-//    for(IPRange *it = zone.membermachine.first(); it!=0; it = zone.membermachine.next()) {
+    BOOST_FOREACH( IPRange const & it, zone.getMemberMachineList() ) 
+    {
         zoneAddressListBox->addItem(it.getAddress().c_str());
     }
         // Display a special message for the Local zone.
-    if(zone.isLocal()) {
+    if(zone.isLocal()) 
+    {
         zoneAddressListBox->addItem(QObject::tr("<< IP addresses on the local machine >>"));
     }
-        // Display a special message for the Internet zone.
-    if(zone.isInternet()) {
+    // Display a special message for the Internet zone.
+    if(zone.isInternet()) 
+    {
         zoneAddressListBox->addItem(QObject::tr("<< IP addresses not matching any zone >>"));
     }
     
@@ -709,6 +711,12 @@ void GuardPuppyDialog_w::setZoneConnectionGUI(::Zone const & zone)
             item->setCheckState( Qt::Checked );
         else 
             item->setCheckState( Qt::Unchecked );
+        if ( zoneTo == zoneFrom )
+            item->setFlags( item->flags() & ~Qt::ItemIsEnabled );  // cannot make zone connections to yourself.
+        // \!todo  This is the way guarddog works, I'm not sure we need to say this.  It should be possible to have a single zone...
+        // \!todo  change out for zone.editable(), since we have it.
+        if ( (zoneFrom == "Internet" || zoneFrom == "Local" ) && ( zoneTo == "Internet" || zoneTo == "Local" ) )
+            item->setFlags( item->flags() & ~Qt::ItemIsEnabled );  // cannot change default zones
 
         zoneConnectionTableWidget->setItem( zoneConnectionTableWidget->rowCount()-1, 0, item );
     }
