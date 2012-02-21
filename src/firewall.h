@@ -1638,7 +1638,7 @@ private:
         {
             throw std::string( "Sorry, old Guarddog firewall files can not be read." );
         } 
-        else if ( s != "# [GuardPuppy]" && s != "# [GuardDog2]" ) 
+        else if ( s != "# [GuardPuppy]" && s != "# [Guarddog2]" ) 
         {
             throw std::string("Error reading firewall file. This does not appear to be a Guarddog or GuardPuppy firewall file.");
         }    
