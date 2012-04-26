@@ -700,18 +700,6 @@ private:
         PortRangeInfo localPRI;
         const char *rateunits[] = {"second", "minute", "hour", "day" };
 
-        uint localindex = 0;
-        uint internetindex = 0;
-
-        // Work out what the indexes of the local zone and internet zone are.
-        BOOST_FOREACH( Zone const & zit, zones )
-        {
-            if ( zit.isLocal() )
-                localindex = zit.getId();
-            if ( zit.isInternet() )
-                internetindex = zit.getId();
-        }
-
         stream<<"###############################\n"
             "###### iptables firewall ######\n"
             "###############################\n"
@@ -1121,7 +1109,7 @@ private:
                 {
                     // Create the fitler chain for this combinatin of source and dest zone.
                     stream << "# Create chain to filter traffic going from '" << zit.getName() <<"' to '" << zit2.getName() << "'\n";
-                    stream << "iptables -N f" << zit.getId() << "to" << zit2.getId() << "\n";
+                    stream << "iptables -N " << zit.getName() << "_to_" << zit2.getName() << "\n";
                 }
             }
         }
@@ -1164,13 +1152,13 @@ private:
                             {
                                 if ( networkuse.source == ENTITY_CLIENT) 
                                 {
-                                    expandIPTablesFilterRule( stream, fromZone.getId(), fromZone.getId() == localindex ? &localPRI : 0, 
-                                            toZone.getId(), toZone.getId()==localindex ? &localPRI : 0, networkuse);
+                                    expandIPTablesFilterRule( stream, fromZone.getName(), fromZone.isLocal() ? &localPRI : 0, 
+                                            toZone.getName(), toZone.isLocal() ? &localPRI : 0, networkuse);
                                 }
                                 if ( networkuse.dest == ENTITY_CLIENT) 
                                 {
-                                    expandIPTablesFilterRule( stream, toZone.getId(), toZone.getId() == localindex ? &localPRI : 0, 
-                                            fromZone.getId(), fromZone.getId()==localindex ? &localPRI : 0, networkuse);
+                                    expandIPTablesFilterRule( stream, toZone.getName(), toZone.isLocal() ? &localPRI : 0, 
+                                            fromZone.getName(), fromZone.isLocal() ? &localPRI : 0, networkuse);
                                 }
                             } 
                             else 
@@ -1198,11 +1186,11 @@ private:
                             }
                             if(networkuse.source==ENTITY_CLIENT) 
                             {
-                                expandIPTablesFilterRule(stream,fromZone.getId(),fromZone.getId()==localindex ? &localPRI : 0, toZone.getId(),toZone.getId()==localindex ? &localPRI : 0,networkuse,false,logreject);
+                                expandIPTablesFilterRule(stream,fromZone.getName(),fromZone.isLocal() ? &localPRI : 0, toZone.getName(), toZone.isLocal() ? &localPRI : 0,networkuse,false,logreject);
                             }
                             if(networkuse.dest==ENTITY_CLIENT) 
                             {
-                                expandIPTablesFilterRule(stream,toZone.getId(),toZone.getId()==localindex ? &localPRI : 0, fromZone.getId(),fromZone.getId()==localindex ? &localPRI : 0,networkuse,false,logreject);
+                                expandIPTablesFilterRule(stream,toZone.getName(),toZone.isLocal() ? &localPRI : 0, fromZone.getName(), fromZone.isLocal() ? &localPRI : 0,networkuse,false,logreject);
                             }
                         }
                     }
@@ -1222,7 +1210,7 @@ private:
                 {
                     // Finally, the DENY and LOG packet rule to finish things off.
                     stream<<"# Failing all the rules above, we log and DROP the packet.\n"
-                        "iptables -A f" << fromZone.getId() << "to" << toZone.getId() << " -j logdrop\n";
+                        "iptables -A " << fromZone.getName() << "_to_" << toZone.getName() << " -j logdrop\n";
                 }
             }
         }
@@ -1244,14 +1232,14 @@ private:
         BOOST_FOREACH( Zone const & zit, zones ) 
         {
             stream<<"\n# Chain to split traffic coming from zone '" << zit.getName() <<"' by dest zone\n";
-            stream<<"iptables -N s" << zit.getId() <<"\n";
+            stream<<"iptables -N " << zit.getName() <<"\n";
 
             // Fill the chain.
             // Branch for traffic going to the Local zone.
             if ( !zit.isLocal() )
             {
                 stream<<"for X in $IPS ; do\n"
-                    "    iptables -A s"<<zit.getId() <<" -d $X -j f"<<zit.getId() <<"to"<<localindex<<"\n"
+                    "    iptables -A "<<zit.getName() <<" -d $X -j " << zit.getName() <<"_to_Local" << "\n"
                     "done\n";
             }
 
@@ -1268,7 +1256,7 @@ private:
                         {
                             if ( addy.getMask()==(uint)mask) 
                             {
-                                stream<<"iptables -A s" << zit.getId() <<" -d "<<addy.getAddress()<<" -j f" << zit.getId() << "to" << zit2.getId() <<"\n";
+                                stream<<"iptables -A " << zit.getName() <<" -d "<<addy.getAddress()<<" -j " << zit.getName() << "_to_" << zit2.getName() <<"\n";
                             }
                         }
                     }
@@ -1280,13 +1268,13 @@ private:
             // Add "catch all" rules for internet packets
             if ( !zit.isInternet() ) 
             {  // Except for the chain that handles traffic coming from the internet.
-                stream<<"iptables -A s" << zit.getId() <<" -j f" << zit.getId() << "to" << internetindex<<"\n";
+                stream<<"iptables -A " << zit.getName() <<" -j " << zit.getName() << "_to_Internet" <<"\n";
             } 
             else 
             {
                 // We should not see traffic coming from the internet trying to go directly back
                 // out to the internet. That's weird, and worth logging.
-                stream<<"iptables -A s"<< zit.getId() << " -j logdrop\n";
+                stream<<"iptables -A "<< zit.getName() << " -j logdrop\n";
             }
         }
 
@@ -1304,7 +1292,7 @@ private:
                     {
                         if(addy.getMask() == (uint)mask) 
                         {
-                            stream<<"iptables -A srcfilt -s " << addy.getAddress()<<" -j s"<<zit2.getId()<<"\n";
+                            stream<<"iptables -A srcfilt -s " << addy.getAddress()<<" -j "<<zit2.getName()<<"\n";
                         }
                     }
                 }
@@ -1315,7 +1303,7 @@ private:
             "fi\n";
 
         stream<<"# Assume internet default rule\n"
-            "iptables -A srcfilt -j s"<<internetindex<<"\n"
+            "iptables -A srcfilt -j Internet"<<"\n"
             "\n";
 
         // Remove the temp DNS accept rules.
@@ -1329,7 +1317,7 @@ private:
             "\n"
             "# The output chain is very simple. We direct everything to the\n"
             "# 'source is local' split chain.\n"
-            "iptables -A OUTPUT -j s"<<localindex<<"\n"
+            "iptables -A OUTPUT -j Local"<<"\n"
             "\n"
             "iptables -A INPUT -j nicfilt\n"
             "iptables -A INPUT -j srcfilt\n"
@@ -1346,7 +1334,7 @@ private:
     //
     // permit==true && log==true is not supported.
     //
-    void expandIPTablesFilterRule( std::ostream & stream, int fromzone, PortRangeInfo * fromzonePRI, int tozone, PortRangeInfo *tozonePRI,
+    void expandIPTablesFilterRule( std::ostream & stream, std::string const & fromzone, PortRangeInfo * fromzonePRI, std::string const & tozone, PortRangeInfo *tozonePRI,
             ProtocolNetUse const & netuse, bool permit = true, bool log = false) 
     {
         const char *icmpname;
@@ -1361,7 +1349,7 @@ private:
                 {
                     BOOST_FOREACH( ProtocolNetUseDetail const & dest, netuse.destDetails() )
                     {
-                        stream<<"iptables -A f"<<fromzone<<"to"<<tozone<<" -p tcp"
+                        stream<<"iptables -A "<<fromzone<<"_to_"<<tozone<<" -p tcp"
                             " --sport "<<(source.getStart(fromzonePRI))<<":"<<(source.getEnd(fromzonePRI))<<
                             " --dport "<<(dest.getStart(tozonePRI))<<":"<<(dest.getEnd(tozonePRI))<<
                             " -m state --state NEW";
@@ -1391,7 +1379,7 @@ private:
                 {
                     BOOST_FOREACH( ProtocolNetUseDetail const & dest, netuse.destDetails() )
                     {
-                        stream<<"iptables -A f"<<fromzone<<"to"<<tozone<<" -p udp"
+                        stream<<"iptables -A "<<fromzone<<"_to_"<<tozone<<" -p udp"
                             " --sport "<<(source.getStart(fromzonePRI))<<":"<<(source.getEnd(fromzonePRI))<<
                             " --dport "<<(dest.getStart(tozonePRI))<<":"<<(dest.getEnd(tozonePRI));
                         if(permit) 
@@ -1522,7 +1510,7 @@ private:
                             break;
                     }
 
-                    stream<<"iptables -A f"<<fromzone<<"to"<<tozone<<" -p icmp --icmp-type ";
+                    stream<<"iptables -A "<<fromzone<<"_to_"<<tozone<<" -p icmp --icmp-type ";
                     if(icmpname!=0) 
                     {
                         stream<<(icmpname);
@@ -1560,7 +1548,7 @@ private:
             default:    // Every other protocol.
                 if(permit) 
                 {
-                    stream<<"iptables -A f"<<fromzone<<"to"<<tozone<<
+                    stream<<"iptables -A "<<fromzone<<"_to_"<<tozone<<
                         " -p "<<netuse.getType()<<
                         " -j ACCEPT\n";
                     // Unlike the ipchains code, we don't need to check for
