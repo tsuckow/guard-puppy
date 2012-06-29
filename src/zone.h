@@ -16,7 +16,7 @@
 **  a list of zone-protocol pairs this zone can communicate with.
 */
 
-class Zone 
+class Zone
 {
 public:
     enum ZoneType {LocalZone, InternetZone, UserZone};
@@ -29,7 +29,7 @@ private:
     std::map< std::string, std::map< std::string, ProtocolState > > protocols;  // [toZone][protocolName] = state
     std::vector< std::string > connections;          // List of zone names this zone is connected to, in theory, these are keys of protocols
                                                      // Though it's possible that zones are connected in name before any protocols are associated
-                                                     // with them.  
+                                                     // with them.
                                                      //! \todo Might be something to examine in the future.
     //  id, nextId are used to assign integers to zones.  Probably not needed
     //  as zone name could be used instead.  Too early to remove though.
@@ -42,7 +42,7 @@ public:
         *this = rhs;
     }
 
-    Zone( ZoneType zt ) 
+    Zone( ZoneType zt )
     {
         zonetype = zt;
         id = nextId++;
@@ -54,7 +54,7 @@ public:
         id = nextId++;
     }
 
-    ~Zone() 
+    ~Zone()
     {
     }
 
@@ -74,7 +74,7 @@ public:
 
     void renameMachine( std::string const & oldMachineName, std::string const & newMachineName )
     {
-        std::vector< IPRange >::iterator i = std::find_if( memberMachine.begin(), memberMachine.end(), boost::phoenix::bind( &IPRange::getAddress, boost::phoenix::arg_names::arg1) == oldMachineName );    
+        std::vector< IPRange >::iterator i = std::find_if( memberMachine.begin(), memberMachine.end(), boost::phoenix::bind( &IPRange::getAddress, boost::phoenix::arg_names::arg1) == oldMachineName );
 
         if ( i != memberMachine.end() )
             i->setAddress( newMachineName );
@@ -90,6 +90,9 @@ public:
         return comment;
     }
 
+    //One of these Name functions should probably sanitize for whitespace,
+    //or there needs to be another getter that does.
+    //tldr white space can't be in a name somehow.
     void setName( std::string const & n )
     {
         name = n;
@@ -116,17 +119,17 @@ public:
             memberMachine.erase( i );
     }
 
-    bool operator!=( Zone const & rhs ) const 
-    { 
-        return name != rhs.name; 
+    bool operator!=( Zone const & rhs ) const
+    {
+        return name != rhs.name;
     }
 
-    void setProtocolState( std::string const & zoneTo, std::string const & protocol, Zone::ProtocolState state) 
+    void setProtocolState( std::string const & zoneTo, std::string const & protocol, Zone::ProtocolState state)
     {
         protocols[ zoneTo ][ protocol ] = state;
     }
 
-    void setProtocolState( Zone const & toZone, ProtocolEntry const & proto, Zone::ProtocolState state) 
+    void setProtocolState( Zone const & toZone, ProtocolEntry const & proto, Zone::ProtocolState state)
     {
         protocols[ toZone.name ][ proto.name ] = state;
     }
@@ -135,9 +138,9 @@ public:
     **  \todo This is debatable whether it's a valid function or not.
     **       At a minimum, it's poorly named or in the wrong place.
     */
-    bool editable() const 
+    bool editable() const
     {
-        switch ( zonetype ) 
+        switch ( zonetype )
         {
             case LocalZone:
             case InternetZone:
@@ -178,9 +181,9 @@ public:
         }
         return protocolsNames;
     }
-    
+
 #if 0
-    ProtocolState getProtocolState(Zone const & toZone, ProtocolEntry const & proto) 
+    ProtocolState getProtocolState(Zone const & toZone, ProtocolEntry const & proto)
     {
         if ( protocols.find( toZone.name ) != protocols.end() )
         {
@@ -192,7 +195,7 @@ public:
         return DENY;
     }
 #endif
-    void denyAllProtocols( Zone const & toZone ) 
+    void denyAllProtocols( Zone const & toZone )
     {
         if ( protocols.find( toZone.name ) != protocols.end() )
         {
@@ -205,12 +208,12 @@ public:
         return zonetype==LocalZone;
     }
 
-    bool isInternet() const 
+    bool isInternet() const
     {
         return zonetype==InternetZone;
     }
 
-    void connect( std::string const & zoneTo ) 
+    void connect( std::string const & zoneTo )
     {
         if ( !isConnectedTo( zoneTo ) )
         {
@@ -232,7 +235,7 @@ public:
         return std::find( connections.begin(), connections.end(), zoneName ) != connections.end();
     }
 
-    bool isConnectionMutable(Zone const & toZone) 
+    bool isConnectionMutable(Zone const & toZone)
     {
         if(isLocal() && toZone.isInternet())
         {

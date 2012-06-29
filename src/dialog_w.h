@@ -42,8 +42,11 @@ public:
         setupUi( this );
         if ( firewall.isSuperUserMode() == false )
         {
-            okayPushButton->setEnabled( false );
-            applyPushButton->setEnabled( false );
+            //it may be better to have this check in the buttons and
+            //tell the user that changes did infact succeed or not.
+
+            //okayPushButton->setEnabled( false );
+            //applyPushButton->setEnabled( false );
         }
         guiReady = true;
         rebuildGui();
@@ -83,6 +86,12 @@ private slots:
     void on_protocolTreeWidget_itemChanged( QTreeWidgetItem * item, int column );
     void protocolStateChanged( std::string const & zoneTo, std::string const & protocol, Zone::ProtocolState state );
     void on_zoneConnectionTableWidget_itemChanged( QTableWidgetItem * item );
+
+    void on_advImportPushButton_clicked()
+    {}
+    void on_advExportPushButton_clicked(){}
+    void on_newUserDefinedProtocolPushButton_clicked(){}
+    void on_deleteUserDefinedProtocolPushButton_clicked(){}
 
     //  All the checkbox options
     void on_logDroppedPacketsCheckBox_stateChanged( int state );

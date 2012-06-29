@@ -12,35 +12,13 @@ void GuardPuppyDialog_w::on_aboutPushButton_clicked()
 {
     GuardPuppyAboutDialog_w aboutDialog;
     aboutDialog.exec();
-#if 0
-    QDialog aboutData("guarddog",I18N_NOOP("Guarddog"),VERSION,
-        I18N_NOOP("Firewall utility"),KAboutData::License_GPL,
-        "(c) 2000-2007, Simon Edwards",
-        I18N_NOOP("Utility for easily creating and configuring a firewall."),
-        "http://www.simonzone.com/software/guarddog/");
-
-    aboutData.addAuthor("Simon Edwards",I18N_NOOP("Developer"),"simon@simonzone.com","http://www.simonzone.com/");
-    aboutData.addCredit("J F Gratton",I18N_NOOP("Help with a little bit of network code."));
-    aboutData.addCredit("Joerg Buchland",I18N_NOOP("Help with sorting out what /dev interface ISDN uses."));
-    aboutData.addCredit("Ludovic Lange",I18N_NOOP("Bug fixes, DHCP help."));
-    aboutData.addCredit("Jason L. Buberel",I18N_NOOP("Feedback, protocol info."));
-    aboutData.addCredit("Carsten Pfeiffer",I18N_NOOP("Feedback, help with KDE3"));
-    aboutData.addCredit("Gunner Poulsen", I18N_NOOP("Danish translation"));
-    aboutData.addCredit("Daniele Medri", I18N_NOOP("Italian translation"));
-    aboutData.addCredit("Stephan Johach", I18N_NOOP("German translation"));
-    aboutData.addCredit("Pascal Billery Schneider", I18N_NOOP("French translation"));
-    aboutData.addCredit("Ceoldo Costantino", I18N_NOOP("Italian translation"));
-    aboutData.addCredit("Per Agerb�", I18N_NOOP("Code Contribution"));
-    aboutData.addCredit("Antonio Diaz", I18N_NOOP("Spanish translation"));
-    aboutData.addCredit("Tomas N?mec", I18N_NOOP("Czech translation"));
-    aboutData.addCredit("Ray Lambert", I18N_NOOP("Port reference tab"));
-#endif
 }
 
 void GuardPuppyDialog_w::on_protocolTreeWidget_itemClicked( QTreeWidgetItem * item, int column )
 {
+    //! \todo Add discriptions to the protocol buckets, or handle in this function not updating when they are clicked
     std::string protocol = item->text( column ).toStdString();
-
+    //fills in the Protocol discription based on the curently selected Protocol
     protocolTextEdit->setText( firewall.getProtocolText( protocol ).c_str() );
 }
 
@@ -51,26 +29,30 @@ void GuardPuppyDialog_w::on_protocolTreeWidget_itemChanged( QTreeWidgetItem * it
 
 
 ///////////////////////////////////////////////////////////////////////////
-void GuardPuppyDialog_w::on_okayPushButton_clicked() 
+void GuardPuppyDialog_w::on_okayPushButton_clicked()
 {
     firewall.saveAndApply();
     //! \todo also save program state, i.e. what the current window size, position is, saveOptions()
     close();
 }
 
-void GuardPuppyDialog_w::on_cancelPushButton_clicked() 
+void GuardPuppyDialog_w::on_cancelPushButton_clicked()
 {
 #if 0
         std::string errorstring;
 
-        if ( waspreviousfirewall && systemfirewallmodified) 
+        if ( waspreviousfirewall && systemfirewallmodified)
         {
             // This is where things become complex.
             // Should we try to restore things to how they were before this program started?
-            switch(QMessageBox::question(0, "Question", 
+            //
+            //There is a race condition if some other firewall front end modified the settings in the interm.
+            switch(QMessageBox::question(0, "Question",
                         ("The system's firewall settings have been modified.\n\n"
                          "Shall I restore them to the previous settings?\n\n"
-                         "These changes may disrupt current network connections."), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Cancel )) {
+                         "These changes may disrupt current network connections."),
+                         QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel,
+                         QMessageBox::Cancel )) {
                 // "Yes, revert to the previous settings."
                 case QMessageBox::Yes:
                     // Restore from the backup.
@@ -100,8 +82,8 @@ void GuardPuppyDialog_w::on_cancelPushButton_clicked()
                     return false;
 
             }
-        } 
-        else 
+        }
+        else
         {
             // Simple Cancel.
             saveOptions();
@@ -113,7 +95,7 @@ void GuardPuppyDialog_w::on_cancelPushButton_clicked()
     close();
 }
 #if 0
-    bool applyFirewall(bool /* warnfirst */) 
+    bool applyFirewall(bool /* warnfirst */)
     {
         std::string errorstring;
         KTempFile tmpfile(0,0,0700);
@@ -181,7 +163,7 @@ void GuardPuppyDialog_w::on_cancelPushButton_clicked()
     }
 #endif
 
-void GuardPuppyDialog_w::on_applyPushButton_clicked() 
+void GuardPuppyDialog_w::on_applyPushButton_clicked()
 {
     firewall.apply();
 
@@ -190,13 +172,13 @@ void GuardPuppyDialog_w::on_applyPushButton_clicked()
 #if 0
 	QString errorstring;
     QString filename(SYSTEM_RC_FIREWALL);
-    
+
     if(firewall.saveFirewall(filename,errorstring)==false) {
 		QMessageBox::critical(0,"TITLE3", QObject::tr("An error occurred while writing the firewall script to disk.\n\n"
             "(Detailed message: \"%1\")").arg(errorstring));
 		return;
 	}
-    if(applyFirewall(true)) 
+    if(applyFirewall(true))
     {
         modified = false;
     }
@@ -313,7 +295,7 @@ void GuardPuppyDialog_w::rebuildGui()
     if ( guiReady )
     {
         checkBox_3->setCheckState( Qt::PartiallyChecked );
-//    updatinggui = true;
+
         zoneListWidget->clear();
         protocolZoneListWidget->clear();
         std::vector< std::string > zones = firewall.getZoneList();
@@ -327,14 +309,13 @@ void GuardPuppyDialog_w::rebuildGui()
 
         buildConnectionGUI();
 
-//        zit->toFirst();
         if ( firewall.zoneCount() > 0 && currentZoneName() != "" )
         {
             setZoneGUI( firewall.getZone( currentZoneName() ) );
             setZoneAddressGUI( firewall.getZone( currentZoneName() ) );
             setZoneConnectionGUI( firewall.getZone( currentZoneName() ) );
         }
-//        setUserDefinedProtocolGUI( UserDefinedProtocol const & userprotocol) 
+//        setUserDefinedProtocolGUI( UserDefinedProtocol const & userprotocol)
 
         // Put the widgets in the right state for the logging page.
         logDroppedPacketsCheckBox->setChecked(firewall.isLogDrop());
@@ -364,12 +345,12 @@ void GuardPuppyDialog_w::rebuildGui()
 
         enableDhcpCheckBox->setChecked(firewall.isDHCPcEnabled());
         dhcpInterfaceNameLineEdit->setText(firewall.getDHCPcInterfaceName().c_str());
-        
+
         enableDhcpdCheckBox->setChecked(firewall.isDHCPdEnabled());
         dhcpdInterfaceNameLineEdit->setText(firewall.getDHCPdInterfaceName().c_str());
 
         allowTcpTimeStampsCheckBox->setChecked(firewall.isAllowTCPTimestamps());
-    
+
         // Add each User Defined Protocol to the list box.
         std::vector< UserDefinedProtocol > const & udp = firewall.getUserDefinedProtocols();
 
@@ -382,10 +363,6 @@ void GuardPuppyDialog_w::rebuildGui()
         }
 
 
-//        udpit = firewall.newUserDefinedProtocolsIterator();
-//        for(; udpit->current(); ++(*udpit)) {
-//            addUserDefinedProtocolToListBox(udpit->current());
-//        }
         createProtocolPages();
         setProtocolPagesEnabled(!firewall.isDisabled());
         setAdvancedPageEnabled(!firewall.isDisabled());
@@ -394,86 +371,9 @@ void GuardPuppyDialog_w::rebuildGui()
         setLoggingPageEnabled(!firewall.isDisabled());
 
         descriptionEdit->setText(firewall.description.c_str());
-
-//        updatinggui = false;
-
-#if 0
-    QListIterator<GuardPuppyFirewall::Zone> *zit;
-    uint start,end;
-    QListIterator<UserDefinedProtocol> *udpit;
-
-    updatinggui = true;
-    
-    zit = firewall.newZonesIterator();  // Select the first zone in the list box.
-        // Fill up the zone list box.
-    for(zit->toFirst(); zit->current(); ++(*zit)) {
-        zonelistbox->insertItem(zit->current()->name);
-    }
-    zonelistbox->setSelected(0,true);
-
-    buildConnectionGUI();
-
-    zit->toFirst();
-    setZoneGUI(*zit->current());
-    setZoneAddressGUI(*zit->current());
-    setZoneConnectionGUI(*zit->current());
-    delete zit;
-    zonelistbox->setSelected(0,true);
-
-        // Put the widgets in the right state for the logging page.
-    logdroppedpacketscheckbox->setChecked(firewall.isLogDrop());
-    logrejectcheckbox->setChecked(firewall.isLogReject());
-    logabortedtcpcheckbox->setChecked(firewall.isLogAbortedTCP());
-    logipoptionscheckbox->setChecked(firewall.isLogIPOptions());
-    logtcpsequencecheckbox->setChecked(firewall.isLogTCPSequence());
-    logtcpoptionscheckbox->setChecked(firewall.isLogTCPOptions());
-    loglevelcombobox->setCurrentItem(firewall.getLogLevel());
-    loguseratelimitcheckbox->setChecked(firewall.isLogRateLimit());
-
-    logratespinbox->setValue(firewall.getLogRate());
-
-    lograteunitcombobox->setCurrentItem(firewall.getLogRateUnit());
-    logburstspinbox->setValue(firewall.getLogRateBurst());
-    logwarnratelimitcheckbox->setChecked(firewall.isLogWarnLimit());
-    logwarnratespinbox->setValue(firewall.getLogWarnLimitRate());
-    logwarnrateunitcombobox->setCurrentItem(firewall.getLogWarnLimitRateUnit());
-
-        // Put the widgets in the right state for the Advanced page.
-    firewall.getLocalDynamicPortRange(start,end);
-    localportrangelowspinbox->setValue(start);
-    localportrangehighspinbox->setValue(end);
-
-    disablefirewallcheckbox->setChecked(firewall.isDisabled());
-
-    enabledhcpccheckbox->setChecked(firewall.isDHCPcEnabled());
-    dhcpcinterfacenamelineedit->setText(firewall.getDHCPcInterfaceName());
-    
-    enabledhcpdcheckbox->setChecked(firewall.isDHCPdEnabled());
-    dhcpdinterfacenamelineedit->setText(firewall.getDHCPdInterfaceName());
-
-    allowtcptimestampscheckbox->setChecked(firewall.isAllowTCPTimestamps());
-    
-        // Add each User Defined Protocol to the list box.
-    udpit = firewall.newUserDefinedProtocolsIterator();
-    for(; udpit->current(); ++(*udpit)) {
-        addUserDefinedProtocolToListBox(udpit->current());
-    }
-    createProtocolPages();
-    setProtocolPagesEnabled(!firewall.isDisabled());
-    setAdvancedPageEnabled(!firewall.isDisabled());
-    setZonePageEnabled(!firewall.isDisabled());
-    setLoggingPageEnabled(!firewall.isDisabled());
-
-    descriptionedit->setText(firewall.description);
-
-    updatinggui = false;
-#endif
-
-
-
     }
 }
-void GuardPuppyDialog_w::setLoggingPageEnabled(bool enabled) 
+void GuardPuppyDialog_w::setLoggingPageEnabled(bool enabled)
 {
 
     bool logging = firewall.isLogReject() || firewall.isLogDrop();
@@ -500,13 +400,11 @@ void GuardPuppyDialog_w::setLoggingPageEnabled(bool enabled)
 
 
 ///////////////////////////////////////////////////////////////////////////
-void GuardPuppyDialog_w::setProtocolPagesEnabled(bool enabled) 
+void GuardPuppyDialog_w::setProtocolPagesEnabled(bool enabled)
 {
     protocolZoneListWidget->setEnabled( enabled );
     protocolTextEdit->setEnabled( enabled );
     protocolTreeWidget->setEnabled( enabled );
-//    servingzonelistbox->setEnabled(enabled);
-//    protocolwidgetstack->setEnabled(enabled);
 }
 
 //Qt::CheckState itemState = qobject_cast<QCheckBox*>(treeWidget->itemWidget(item, 0))->checkState();
@@ -525,7 +423,7 @@ void GuardPuppyDialog_w::protocolStateChanged( std::string const & zoneTo, std::
     firewall.setProtocolState( currentProtocolZoneName(), zoneTo, protocol, state );
 }
 
-void GuardPuppyDialog_w::createProtocolPages() 
+void GuardPuppyDialog_w::createProtocolPages()
 {
     protocolTreeWidget->clear();
 
@@ -585,18 +483,18 @@ void GuardPuppyDialog_w::createProtocolPages()
     protocolTreeWidget->header()->setResizeMode( QHeaderView::ResizeToContents );
 }
 
-void GuardPuppyDialog_w::setZoneGUI( ::Zone const & zone ) 
+void GuardPuppyDialog_w::setZoneGUI( ::Zone const & zone )
 {
     zoneNameLineEdit->setText( zone.getName().c_str());
     zoneCommentLineEdit->setText( zone.getComment().c_str());
 
-    if ( zone.editable() ) 
+    if ( zone.editable() )
     {
         zoneNameLineEdit->setReadOnly(false);
         zoneCommentLineEdit->setReadOnly(false);
         deleteZonePushButton->setEnabled(true);
-    } 
-    else 
+    }
+    else
     {
         zoneNameLineEdit->setReadOnly(true);
         zoneCommentLineEdit->setReadOnly(true);
@@ -604,39 +502,39 @@ void GuardPuppyDialog_w::setZoneGUI( ::Zone const & zone )
     }
 }
 
-void GuardPuppyDialog_w::setZoneAddressGUI( ::Zone const & zone) 
+void GuardPuppyDialog_w::setZoneAddressGUI( ::Zone const & zone)
 {
         // Clean out the address list box.
     zoneAddressListBox->clear();
-    
+
     zoneAddressListBox->setEnabled( zone.editable());
-    
-    BOOST_FOREACH( IPRange const & it, zone.getMemberMachineList() ) 
+
+    BOOST_FOREACH( IPRange const & it, zone.getMemberMachineList() )
     {
         zoneAddressListBox->addItem(it.getAddress().c_str());
     }
         // Display a special message for the Local zone.
-    if(zone.isLocal()) 
+    if(zone.isLocal())
     {
         zoneAddressListBox->addItem(QObject::tr("<< IP addresses on the local machine >>"));
     }
     // Display a special message for the Internet zone.
-    if(zone.isInternet()) 
+    if(zone.isInternet())
     {
         zoneAddressListBox->addItem(QObject::tr("<< IP addresses not matching any zone >>"));
     }
-    
+
     newZoneAddressPushButton->setEnabled(zone.editable());
-    
-    if(!zone.getMemberMachineList().empty() ) 
+
+    if(!zone.getMemberMachineList().empty() )
     {
 //        zoneAddressLineEdit->setText((zone.membermachine.at(0)).getAddress().c_str());
         zoneAddressListBox->setCurrentRow(0); //,true);
         zoneAddressListBox->setEnabled(true);
         deleteZoneAddressPushButton->setEnabled(true);
         zoneAddressLineEdit->setEnabled(true);
-    } 
-    else 
+    }
+    else
     {
         zoneAddressLineEdit->setText("");
         zoneAddressListBox->setEnabled(false);
@@ -645,42 +543,42 @@ void GuardPuppyDialog_w::setZoneAddressGUI( ::Zone const & zone)
     }
 }
 
-void GuardPuppyDialog_w::setZonePageEnabled(::Zone const & thisZone, bool enabled) 
+void GuardPuppyDialog_w::setZonePageEnabled(::Zone const & thisZone, bool enabled)
 {
-    if ( enabled) 
+    if ( enabled)
     {
         newZoneAddressPushButton->setEnabled(true);
         zoneAddressListBox->setEnabled(true);
-    
+
         newZoneAddressPushButton->setEnabled(thisZone.editable());
-//        deleteZoneAddressPushButton->setEnabled(thisZone.editable());        
-        
+//        deleteZoneAddressPushButton->setEnabled(thisZone.editable());
+
         zoneNameLineEdit->setEnabled(true);
         zoneCommentLineEdit->setEnabled(true);
-        
-        if(!thisZone.getMemberMachineList().empty()) 
+
+        if(!thisZone.getMemberMachineList().empty())
         {
             zoneAddressListBox->setEnabled(true);
 //            deleteZoneAddressPushButton->setEnabled(true);
             zoneAddressLineEdit->setEnabled(true);
-        } 
-        else 
+        }
+        else
         {
             zoneAddressListBox->setEnabled(false);
 //            deleteZoneAddressPushButton->setEnabled(false);
             zoneAddressLineEdit->setEnabled(false);
         }
-            
-    } 
-    else 
+
+    }
+    else
     {
             // Disable the widgets.
         newZoneAddressPushButton->setEnabled(false);
-        zoneAddressListBox->setEnabled(false);        
+        zoneAddressListBox->setEnabled(false);
         zoneNameLineEdit->setEnabled(false);
         zoneCommentLineEdit->setEnabled(false);
 //        deleteZoneAddressPushButton->setEnabled(false);
-    
+
         newZoneAddressPushButton->setEnabled(false);
 //        deleteZoneAddressPushButton->setEnabled(false);
         zoneAddressLineEdit->setEnabled(false);
@@ -694,13 +592,13 @@ void GuardPuppyDialog_w::on_zoneConnectionTableWidget_itemChanged( QTableWidgetI
     firewall.updateZoneConnection( currentZoneName(), fromZone, item->checkState() == Qt::Checked);
 }
 
-void GuardPuppyDialog_w::setZoneConnectionGUI(::Zone const & zone) 
+void GuardPuppyDialog_w::setZoneConnectionGUI(::Zone const & zone)
 {
     zoneConnectionTableWidget->setRowCount( 0 );
 //    zoneConnectionTableWidget->clearContents();
 
     std::vector< std::string > const & zoneList = firewall.getZoneList();
-    std::string zoneFrom = zone.getName(); 
+    std::string zoneFrom = zone.getName();
 
     BOOST_FOREACH( std::string const & zoneTo, zoneList )
     {
@@ -709,7 +607,7 @@ void GuardPuppyDialog_w::setZoneConnectionGUI(::Zone const & zone)
         bool connected = firewall.areZonesConnected( zoneFrom, zoneTo );
         if ( connected )
             item->setCheckState( Qt::Checked );
-        else 
+        else
             item->setCheckState( Qt::Unchecked );
         if ( zoneTo == zoneFrom )
             item->setFlags( item->flags() & ~Qt::ItemIsEnabled );  // cannot make zone connections to yourself.
@@ -722,7 +620,7 @@ void GuardPuppyDialog_w::setZoneConnectionGUI(::Zone const & zone)
     }
 }
 
-void GuardPuppyDialog_w::setUserDefinedProtocolGUI( UserDefinedProtocol const & userprotocol) 
+void GuardPuppyDialog_w::setUserDefinedProtocolGUI( UserDefinedProtocol const & userprotocol)
 {
         userDefinedProtocolNameLineEdit->setText(userprotocol.getName().c_str());
         userDefinedProtocolTypeComboBox->setCurrentIndex(userprotocol.getType()==IPPROTO_TCP ? 0 : 1);
@@ -762,7 +660,7 @@ void GuardPuppyDialog_w::setAdvancedPageEnabled(bool enabled)
     userDefinedProtocolTypeComboBox->setEnabled(enabled && gotudps);
     userDefinedProtocolPortStartSpinBox->setEnabled(enabled && gotudps);
     userDefinedProtocolPortEndSpinBox->setEnabled(enabled && gotudps);
-    if ( gotudps ) 
+    if ( gotudps )
     {
         BOOST_FOREACH( UserDefinedProtocol const & u, udp )
         {
@@ -772,14 +670,14 @@ void GuardPuppyDialog_w::setAdvancedPageEnabled(bool enabled)
             userDefinedProtocolBidirectionalCheckBox->setEnabled(enabled && gotudps && u.getType()==IPPROTO_UDP);
             break;
         }
-    } 
-    else 
+    }
+    else
     {
         userDefinedProtocolBidirectionalCheckBox->setEnabled(false);
     }
     enableDhcpCheckBox->setEnabled( enabled );
     dhcpInterfaceNameLineEdit->setEnabled( firewall.isDHCPcEnabled() && enabled );
-    
+
     enableDhcpdCheckBox->setEnabled( enabled );
     dhcpdInterfaceNameLineEdit->setEnabled( firewall.isDHCPdEnabled() && enabled );
 
@@ -787,7 +685,7 @@ void GuardPuppyDialog_w::setAdvancedPageEnabled(bool enabled)
 
 }
 
-void GuardPuppyDialog_w::buildConnectionGUI() 
+void GuardPuppyDialog_w::buildConnectionGUI()
 {
 #if 0
     QListIterator<GuardPuppyFirewall::Zone> *zit;

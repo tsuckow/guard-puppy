@@ -65,18 +65,18 @@ email                : simon@simonzone.com
 
 // Just a tiny helper class.
 // Holds a single port range.
-struct PortRangeInfo 
+struct PortRangeInfo
 {
     uint dynamicStart;
     uint dynamicEnd;
 
-    PortRangeInfo(uint s = 1024, uint e = 65535 ) 
+    PortRangeInfo(uint s = 1024, uint e = 65535 )
         : dynamicStart( s ), dynamicEnd( e )
     {
     }
 };
 
-enum RangeType 
+enum RangeType
 {
     PORTRANGE_RANGE=0,
     PORTRANGE_ANY,
@@ -84,12 +84,12 @@ enum RangeType
     PORTRANGE_NONPRIVILEGED,
     PORTRANGE_DYNAMIC
 };
-enum NetworkEntity 
+enum NetworkEntity
 {
-    ENTITY_SERVER, 
+    ENTITY_SERVER,
     ENTITY_CLIENT
 };
-enum Classification 
+enum Classification
 {
     CLASS_UNKNOWN=0,
     CLASS_MAIL,
@@ -104,17 +104,17 @@ enum Classification
 };
 
 
-class ProtocolNetUseDetail 
+class ProtocolNetUseDetail
 {
 
     bool alternate;
     RangeType rangetype;
-    union 
+    union
     {
         uint start; // tcmp, udp
         uint type;  // icmp
     };
-    union 
+    union
     {
         uint end;   // tcp, udp
         int code;   // icmp
@@ -143,7 +143,7 @@ public:
         return result.str();
     }
 
-    void setStartPort(uint p) 
+    void setStartPort(uint p)
     {
         start = p;
         if(start > end) {
@@ -151,10 +151,10 @@ public:
         }
     }
 
-    void setEndPort(uint p) 
+    void setEndPort(uint p)
     {
         end = p;
-        if ( start > end) 
+        if ( start > end)
         {
             start = p;
         }
@@ -162,7 +162,7 @@ public:
 
 
     ///////////////////////////////////////////////////////////////////////////
-    ~ProtocolNetUseDetail() 
+    ~ProtocolNetUseDetail()
     {
 
     }
@@ -392,7 +392,7 @@ public:
 
 
 };
-enum Score 
+enum Score
 {
     SCORE_UNKNOWN=0,
     SCORE_LOW,
@@ -400,7 +400,7 @@ enum Score
     SCORE_HIGH
 };
 
-class ProtocolEntry 
+class ProtocolEntry
 {
 public:
     std::string name;
@@ -433,7 +433,7 @@ public:
 
     void setName( std::string const & n ) { name = n; }
 
-    ProtocolEntry( std::string const & _name = "" ) 
+    ProtocolEntry( std::string const & _name = "" )
      : name( _name )
     {
         //    networkuse.setAutoDelete(true);
@@ -443,7 +443,7 @@ public:
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    ~ProtocolEntry() 
+    ~ProtocolEntry()
     {
 
     }
@@ -1746,10 +1746,10 @@ cleanup:
     ProtocolEntry & lookup( std::string const & name ) 
     {
 
-        std::vector< ProtocolEntry >::iterator pit = std::find_if( protocolDataBase.begin(), protocolDataBase.end(), boost::phoenix::bind( &ProtocolEntry::name, boost::phoenix::arg_names::arg1) == name );    
+        std::vector< ProtocolEntry >::iterator pit = std::find_if( protocolDataBase.begin(), protocolDataBase.end(), boost::phoenix::bind( &ProtocolEntry::name, boost::phoenix::arg_names::arg1) == name );
         if ( pit == protocolDataBase.end() )
         {
-            pit = std::find_if( protocolDataBase.begin(), protocolDataBase.end(), boost::phoenix::bind( &ProtocolEntry::longname, boost::phoenix::arg_names::arg1) == name );    
+            pit = std::find_if( protocolDataBase.begin(), protocolDataBase.end(), boost::phoenix::bind( &ProtocolEntry::longname, boost::phoenix::arg_names::arg1) == name );
             if ( pit == protocolDataBase.end() )
             {
                 std::cout << "Didn't protocol database: " << name << std::endl;
