@@ -442,7 +442,7 @@ public:
         std::string cmd = "chmod 0700 " + tmp;
         system( cmd.c_str() );
         runFirewall( tmp );
-        //boost::filesystem::remove( tmp );
+        boost::filesystem::remove( tmp );
     }
 
     void copyFile( std::string const & src,  std::string const & dest )

@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Firewall Configuration - guardPuppy</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -696,7 +696,7 @@
              <item>
               <widget class="QLabel" name="label_17">
                <property name="text">
-                <string>Localy Dynamic Port Range:</string>
+                <string>Local Dynamic Port Range:</string>
                </property>
               </widget>
              </item>
