@@ -1,6 +1,9 @@
 #pragma once
 
+#include <string>
+
 #include <QDialog>
+#include <QFileDialog>
 #include <QCheckBox>
 #include "ui_guardPuppy.h"
 
@@ -87,9 +90,18 @@ private slots:
     void protocolStateChanged( std::string const & zoneTo, std::string const & protocol, Zone::ProtocolState state );
     void on_zoneConnectionTableWidget_itemChanged( QTableWidgetItem * item );
 
-    void on_advImportPushButton_clicked()
-    {}
-    void on_advExportPushButton_clicked(){}
+    //new
+    void on_advImportPushButton_clicked(){
+    //! \todo add logic to handle readFirewall failure
+        firewall.factoryDefaults();
+        std::string filename = QFileDialog::getOpenFileName(this, tr("Export GuardPuppy Config"), "/~", tr("All Files (*)")).toStdString();
+        firewall.readFirewall(filename);
+    }
+    void on_advExportPushButton_clicked(){
+        //put a dialog box out that the user can specify a place to save the file
+        std::string filename = QFileDialog::getSaveFileName(this, tr("Import GuardPuppy Config"), "/~", tr("All Files (*)")).toStdString();
+        firewall.save(filename);
+    }
     void on_newUserDefinedProtocolPushButton_clicked(){}
     void on_deleteUserDefinedProtocolPushButton_clicked(){}
 

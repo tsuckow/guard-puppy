@@ -334,7 +334,6 @@ public:
         zone.setName( newZoneName );
     }
 
-public:
     /*!
     **  \brief return list of user defined protocols
     **
@@ -360,7 +359,7 @@ public:
         }
         catch ( std::string const & msg )
         {
-            std::cout << "Exception: " << msg << std::endl;
+            std::cerr << "Exception: " << msg << std::endl;
         }
     }
 
@@ -1567,6 +1566,8 @@ private:
         }
     }
 
+//this needs to be public
+public:
     /*!
     **  \brief  Read in firewall from stream and initialize firewall state
     **
@@ -2036,7 +2037,7 @@ private:
             }
         }
     }
-
+//i need this also public
     /*!
     **  \brief Set firewall to known "good" defaults
     */
@@ -2086,7 +2087,7 @@ private:
 
         description = "";
     }
-
+private:
     /*!
     **  \brief  Execute the filename as a shell command
     */
