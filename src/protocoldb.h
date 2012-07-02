@@ -443,6 +443,21 @@ private:
 public:
     std::string lastPragmaName;
     std::map< std::string, std::string > pragma;
+
+    bool operator==(ProtocolEntry const & that)
+    {
+        return      name                ==  that.name
+                &&  longnamelanguage    ==  that.longnamelanguage
+                &&  longname            ==  that.longname
+                &&  descriptionlanguage ==  that.descriptionlanguage
+                &&  description         ==  that.description
+                &&  threat              ==  that.threat
+                &&  falsepos            ==  that.falsepos
+                &&  classification      ==  that.classification
+                &&  networkuse          ==  that.networkuse
+                &&  lastPragmaName      ==  that.lastPragmaName
+                &&  pragma              ==  that.pragma;
+    }
     void addPragmaValue( std::string const & value )
     {
         std::cout << "Pragma " << lastPragmaName << " = " << value << std::endl;
