@@ -1932,7 +1932,14 @@ public:
 
             // Create and fill in the new User Defined Protocol object.
             UserDefinedProtocol udp(tmpstring, udptype, udpstartport, udpendport, udpbidirectional, pdb, udpid);
-            userdefinedprotocols.push_back( udp );
+            //there might be a better way to do this
+            bool assign = true;
+            BOOST_FOREACH(UserDefinedProtocol i, userdefinedprotocols)
+            {
+                assign = !(i == udp) && assign;
+            }
+            if (assign)
+                userdefinedprotocols.push_back( udp );
 
             std::getline( stream, s );
             if(s.empty()) throw std::string( "Empty string read" );

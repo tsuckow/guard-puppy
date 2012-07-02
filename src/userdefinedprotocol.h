@@ -40,7 +40,7 @@ public:
             twice. It will, however not prevent similar protocols from being added. (like
             if only the name is different)
     **/
-    bool operator==(UserDefinedProtocol const & that)
+    bool operator==(UserDefinedProtocol const & that) const
     {
         return  id              ==  that.id
                 &&  entry       ==  that.entry

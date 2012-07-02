@@ -121,7 +121,7 @@ class ProtocolNetUseDetail
     };
 public:
 
-    bool operator==(ProtocolNetUseDetail const & that)
+    bool operator==(ProtocolNetUseDetail const & that) const
     {
         return  alternate       ==  that.alternate
                 && rangetype    ==  that.rangetype
@@ -258,7 +258,7 @@ public:
     std::string lastPragmaName;
     std::map< std::string, std::string > pragma;
 
-    bool operator==(ProtocolNetUse const & that)
+    bool operator==(ProtocolNetUse const & that) const
     {
         return  descriptionlanguage     ==  that.descriptionlanguage
                 &&  description         ==  that.description
@@ -444,7 +444,7 @@ public:
     std::string lastPragmaName;
     std::map< std::string, std::string > pragma;
 
-    bool operator==(ProtocolEntry const & that)
+    bool operator==(ProtocolEntry const & that) const
     {
         return      name                ==  that.name
                 &&  longnamelanguage    ==  that.longnamelanguage
