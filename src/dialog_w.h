@@ -95,7 +95,7 @@ private slots:
     void on_advRestoreFactoryDefaultsPushButton_clicked();
 
     void on_newUserDefinedProtocolPushButton_clicked(){}
-    void on_deleteUserDefinedProtocolPushButton_clicked(){}
+    void on_deleteUserDefinedProtocolPushButton_clicked();
 
     //  All the checkbox options
     void on_logDroppedPacketsCheckBox_stateChanged( int state );

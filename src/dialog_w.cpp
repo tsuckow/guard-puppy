@@ -539,20 +539,26 @@ void GuardPuppyDialog_w::setZoneConnectionGUI(::Zone const & zone)
     }
 }
 
-void GuardPuppyDialog_w::on_advImportPushButton_clicked(){
+void GuardPuppyDialog_w::on_advImportPushButton_clicked()
+{
 //! \todo add logic to handle readFirewall failure
     firewall.factoryDefaults();
     std::string filename = QFileDialog::getOpenFileName(this, tr("Export GuardPuppy Config"), "/~", tr("All Files (*)")).toStdString();
     firewall.readFirewall(filename);
-    rebuildGui();
+    rebuildGui();//TODO figure out a better way of redrawing...?
 }
-void GuardPuppyDialog_w::on_advExportPushButton_clicked(){
-    //put a dialog box out that the user can specify a place to save the file
+void GuardPuppyDialog_w::on_advExportPushButton_clicked()
+{
     std::string filename = QFileDialog::getSaveFileName(this, tr("Import GuardPuppy Config"), "/~", tr("All Files (*)")).toStdString();
     firewall.save(filename);
 }
 void GuardPuppyDialog_w::on_advRestoreFactoryDefaultsPushButton_clicked(){
     firewall.factoryDefaults();
+    rebuildGui();
+}
+void GuardPuppyDialog_w::on_deleteUserDefinedProtocolPushButton_clicked()
+{
+    firewall.deleteUserDefinedProtocol(userDefinedProtocolTableWidget->currentRow());
     rebuildGui();
 }
 

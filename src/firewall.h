@@ -344,6 +344,21 @@ public:
         return userdefinedprotocols;
     }
 
+    void newUserDefinedProtocol()
+    {
+    }
+
+    /*!
+    **  \brief Deletes a User Defined Protocol
+    **
+    **  gets the udp by position in vector?
+    */
+    void deleteUserDefinedProtocol( uint const i )
+    {
+        if( i < userdefinedprotocols.size())
+            userdefinedprotocols.erase(userdefinedprotocols.begin()+i);
+    }
+
     /*!
     **
     ** \todo Need to throw exception if things don't work.  One case would
@@ -1935,9 +1950,8 @@ public:
             //there might be a better way to do this
             bool assign = true;
             BOOST_FOREACH(UserDefinedProtocol i, userdefinedprotocols)
-            {
                 assign = !(i == udp) && assign;
-            }
+
             if (assign)
                 userdefinedprotocols.push_back( udp );
 
