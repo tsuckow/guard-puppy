@@ -121,6 +121,14 @@ class ProtocolNetUseDetail
     };
 public:
 
+    bool operator==(ProtocolNetUseDetail const & that)
+    {
+        return  alternate       ==  that.alternate
+                && rangetype    ==  that.rangetype
+                && start        ==  that.start
+                && end          ==  that.end;
+    }
+
     ProtocolNetUseDetail() {
         alternate = false;
         rangetype = PORTRANGE_RANGE;
