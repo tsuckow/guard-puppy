@@ -25,7 +25,7 @@ email                : simon@simonzone.com
 //
 // This class is basically a facade over the Protocol DB classes.
 //
-class UserDefinedProtocol 
+class UserDefinedProtocol
 {
     uint id;
 public:
@@ -33,7 +33,7 @@ public:
     ProtocolNetUse       netuse;
     ProtocolNetUseDetail destdetail;
 public:
-    UserDefinedProtocol(std::string const & tmpstring, uchar udptype, uint udpstartport, uint udpendport, bool udpbidirectional, ProtocolDB & database, uint newid) 
+    UserDefinedProtocol(std::string const & tmpstring, uchar udptype, uint udpstartport, uint udpendport, bool udpbidirectional, ProtocolDB & database, uint newid)
     {
         entry = ProtocolEntry() ;
         entry.classification = CLASS_CUSTOM;
@@ -68,13 +68,13 @@ public:
         database.addProtocolEntry(entry);
     }
 
-    ~UserDefinedProtocol() 
+    ~UserDefinedProtocol()
     {
         //    db->takeEntry(entry);
         //    delete entry;
     }
 
-    void setID(uint newid) 
+    void setID(uint newid)
     {
         id = newid;
         std::stringstream ss;
@@ -82,69 +82,69 @@ public:
         entry.name = ss.str();
     }
 
-    uint getID() const 
+    uint getID() const
     {
         return id;
     }
 
-    void setName(const std::string &n) 
+    void setName(const std::string &n)
     {
         entry.longname = n;
     }
 
-    std::string getRangeString() const 
+    std::string getRangeString() const
     {
         return destdetail.getRangeString();
     }
 
-    std::string getName() const 
+    std::string getName() const
     {
         return entry.longname;
     }
 
-    void setType(uchar t) 
+    void setType(uchar t)
     {
         netuse.type = t;
     }
 
-    uchar getType() const 
+    uchar getType() const
     {
         return netuse.type;
     }
 
-    void setBidirectional(bool on) 
+    void setBidirectional(bool on)
     {
         netuse.bidirectional = on;
     }
 
-    bool isBidirectional() const 
+    bool isBidirectional() const
     {
         return netuse.isBidirectional();
     }
 
-    void setStartPort(uint p) 
+    void setStartPort(uint p)
     {
         destdetail.setStartPort( p );
     }
 
-    void setEndPort(uint p) 
+    void setEndPort(uint p)
     {
         destdetail.setEndPort( p );
     }
 
-    uint getStartPort() const 
+    uint getStartPort() const
     {
         return destdetail.getStart();
     }
 
-    uint getEndPort() const 
+    uint getEndPort() const
     {
         return destdetail.getEnd();
     }
 
-    ProtocolEntry const & getProtocolEntry() const 
+    ProtocolEntry const & getProtocolEntry() const
     {
         return entry;
-    }    
+    }
 };
 
