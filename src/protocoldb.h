@@ -257,6 +257,21 @@ private:
 public:
     std::string lastPragmaName;
     std::map< std::string, std::string > pragma;
+
+    bool operator==(ProtocolNetUse const & that)
+    {
+        return  descriptionlanguage     ==  that.descriptionlanguage
+                &&  description         ==  that.description
+                &&  type                ==  that.type
+                &&  bidirectional       ==  that.bidirectional
+                &&  source              ==  that.source
+                &&  dest                ==  that.dest
+                &&  sourcedetaillist    ==  that.sourcedetaillist
+                &&  destdetaillist      ==  that.destdetaillist
+                &&  lastPragmaName      ==  that.lastPragmaName
+                &&  pragma              ==  that.pragma;
+    }
+
     void addPragmaValue( std::string const & value )
     {
         std::cout << "Pragma " << lastPragmaName << " = " << value << std::endl;
