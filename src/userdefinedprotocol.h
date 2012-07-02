@@ -33,6 +33,21 @@ public:
     ProtocolNetUse       netuse;
     ProtocolNetUseDetail destdetail;
 public:
+    /** 
+    @brief: This function compares the internals of 2 protocols to determine if they are
+            the same.
+            This is needed to not readd the same protocol twice, when loading the same config
+            twice. It will, however not prevent similar protocols from being added. (like
+            if only the name is different)
+    **/
+    bool operator==(UserDefinedProtocol const & that)
+    {
+        return  id              ==  that.id
+                &&  entry       ==  that.entry
+                &&  netuse      ==  that.netuse
+                &&  destdetail  ==  that.destdetail;
+    }
+
     UserDefinedProtocol(std::string const & tmpstring, uchar udptype, uint udpstartport, uint udpendport, bool udpbidirectional, ProtocolDB & database, uint newid)
     {
         entry = ProtocolEntry() ;
