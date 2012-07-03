@@ -94,7 +94,7 @@ private slots:
     void on_advExportPushButton_clicked();
     void on_advRestoreFactoryDefaultsPushButton_clicked();
 
-    void on_newUserDefinedProtocolPushButton_clicked(){}
+    void on_newUserDefinedProtocolPushButton_clicked();
     void on_deleteUserDefinedProtocolPushButton_clicked();
 
     //  All the checkbox options

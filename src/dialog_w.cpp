@@ -556,6 +556,21 @@ void GuardPuppyDialog_w::on_advRestoreFactoryDefaultsPushButton_clicked(){
     firewall.factoryDefaults();
     rebuildGui();
 }
+void GuardPuppyDialog_w::on_newUserDefinedProtocolPushButton_clicked()
+{
+//  std::string name        =   userDefinedProtocolNameLineEdit->text().toStdString();
+//  uchar  udpType          =   ((userDefinedProtocolTypeComboBox->currentIndex()==0)?(IPPROTO_TCP):(IPPROTO_UDP));
+//  uint   udpStartPort     =   userDefinedProtocolPortStartSpinBox->value();
+//  uint   udpEndPort       =   userDefinedProtocolPortEndSpinBox->value();
+//  bool   udpBidirectional =   userDefinedProtocolBidirectionalCheckBox->checkState();
+    std::string name        =   "New Protocol";
+    uchar  udpType          =   IPPROTO_TCP;
+    uint   udpStartPort     =   0;
+    uint   udpEndPort       =   0;
+    bool   udpBidirectional =   false;
+    firewall.newUserDefinedProtocol(name, udpType, udpStartPort, udpEndPort, udpBidirectional);
+    rebuildGui();
+}
 void GuardPuppyDialog_w::on_deleteUserDefinedProtocolPushButton_clicked()
 {
     firewall.deleteUserDefinedProtocol(userDefinedProtocolTableWidget->currentRow());

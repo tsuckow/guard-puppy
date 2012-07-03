@@ -344,8 +344,11 @@ public:
         return userdefinedprotocols;
     }
 
-    void newUserDefinedProtocol()
+    void newUserDefinedProtocol(std::string name, uchar udpType, uint udpStartPort, uint udpEndPort, bool bi)
     {
+        //! \todo get a way to generate a udpid... or is it even needed... probably not.
+        UserDefinedProtocol p (name, udpType, udpStartPort, udpEndPort, bi, pdb, /*udpid*/ 0);
+        userdefinedprotocols.push_back(p);
     }
 
     /*!
@@ -1900,7 +1903,7 @@ public:
                     udptype = IPPROTO_UDP;
                 }
                 else
-                {
+                {// Add support for other types of sockets (like RAW)?
                     throw std::string("Error parsing firewall [UserDefinedProtocol] section. Expected '# TYPE=TCP' or '# TYPE=UDP'");
                 }
             }

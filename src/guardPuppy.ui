@@ -17,7 +17,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="Zone">
       <attribute name="title">
@@ -218,7 +218,7 @@
                <enum>Qt::PreventContextMenu</enum>
               </property>
               <attribute name="horizontalHeaderVisible">
-               <bool>true</bool>
+               <bool>false</bool>
               </attribute>
               <attribute name="horizontalHeaderCascadingSectionResizes">
                <bool>false</bool>
@@ -260,7 +260,7 @@
                <bool>false</bool>
               </attribute>
               <attribute name="horizontalHeaderVisible">
-               <bool>true</bool>
+               <bool>false</bool>
               </attribute>
               <attribute name="horizontalHeaderMinimumSectionSize">
                <number>50</number>
@@ -820,6 +820,12 @@
            <layout class="QVBoxLayout" name="verticalLayout_10">
             <item>
              <widget class="QTableWidget" name="userDefinedProtocolTableWidget">
+              <property name="editTriggers">
+               <set>QAbstractItemView::NoEditTriggers</set>
+              </property>
+              <property name="selectionBehavior">
+               <enum>QAbstractItemView::SelectRows</enum>
+              </property>
               <column>
                <property name="text">
                 <string>Name</string>
@@ -880,8 +886,14 @@
               </item>
               <item>
                <widget class="QSpinBox" name="userDefinedProtocolPortStartSpinBox">
+                <property name="minimum">
+                 <number>0</number>
+                </property>
                 <property name="maximum">
-                 <number>56635</number>
+                 <number>255</number>
+                </property>
+                <property name="value">
+                 <number>0</number>
                 </property>
                </widget>
               </item>
@@ -895,7 +907,7 @@
               <item>
                <widget class="QSpinBox" name="userDefinedProtocolPortEndSpinBox">
                 <property name="maximum">
-                 <number>65535</number>
+                 <number>255</number>
                 </property>
                </widget>
               </item>
@@ -918,7 +930,18 @@
                </widget>
               </item>
               <item>
-               <widget class="QComboBox" name="userDefinedProtocolTypeComboBox"/>
+               <widget class="QComboBox" name="userDefinedProtocolTypeComboBox">
+                <item>
+                 <property name="text">
+                  <string>TCP</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>UDP</string>
+                 </property>
+                </item>
+               </widget>
               </item>
              </layout>
             </item>
