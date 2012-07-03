@@ -344,6 +344,11 @@ public:
         return userdefinedprotocols;
     }
 
+    /*!
+    **  \brief Adds a new UDP with the given information
+    **
+    **
+    */
     void newUserDefinedProtocol(std::string name, uchar udpType, uint udpStartPort, uint udpEndPort, bool bi)
     {
         //! \todo get a way to generate a udpid... or is it even needed... probably not.
@@ -357,7 +362,8 @@ public:
     **  gets the udp by position in vector?
     */
     void deleteUserDefinedProtocol( uint const i )
-    {
+    {//this is removing it from the list of UDPs but not the list of REAL protocols
+        pdb.deleteProtocolEntry(userdefinedprotocols[i].getName());
         if( i < userdefinedprotocols.size())
             userdefinedprotocols.erase(userdefinedprotocols.begin()+i);
     }
@@ -1947,16 +1953,13 @@ public:
                     throw std::string("Error parsing firewall [UserDefinedProtocol] section. Expected '# BIDIRECTIONAL=0' or '# BIDIRECTIONAL=1'");
                 }
             }
-
-            // Create and fill in the new User Defined Protocol object.
-            UserDefinedProtocol udp(tmpstring, udptype, udpstartport, udpendport, udpbidirectional, pdb, udpid);
-            //there might be a better way to do this
-            bool assign = true;
-            BOOST_FOREACH(UserDefinedProtocol i, userdefinedprotocols)
-                assign = !(i == udp) && assign;
-
-            if (assign)
+            try { pdb.lookup(tmpstring); }
+            catch(...)
+            {//we couldn't find it!
+            //so make it and add it to the list
+                UserDefinedProtocol udp(tmpstring, udptype, udpstartport, udpendport, udpbidirectional, pdb, udpid);
                 userdefinedprotocols.push_back( udp );
+            }
 
             std::getline( stream, s );
             if(s.empty()) throw std::string( "Empty string read" );

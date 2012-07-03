@@ -259,17 +259,13 @@ public:
     std::map< std::string, std::string > pragma;
 
     bool operator==(ProtocolNetUse const & that) const
-    {
+    {//a little more bullet proof
         return  descriptionlanguage     ==  that.descriptionlanguage
                 &&  description         ==  that.description
                 &&  type                ==  that.type
                 &&  bidirectional       ==  that.bidirectional
                 &&  source              ==  that.source
-                &&  dest                ==  that.dest
-                &&  sourcedetaillist    ==  that.sourcedetaillist
-                &&  destdetaillist      ==  that.destdetaillist
-                &&  lastPragmaName      ==  that.lastPragmaName
-                &&  pragma              ==  that.pragma;
+                &&  dest                ==  that.dest;
     }
 
     void addPragmaValue( std::string const & value )
@@ -445,18 +441,9 @@ public:
     std::map< std::string, std::string > pragma;
 
     bool operator==(ProtocolEntry const & that) const
-    {
-        return      name                ==  that.name
-                &&  longnamelanguage    ==  that.longnamelanguage
-                &&  longname            ==  that.longname
-                &&  descriptionlanguage ==  that.descriptionlanguage
-                &&  description         ==  that.description
-                &&  threat              ==  that.threat
-                &&  falsepos            ==  that.falsepos
-                &&  classification      ==  that.classification
-                &&  networkuse          ==  that.networkuse
-                &&  lastPragmaName      ==  that.lastPragmaName
-                &&  pragma              ==  that.pragma;
+    {   //protocols are now considered the same if they have the same name.
+        //because if they don't we can run into very bad times
+        return  name == that.name;
     }
     void addPragmaValue( std::string const & value )
     {
@@ -568,6 +555,22 @@ public:
     void addProtocolEntry( ProtocolEntry const & pe )
     {
         protocolDataBase.push_back( pe );
+    }
+
+    void deleteProtocolEntry( std::string const & name )
+    {
+        std::vector< ProtocolEntry >::iterator pit = std::find_if( protocolDataBase.begin(), protocolDataBase.end(), boost::phoenix::bind( &ProtocolEntry::name, boost::phoenix::arg_names::arg1) == name );
+        if ( pit == protocolDataBase.end() )
+        {
+            pit = std::find_if( protocolDataBase.begin(), protocolDataBase.end(), boost::phoenix::bind( &ProtocolEntry::longname, boost::phoenix::arg_names::arg1) == name );
+            if ( pit == protocolDataBase.end() )
+            {
+                std::cout << "Couldn't find protocol: " << name << std::endl;
+                throw std::string("Protocol not found");
+            }
+        }
+        protocolDataBase.erase(pit);
+
     }
 
 private:
