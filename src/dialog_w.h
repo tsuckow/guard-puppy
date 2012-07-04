@@ -66,7 +66,7 @@ public:
     void setProtocolPagesEnabled(bool enabled);
     void setAdvancedPageEnabled(bool enabled);
     void setLoggingPageEnabled(bool enabled);
-
+    void createUdpTableWidget();
 
 
 private slots:
@@ -97,6 +97,7 @@ private slots:
     void on_newUserDefinedProtocolPushButton_clicked();
     void on_deleteUserDefinedProtocolPushButton_clicked();
 
+    void on_userDefinedProtocolTableWidget_itemSelectionChanged();
     //  All the checkbox options
     void on_logDroppedPacketsCheckBox_stateChanged( int state );
     void on_logRejectPacketsCheckBox_stateChanged( int state );

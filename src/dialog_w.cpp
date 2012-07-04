@@ -266,22 +266,7 @@ void GuardPuppyDialog_w::rebuildGui()
 
         allowTcpTimeStampsCheckBox->setChecked(firewall.isAllowTCPTimestamps());
 
-        // Add each User Defined Protocol to the list box.
-        std::vector< UserDefinedProtocol > const & udp = firewall.getUserDefinedProtocols();
-        //first clear it
-        for(int i=userDefinedProtocolTableWidget->rowCount()-1; i >= 0; --i)
-        {
-            userDefinedProtocolTableWidget->removeRow(i);
-        }
-        BOOST_FOREACH( UserDefinedProtocol const & u, udp )
-        {
-            userDefinedProtocolTableWidget->insertRow( userDefinedProtocolTableWidget->rowCount() );
-            userDefinedProtocolTableWidget->setItem( userDefinedProtocolTableWidget->rowCount()-1, 0, new QTableWidgetItem( u.getName().c_str() ) );
-            userDefinedProtocolTableWidget->setItem( userDefinedProtocolTableWidget->rowCount()-1, 1, new QTableWidgetItem( u.getType()==IPPROTO_TCP ? QObject::tr("TCP") : QObject::tr("UDP") ) );
-            userDefinedProtocolTableWidget->setItem( userDefinedProtocolTableWidget->rowCount()-1, 2, new QTableWidgetItem( u.getRangeString().c_str() ) );
-        }
-
-
+        createUdpTableWidget();
         createProtocolPages();
         setProtocolPagesEnabled(!firewall.isDisabled());
         setAdvancedPageEnabled(!firewall.isDisabled());
@@ -558,11 +543,6 @@ void GuardPuppyDialog_w::on_advRestoreFactoryDefaultsPushButton_clicked(){
 }
 void GuardPuppyDialog_w::on_newUserDefinedProtocolPushButton_clicked()
 {
-//  std::string name        =   userDefinedProtocolNameLineEdit->text().toStdString();
-//  uchar  udpType          =   ((userDefinedProtocolTypeComboBox->currentIndex()==0)?(IPPROTO_TCP):(IPPROTO_UDP));
-//  uint   udpStartPort     =   userDefinedProtocolPortStartSpinBox->value();
-//  uint   udpEndPort       =   userDefinedProtocolPortEndSpinBox->value();
-//  bool   udpBidirectional =   userDefinedProtocolBidirectionalCheckBox->checkState();
     std::string name        =   "New Protocol";
     uchar  udpType          =   IPPROTO_TCP;
     uint   udpStartPort     =   0;
@@ -571,13 +551,19 @@ void GuardPuppyDialog_w::on_newUserDefinedProtocolPushButton_clicked()
     firewall.newUserDefinedProtocol(name, udpType, udpStartPort, udpEndPort, udpBidirectional);
     rebuildGui();
 }
+
 void GuardPuppyDialog_w::on_deleteUserDefinedProtocolPushButton_clicked()
 {
     firewall.deleteUserDefinedProtocol(userDefinedProtocolTableWidget->currentRow());
     rebuildGui();
 }
 
-
+void GuardPuppyDialog_w::on_userDefinedProtocolTableWidget_itemSelectionChanged()
+{
+    int row = userDefinedProtocolTableWidget->currentRow();
+    UserDefinedProtocol const cur = firewall.getUserDefinedProtocols()[row];
+    setUserDefinedProtocolGUI(cur);
+}
 void GuardPuppyDialog_w::setUserDefinedProtocolGUI( UserDefinedProtocol const & userprotocol)
 {
         userDefinedProtocolNameLineEdit->setText(userprotocol.getName().c_str());
@@ -586,6 +572,23 @@ void GuardPuppyDialog_w::setUserDefinedProtocolGUI( UserDefinedProtocol const & 
         userDefinedProtocolPortEndSpinBox->setValue(userprotocol.getEndPort());
         userDefinedProtocolBidirectionalCheckBox->setEnabled(userprotocol.getType()==IPPROTO_UDP);
         userDefinedProtocolBidirectionalCheckBox->setChecked(userprotocol.isBidirectional());
+}
+
+void GuardPuppyDialog_w::createUdpTableWidget()
+{
+    std::vector< UserDefinedProtocol > const & udp = firewall.getUserDefinedProtocols();
+    //first clear it
+    for(int i=userDefinedProtocolTableWidget->rowCount()-1; i >= 0; --i)
+    {
+        userDefinedProtocolTableWidget->removeRow(i);
+    }
+    BOOST_FOREACH( UserDefinedProtocol const & u, udp )
+    {
+        userDefinedProtocolTableWidget->insertRow( userDefinedProtocolTableWidget->rowCount() );
+        userDefinedProtocolTableWidget->setItem( userDefinedProtocolTableWidget->rowCount()-1, 0, new QTableWidgetItem( u.getName().c_str() ) );
+        userDefinedProtocolTableWidget->setItem( userDefinedProtocolTableWidget->rowCount()-1, 1, new QTableWidgetItem( u.getType()==IPPROTO_TCP ? QObject::tr("TCP") : QObject::tr("UDP") ) );
+        userDefinedProtocolTableWidget->setItem( userDefinedProtocolTableWidget->rowCount()-1, 2, new QTableWidgetItem( u.getRangeString().c_str() ) );
+    }
 }
 
 void GuardPuppyDialog_w::setAdvancedPageEnabled(bool enabled)
@@ -603,26 +606,14 @@ void GuardPuppyDialog_w::setAdvancedPageEnabled(bool enabled)
     userDefinedProtocolTypeComboBox->setEnabled(enabled && gotudps);
     userDefinedProtocolPortStartSpinBox->setEnabled(enabled && gotudps);
     userDefinedProtocolPortEndSpinBox->setEnabled(enabled && gotudps);
-    if ( gotudps )
-    {
-        BOOST_FOREACH( UserDefinedProtocol const & u, udp )
-        {
-            if ( u.entry.name != "userdefined4" )
-                continue;
-            // Work out the index of the currently selected User Protocol.
-            userDefinedProtocolBidirectionalCheckBox->setEnabled(enabled && gotudps && u.getType()==IPPROTO_UDP);
-            break;
-        }
-    }
-    else
-    {
-        userDefinedProtocolBidirectionalCheckBox->setEnabled(false);
-    }
+
+    userDefinedProtocolBidirectionalCheckBox->setEnabled(enabled && gotudps && udp[0].getType()==IPPROTO_UDP);
+
     enableDhcpCheckBox->setEnabled( enabled );
-    dhcpInterfaceNameLineEdit->setEnabled( firewall.isDHCPcEnabled() && enabled );
+    dhcpInterfaceNameLineEdit->setEnabled( enabled && firewall.isDHCPcEnabled() );
 
     enableDhcpdCheckBox->setEnabled( enabled );
-    dhcpdInterfaceNameLineEdit->setEnabled( firewall.isDHCPdEnabled() && enabled );
+    dhcpdInterfaceNameLineEdit->setEnabled( enabled && firewall.isDHCPdEnabled() );
 
     allowTcpTimeStampsCheckBox->setEnabled(enabled);
 
