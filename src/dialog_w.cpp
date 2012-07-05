@@ -554,15 +554,22 @@ void GuardPuppyDialog_w::on_newUserDefinedProtocolPushButton_clicked()
 
 void GuardPuppyDialog_w::on_deleteUserDefinedProtocolPushButton_clicked()
 {
-    firewall.deleteUserDefinedProtocol(userDefinedProtocolTableWidget->currentRow());
-    rebuildGui();
+    int row = userDefinedProtocolTableWidget->currentRow();
+    if(row >= 0)
+    {
+        firewall.deleteUserDefinedProtocol(userDefinedProtocolTableWidget->currentRow());
+        rebuildGui();
+    }
 }
 
 void GuardPuppyDialog_w::on_userDefinedProtocolTableWidget_itemSelectionChanged()
 {
     int row = userDefinedProtocolTableWidget->currentRow();
-    UserDefinedProtocol const cur = firewall.getUserDefinedProtocols()[row];
-    setUserDefinedProtocolGUI(cur);
+    if(row >= 0)
+    {
+        UserDefinedProtocol const * cur = &firewall.getUserDefinedProtocols()[row];
+        setUserDefinedProtocolGUI(*cur);
+    }
 }
 void GuardPuppyDialog_w::setUserDefinedProtocolGUI( UserDefinedProtocol const & userprotocol)
 {
@@ -708,6 +715,17 @@ void GuardPuppyDialog_w::on_localPortRangeLowSpinBox_valueChanged( int value )
 void GuardPuppyDialog_w::on_localPortRangeHighSpinBox_valueChanged( int value )
 {
     firewall.setLocalDynamicPortRangeEnd( value );
+}
+void GuardPuppyDialog_w::on_userDefinedProtocolNameLineEdit_returnPressed()
+{
+    int row = userDefinedProtocolTableWidget->currentRow();
+    if(row >= 0)
+    {
+       std::string s = userDefinedProtocolNameLineEdit->text().toStdString();
+       UserDefinedProtocol const * c = &firewall.getUserDefinedProtocols()[row];
+       const_cast<UserDefinedProtocol * >(c)->setName(s);
+       createUdpTableWidget();
+    }
 }
 void GuardPuppyDialog_w::on_userDefinedProtocolPortStartSpinBox_valueChanged( int /* value */ )
 {
