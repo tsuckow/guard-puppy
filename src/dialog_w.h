@@ -5,6 +5,8 @@
 #include <QDialog>
 #include <QFileDialog>
 #include <QCheckBox>
+#include <QErrorMessage>
+
 #include "ui_guardPuppy.h"
 
 #include <boost/foreach.hpp>
@@ -113,7 +115,7 @@ private slots:
     void on_enableDhcpCheckBox_stateChanged( int state );
     void on_enableDhcpdCheckBox_stateChanged( int state );
 
-    void on_userDefinedProtocolBidirectionalCheckBox_stateChanged( int state );
+    void on_userDefinedProtocolBidirectionalCheckBox_stateChanged( int state );//
 
     //  The spinboxes
     void on_logRateSpinBox_valueChanged( int value );
@@ -121,10 +123,12 @@ private slots:
     void on_logWarnRateLimitSpinBox_valueChanged( int value );
     void on_localPortRangeLowSpinBox_valueChanged( int value );
     void on_localPortRangeHighSpinBox_valueChanged( int value );
-    void on_userDefinedProtocolPortStartSpinBox_valueChanged( int value );
-    void on_userDefinedProtocolPortEndSpinBox_valueChanged( int value );
 
-    //logLevelComboBox
+//    void on_userDefinedProtocolTypeComboBox_currentIndexChanged(int value);     //
+    void on_userDefinedProtocolNameLineEdit_returnPressed();  //
+    void on_userDefinedProtocolPortStartSpinBox_valueChanged( int value );      //
+    void on_userDefinedProtocolPortEndSpinBox_valueChanged( int value );        //
+
 
 private:
     std::string currentZoneName() const

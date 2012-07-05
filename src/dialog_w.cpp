@@ -555,6 +555,7 @@ void GuardPuppyDialog_w::on_newUserDefinedProtocolPushButton_clicked()
 void GuardPuppyDialog_w::on_deleteUserDefinedProtocolPushButton_clicked()
 {
     int row = userDefinedProtocolTableWidget->currentRow();
+    std::cerr << "Currently Selected Row: " << row;
     if(row >= 0)
     {
         firewall.deleteUserDefinedProtocol(userDefinedProtocolTableWidget->currentRow());
@@ -565,6 +566,7 @@ void GuardPuppyDialog_w::on_deleteUserDefinedProtocolPushButton_clicked()
 void GuardPuppyDialog_w::on_userDefinedProtocolTableWidget_itemSelectionChanged()
 {
     int row = userDefinedProtocolTableWidget->currentRow();
+    std::cerr << "Currently Selected Row: " << row;
     if(row >= 0)
     {
         UserDefinedProtocol const * cur = &firewall.getUserDefinedProtocols()[row];
@@ -691,9 +693,10 @@ void GuardPuppyDialog_w::on_enableDhcpdCheckBox_stateChanged( int state )
     firewall.setDHCPdEnabled( state );
 }
 
-void GuardPuppyDialog_w::on_userDefinedProtocolBidirectionalCheckBox_stateChanged( int /* state */ )
+void GuardPuppyDialog_w::on_userDefinedProtocolBidirectionalCheckBox_stateChanged( int state )
 {
     //! \todo implement with User Defined Protocol related functions
+
 }
 
 void GuardPuppyDialog_w::on_logRateSpinBox_valueChanged( int value )
@@ -719,17 +722,17 @@ void GuardPuppyDialog_w::on_localPortRangeHighSpinBox_valueChanged( int value )
 void GuardPuppyDialog_w::on_userDefinedProtocolNameLineEdit_returnPressed()
 {
     int row = userDefinedProtocolTableWidget->currentRow();
-    if(row >= 0)
-    {
-       std::string s = userDefinedProtocolNameLineEdit->text().toStdString();
-       UserDefinedProtocol const * c = &firewall.getUserDefinedProtocols()[row];
-       const_cast<UserDefinedProtocol * >(c)->setName(s);
-       createUdpTableWidget();
-    }
+    std::string s = userDefinedProtocolNameLineEdit->text().toStdString();
+    UserDefinedProtocol const * c = &firewall.getUserDefinedProtocols()[row];
+    const_cast<UserDefinedProtocol * >(c)->setName(s);
+//this may not be strong enough, because unless something else triggers the protocol tree to get redrawn...
+// bad times.
+    createUdpTableWidget();
 }
 void GuardPuppyDialog_w::on_userDefinedProtocolPortStartSpinBox_valueChanged( int /* value */ )
 {
     //! \todo implement with User Defined Protocol related functions
+   // firewall.
 }
 void GuardPuppyDialog_w::on_userDefinedProtocolPortEndSpinBox_valueChanged( int /* value */ )
 {
