@@ -63,19 +63,32 @@ email                : simon@simonzone.com
 
  */
 
-// Just a tiny helper class.
-// Holds a single port range.
+    /*!
+    **  \struct Contains the dynamic port range
+    */
+/*
+ *  seems like there should only ever be one of these, and it should always exist inside
+ *  the firewall, not anywhere else. Each protocol decides for itself to be Dynamic, but
+ *  the firewall should get to say what that means.
+ */
 struct PortRangeInfo
 {
     uint dynamicStart;
     uint dynamicEnd;
 
+    /*!
+    **  \brief creates a dynamic port range with decent defaults
+    */
     PortRangeInfo(uint s = 1024, uint e = 65535 )
         : dynamicStart( s ), dynamicEnd( e )
     {
     }
 };
 
+
+    /*!
+    **  \brief All the kinds of port ranges there are
+    */
 enum RangeType
 {
     PORTRANGE_RANGE=0,
@@ -84,11 +97,24 @@ enum RangeType
     PORTRANGE_NONPRIVILEGED,
     PORTRANGE_DYNAMIC
 };
+
+
+    /*!
+    **  \brief the kinds of entities we support.
+    **  \todo add in Router or some other such things?
+    */
 enum NetworkEntity
 {
     ENTITY_SERVER,
     ENTITY_CLIENT
 };
+
+    /*!
+    **  \brief The different Kinds of Protocols.
+    **  \todo This really is silly. if we change our vecotor<uint> of vector<protocolentry> of blah blah
+    **        to be map<std::string class, vector<protocolentry> > we can support an unlimited number of classes,
+    **        and have it all be done dynamicly.
+    */
 enum Classification
 {
     CLASS_UNKNOWN=0,
@@ -103,11 +129,9 @@ enum Classification
     CLASS_CUSTOM
 };
 
-
+//Holds a single port range
 class ProtocolNetUseDetail
 {
-
-    bool alternate;
     RangeType rangetype;
     union
     {
@@ -121,23 +145,8 @@ class ProtocolNetUseDetail
     };
 public:
 
-    bool operator==(ProtocolNetUseDetail const & that) const
-    {
-        return  alternate       ==  that.alternate
-                && rangetype    ==  that.rangetype
-                && start        ==  that.start
-                && end          ==  that.end;
-    }
-
-    ProtocolNetUseDetail() {
-        alternate = false;
-        rangetype = PORTRANGE_RANGE;
-        start = 0;
-        end = 0;
-    }
-
-    ProtocolNetUseDetail( bool _alternate, RangeType const & _rangetype, uint _start, uint _end )
-     : alternate( _alternate ), rangetype( _rangetype ), start( _start ), end( _end )
+    ProtocolNetUseDetail( RangeType const & _rangetype=PORTRANGE_RANGE, uint _start=0, uint _end=0)
+     : rangetype( _rangetype ), start( _start ), end( _end )
     {
     }
 
@@ -151,6 +160,19 @@ public:
         return result.str();
     }
 
+    ~ProtocolNetUseDetail()
+    {
+    }
+
+    bool inRange( uint port ) const
+    {
+        return port >= start && port <= end;
+    }
+
+    void setRangeType( RangeType const & r ) { rangetype = r; }
+    //nothing uses the range type outside of creation, so does it need to be a member? i suppose for dynamic it might make sence but then we need to actually know it is dynamic still later on.
+    RangeType const & getRangeType() const { return rangetype; }
+
     void setStartPort(uint p)
     {
         start = p;
@@ -158,7 +180,6 @@ public:
             end = p;
         }
     }
-
     void setEndPort(uint p)
     {
         end = p;
@@ -167,71 +188,38 @@ public:
             start = p;
         }
     }
-
-
-    ///////////////////////////////////////////////////////////////////////////
-    ~ProtocolNetUseDetail()
+    uint getStart(PortRangeInfo const * ri = 0 ) const
     {
-
+        switch(rangetype)
+        {
+            case PORTRANGE_RANGE:            return start;
+            case PORTRANGE_ANY:              return 0;
+            case PORTRANGE_PRIVILEGED:       return 0;
+            case PORTRANGE_NONPRIVILEGED:    return 1024;
+            case PORTRANGE_DYNAMIC: default: return ri==0 ? 1024 : ri->dynamicStart;
+        }
     }
-    bool inRange( uint port ) const
+    uint getEnd(PortRangeInfo const * ri = 0 ) const
     {
-        return port >= start && port <= end;
+        switch(rangetype)
+        {
+            case PORTRANGE_RANGE:            return end;
+            case PORTRANGE_ANY:              return 65535;
+            case PORTRANGE_PRIVILEGED:       return 1023;
+            case PORTRANGE_NONPRIVILEGED:    return 65535;
+            case PORTRANGE_DYNAMIC: default: return ri==0 ? 65535 : ri->dynamicEnd;
+        }
     }
 
-    void setAlternate( bool a ) { alternate = a; }
-    void setRangeType( RangeType const & r ) { rangetype = r; }
     void setCode( int c ) { code = c; }
-    void setStart( uint c ) { start = c; }
-    void setEnd( uint c ) { end = c; }
     void setType( uint c ) { type = c; }
-
-    uint getStart( ) const { return start; }
-    uint getEnd( ) const { return end; }
-
-    uint getType() const { return type; }
     int getCode() const { return code; }
+    uint getType() const { return type; }
 
-    ///////////////////////////////////////////////////////////////////////////
-    uint getStart(PortRangeInfo const * ri ) const
+    void print() const
     {
-        switch(rangetype) {
-            case PORTRANGE_RANGE:
-                return start;
-            case PORTRANGE_ANY:
-                return 0;
-            case PORTRANGE_PRIVILEGED:
-                return 0;
-            case PORTRANGE_NONPRIVILEGED:
-                return 1024;
-            case PORTRANGE_DYNAMIC:
-            default:
-                return ri==0 ? 1024 : ri->dynamicStart;
-        }
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
-    uint getEnd(const PortRangeInfo *ri ) const
-    {
-        switch(rangetype) {
-            case PORTRANGE_RANGE:
-                return end;
-            case PORTRANGE_ANY:
-                return 65535;
-            case PORTRANGE_PRIVILEGED:
-                return 1023;
-            case PORTRANGE_NONPRIVILEGED:
-                return 65535;
-            case PORTRANGE_DYNAMIC:
-            default:
-                return ri==0 ? 65535 : ri->dynamicEnd;
-        }
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
-    void print() const {
-        fprintf(stderr,"[ Alternate: %d Start: %u End: %u ]",
-                (int)alternate,start,end);
+        fprintf(stderr,"[ Start: %u End: %u ]",
+                start,end);
     }
 };
 
@@ -257,16 +245,6 @@ private:
 public:
     std::string lastPragmaName;
     std::map< std::string, std::string > pragma;
-
-    bool operator==(ProtocolNetUse const & that) const
-    {//a little more bullet proof
-        return  descriptionlanguage     ==  that.descriptionlanguage
-                &&  description         ==  that.description
-                &&  type                ==  that.type
-                &&  bidirectional       ==  that.bidirectional
-                &&  source              ==  that.source
-                &&  dest                ==  that.dest;
-    }
 
     void addPragmaValue( std::string const & value )
     {
@@ -467,14 +445,13 @@ public:
         classification = CLASS_UNKNOWN;
     }
 
-    ///////////////////////////////////////////////////////////////////////////
     ~ProtocolEntry()
     {
 
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    void print() const {
+    void print() const
+    {
 
         fprintf(stderr,"[ Name: %s Longname: %s Threat: ",name.c_str(),longname.c_str());
         switch(threat) {
@@ -584,7 +561,7 @@ private:
 
 
     int unknowndepth;   // This is so that we can skip unknown tags.
-    int numberoflines;
+//    int numberoflines;
 #ifndef QT_LITE
     //    QProgressDialog *progressdialog;
 #endif
@@ -755,17 +732,14 @@ public:
         {
             std::cout << "success" << std::endl;
             rc = true;
-            goto cleanup;
         }
         else
         {
             std::cout << "failed" << std::endl;
             std::cout << errorString().toStdString() << std::endl;
             rc = false;
-            goto cleanup;
         }
 
-cleanup:
         xmlfile.close();
         return rc;
     }
@@ -780,43 +754,26 @@ cleanup:
 
         if(unknowndepth==0)
         {
-            switch(parsestate) {
+            switch(parsestate)
+            {
                 case PROTOCOL_STATE_OUTSIDE:
-                    if(localName=="protocoldb") {
+                    if(localName=="protocoldb")
+                    {
                         parsestate = PROTOCOL_STATE_PROTOCOLDB;
-                        i = atts.index(protocolnamespace.c_str(),linesattr.c_str());
-                        if(i!=-1) {
-                            numberoflines = atts.value(i).toInt(&ok);
-                            if(ok==false) {
-                                numberoflines = 1;
-                            } else {
-#ifndef QT_LITE
-                                // Set the number of steps for the progress dialog.
-                                //                            progressdialog->setTotalSteps(numberoflines/100);
-#endif
-                            }
-                        }
+//                        i = atts.index(protocolnamespace.c_str(),linesattr.c_str());
                         return true;
                     }
                     break;
 
                 case PROTOCOL_STATE_PROTOCOLDB:
-                    if ( localName=="protocol" )
+                    if ( localName == "protocol" )
                     {
-//                        if ( xmllocator !=0 )
-//                        {
-//                            if(xmllocator->lineNumber()%100==0) {
-#ifndef QT_LITE
-                                //                            progressdialog->setProgress(xmllocator->lineNumber()/100);
-                                //                            kapp->processEvents();
-#endif
-//                            }
-                        //}
                         currententry = ProtocolEntry();
                         // Fetch the name attribute.
                         i = atts.index(protocolnamespace.c_str(),nameattr.c_str());
-                        if(i==-1) {
-                        std::cout << "  errorstate = PROTOCOL_ERROR_ENTRY_NAME_ATTR_NOT_FOUND" << std::endl;
+                        if(i==-1)
+                        {
+                            std::cerr << "  errorstate = PROTOCOL_ERROR_ENTRY_NAME_ATTR_NOT_FOUND" << std::endl;
                             errorstate = PROTOCOL_ERROR_ENTRY_NAME_ATTR_NOT_FOUND;
                             return false;
                         }
@@ -827,24 +784,21 @@ cleanup:
                     break;
 
                 case PROTOCOL_STATE_ENTRY:
-                    if(localName=="longname") {
+                    if(localName=="longname")
+                    {
                         loadlongname = false;
                         i = atts.index(protocolnamespace.c_str(),langattr.c_str());
                         if(i!=-1)
-                        {
                             tmp = atts.value(i).toStdString();
-                        }
                         else
-                        {
                             tmp = "en";
-                        }
                         if(currententry.longnamelanguage.empty())
                         {
                             loadlongname = true;
                             currententry.longnamelanguage = tmp;
                         }
-                        else
-                        {
+//                        else
+//                        {
                             // Which language is more important?
                             // (Which appears first in the list of acceptable
                             // languages.)
@@ -856,7 +810,7 @@ cleanup:
                             //                            loadlongname = true;
                             //                            currententry.longnamelanguage = tmp;
                             //                        }
-                        }
+//                        }
 
                         parsestate = PROTOCOL_STATE_LONGNAME;
                         return true;
@@ -865,18 +819,18 @@ cleanup:
                     {
                         loaddescription = false;
                         i = atts.index(protocolnamespace.c_str(),langattr.c_str());
-                        if(i!=-1) {
+                        if(i!=-1)
                             tmp = atts.value(i).toStdString();
-                        } else {
+                        else
                             tmp = "en";
-                        }
+
                         if(currententry.descriptionlanguage.empty())
                         {
                             loaddescription = true;
                             currententry.descriptionlanguage = tmp;
                         }
-                        else
-                        {
+//                        else
+//                        {
                             // Which language is more important?
                             // (Which appears first in the list of acceptable
                             // languages.)
@@ -888,7 +842,7 @@ cleanup:
                             //                            loaddescription = true;
                             //                            currententry.descriptionlanguage = tmp;
                             //                        }
-                        }
+//                        }
                         parsestate = PROTOCOL_STATE_DESCRIPTION;
                         return true;
                     }
@@ -899,43 +853,26 @@ cleanup:
                         {
                             tmp = atts.value(i).toStdString();
                             if(tmp=="unknown")
-                            {
                                 currententry.classification = CLASS_UNKNOWN;
-                            }
                             else if(tmp=="mail")
-                            {
                                 currententry.classification = CLASS_MAIL;
-                            }
                             else if(tmp=="chat")
-                            {
                                 currententry.classification = CLASS_CHAT;
-                            }
                             else if(tmp=="file")
-                            {
                                 currententry.classification = CLASS_FILE;
-                            }
                             else if(tmp=="game")
-                            {
                                 currententry.classification = CLASS_GAME;
-                            }
                             else if(tmp=="session")
-                            {
                                 currententry.classification = CLASS_SESSION;
-                            }
                             else if(tmp=="data")
-                            {
                                 currententry.classification = CLASS_DATA;
-                            }
                             else if(tmp=="media")
-                            {
                                 currententry.classification = CLASS_MEDIA;
-                            }
                             else if(tmp=="net")
-                            {
                                 currententry.classification = CLASS_NET;
-                            }
                             else
                             {
+                                std::cerr << "   errorstate = PROTOCOL_ERROR_CLASSIFICATION_CLASS_UNKNOWN: "<<tmp << std::endl;
                                 errorstate = PROTOCOL_ERROR_CLASSIFICATION_CLASS_UNKNOWN;
                                 return false;
                             }
@@ -943,24 +880,28 @@ cleanup:
                         parsestate = PROTOCOL_STATE_CLASSIFICATION;
                         return true;
                     }
-                    if(localName=="network") {
+                    if(localName=="network")
+                    {
                         parsestate = PROTOCOL_STATE_NETWORK;
                         return true;
                     }
-                    if(localName=="security") {
+                    if(localName=="security")
+                    {
                         // Grab the threat info
                         i = atts.index(protocolnamespace.c_str(),threatattr.c_str());
-                        if(i!=-1) {
+                        if(i!=-1)
+                        {
                             tmp = atts.value(i).toStdString();
-                            if(tmp=="unknown") {
+                            if(tmp=="unknown")
                                 currententry.threat = SCORE_UNKNOWN;
-                            } else if(tmp=="low") {
+                            else if(tmp=="low")
                                 currententry.threat = SCORE_LOW;
-                            } else if(tmp=="medium") {
+                            else if(tmp=="medium")
                                 currententry.threat = SCORE_MEDIUM;
-                            } else if(tmp=="high") {
+                            else if(tmp=="high")
                                 currententry.threat = SCORE_HIGH;
-                            } else {
+                            else
+                            {
                                 errorstate = PROTOCOL_ERROR_SECURITY_LEVEL_UNKNOWN;
                                 return false;
                             }
@@ -968,17 +909,19 @@ cleanup:
 
                         // Grab the falsepos info
                         i = atts.index(protocolnamespace.c_str(),falseposattr.c_str());
-                        if(i!=-1) {
+                        if(i!=-1)
+                        {
                             tmp = atts.value(i).toStdString();
-                            if(tmp=="unknown") {
+                            if(tmp=="unknown")
                                 currententry.falsepos = SCORE_UNKNOWN;
-                            } else if(tmp=="low") {
+                            else if(tmp=="low")
                                 currententry.falsepos = SCORE_LOW;
-                            } else if(tmp=="medium") {
+                            else if(tmp=="medium")
                                 currententry.falsepos = SCORE_MEDIUM;
-                            } else if(tmp=="high") {
+                            else if(tmp=="high")
                                 currententry.falsepos = SCORE_HIGH;
-                            } else {
+                            else
+                            {
                                 errorstate = PROTOCOL_ERROR_SECURITY_FALSEPOS_UNKNOWN;
                                 return false;
                             }
@@ -987,16 +930,18 @@ cleanup:
                         return true;
                     }
 
-                    if(localName=="pragma") {
+                    if(localName=="pragma")
+                    {
                         // Grab the pragma name
                         i = atts.index(protocolnamespace.c_str(),nameattr.c_str());
-                        if(i!=-1) {
+                        if(i!=-1)
+                        {
                             tmp = atts.value(i).toStdString();
                             currententry.lastPragmaName = tmp;
                             currententry.pragma[tmp] = "";
                         }
 //                        else {
-//                            currententry.addPragmaame(std::string());  // Null string.
+//                            currententry.addPragmaname(std::string());  // Null string.
 //                        }
                         parsestate = PROTOCOL_STATE_ENTRY_PRAGMA;
                         return true;
@@ -1004,41 +949,38 @@ cleanup:
                     break;
 
                 case PROTOCOL_STATE_NETWORK:
-                    if(localName=="tcp") {
+                    if(localName=="tcp")
+                    {
                         currentnetuse = ProtocolNetUse();
                         currentnetuse.setType( IPPROTO_TCP );
                         // Handle Source attribute
                         i = atts.index(protocolnamespace.c_str(),sourceattr.c_str());
-                        if(i!=-1) {
+                        if(i!=-1)
+                        {
                             tmp = atts.value(i).toStdString();
                             if(tmp=="client")
-                            {
                                 currentnetuse.setSource( ENTITY_CLIENT );
-                            }
                             else if(tmp=="server")
-                            {
                                 currentnetuse.setSource( ENTITY_SERVER );
-                            }
                             else
                             {
+                                std::cerr<<"   errorstate = PROTOCOL_ERROR_TCP_SOURCE_UNKNOWN " << std::endl;
                                 errorstate = PROTOCOL_ERROR_TCP_SOURCE_UNKNOWN;
                                 return false;
                             }
                         }
                         // Handle Dest attribute
                         i = atts.index(protocolnamespace.c_str(),destattr.c_str());
-                        if(i!=-1) {
+                        if(i!=-1)
+                        {
                             tmp = atts.value(i).toStdString();
                             if(tmp=="client")
-                            {
                                 currentnetuse.setDest( ENTITY_CLIENT );
-                            }
                             else if(tmp=="server")
-                            {
                                 currentnetuse.setDest( ENTITY_SERVER );
-                            }
                             else
                             {
+                                std::cerr<<"   errorstate = PROTOCOL_ERROR_TCP_DEST_UNKNOWN " << std::endl;
                                 errorstate = PROTOCOL_ERROR_TCP_DEST_UNKNOWN;
                                 return false;
                             }
@@ -1056,33 +998,28 @@ cleanup:
                         {
                             tmp = atts.value(i).toStdString();
                             if(tmp=="client")
-                            {
                                 currentnetuse.setSource( ENTITY_CLIENT );
-                            }
                             else if(tmp=="server")
-                            {
                                 currentnetuse.setSource( ENTITY_SERVER );
-                            }
                             else
                             {
+                                std::cerr<<"   errorstate = PROTOCOL_ERROR_UDP_SOURCE_UNKNOWN"<<std::endl;
                                 errorstate = PROTOCOL_ERROR_UDP_SOURCE_UNKNOWN;
                                 return false;
                             }
                         }
                         // Handle Dest attribute
                         i = atts.index(protocolnamespace.c_str(),destattr.c_str());
-                        if(i!=-1) {
+                        if(i!=-1)
+                        {
                             tmp = atts.value(i).toStdString();
                             if(tmp=="client")
-                            {
                                 currentnetuse.setDest( ENTITY_CLIENT );
-                            }
                             else if(tmp=="server")
-                            {
                                 currentnetuse.setDest( ENTITY_SERVER );
-                            }
                             else
                             {
+                                std::cerr<<"   errorstate = PROTOCOL_ERROR_UDP_DEST_UNKNOWN"<<std::endl;
                                 errorstate = PROTOCOL_ERROR_UDP_DEST_UNKNOWN;
                                 return false;
                             }
@@ -1091,9 +1028,7 @@ cleanup:
                         // Check for direction attribute
                         i = atts.index(protocolnamespace.c_str(),directionattr.c_str());
                         if(i!=-1)
-                        {
                             currentnetuse.setBidirectional( true );
-                        }
                         parsestate = PROTOCOL_STATE_UDP;
                         return true;
                     }
@@ -1107,15 +1042,12 @@ cleanup:
                         {
                             tmp = atts.value(i).toStdString();
                             if(tmp=="client")
-                            {
                                 currentnetuse.setSource( ENTITY_CLIENT );
-                            }
                             else if(tmp=="server")
-                            {
                                 currentnetuse.setSource( ENTITY_SERVER );
-                            }
                             else
                             {
+                                std::cerr<<"   errorstate = PROTOCOL_ERROR_ICMP_SOURCE_UNKNOWN"<<std::endl;
                                 errorstate = PROTOCOL_ERROR_ICMP_SOURCE_UNKNOWN;
                                 return false;
                             }
@@ -1126,15 +1058,12 @@ cleanup:
                         {
                             tmp = atts.value(i).toStdString();
                             if(tmp=="client")
-                            {
                                 currentnetuse.setDest( ENTITY_CLIENT );
-                            }
                             else if(tmp=="server")
-                            {
                                 currentnetuse.setDest( ENTITY_SERVER );
-                            }
                             else
                             {
+                                std::cerr<<"   errorstate = PROTOCOL_ERROR_ICMP_SOURCE_UNKNOWN"<<std::endl;
                                 errorstate = PROTOCOL_ERROR_ICMP_DEST_UNKNOWN;
                                 return false;
                             }
@@ -1160,9 +1089,6 @@ cleanup:
                             catch ( ... )
                             {
                                 ok = false;
-                            }
-                            if(ok==false)
-                            {
                                 errorstate = PROTOCOL_ERROR_IP_PROTOCOL_ATTR_NOT_UINT;
                                 return false;
                             }
@@ -1180,26 +1106,30 @@ cleanup:
                         }
                         // Handle Source attribute
                         i = atts.index(protocolnamespace.c_str(),sourceattr.c_str());
-                        if(i!=-1) {
+                        if(i!=-1)
+                        {
                             tmp = atts.value(i).toStdString();
-                            if(tmp=="client") {
+                            if(tmp=="client")
                                 currentnetuse.setSource( ENTITY_CLIENT );
-                            } else if(tmp=="server") {
+                            else if(tmp=="server")
                                 currentnetuse.setSource( ENTITY_SERVER );
-                            } else {
+                            else
+                            {
                                 errorstate = PROTOCOL_ERROR_IP_SOURCE_UNKNOWN;
                                 return false;
                             }
                         }
                         // Handle Dest attribute
                         i = atts.index(protocolnamespace.c_str(),destattr.c_str());
-                        if(i!=-1) {
+                        if(i!=-1)
+                        {
                             tmp = atts.value(i).toStdString();
-                            if(tmp=="client") {
+                            if(tmp=="client")
                                 currentnetuse.setDest( ENTITY_CLIENT );
-                            } else if(tmp=="server") {
+                            else if(tmp=="server")
                                 currentnetuse.setDest( ENTITY_SERVER );
-                            } else {
+                            else
+                            {
                                 errorstate = PROTOCOL_ERROR_IP_DEST_UNKNOWN;
                                 return false;
                             }
@@ -1217,23 +1147,28 @@ cleanup:
                     break;
 
                 case PROTOCOL_STATE_TCP:
-                    if(localName=="source") {
+                    if(localName=="source")
+                    {
                         parsestate = PROTOCOL_STATE_TCP_SOURCE;
                         return true;
                     }
-                    if(localName=="dest") {
+                    if(localName=="dest")
+                    {
                         parsestate = PROTOCOL_STATE_TCP_DEST;
                         return true;
                     }
-                    if(localName=="description") {
+                    if(localName=="description")
+                    {
                         doNetuseLanguage(atts);
                         parsestate = PROTOCOL_STATE_TCP_DESCRIPTION;
                         return true;
                     }
-                    if(localName=="pragma") {
+                    if(localName=="pragma")
+                    {
                         // Grab the pragma name
                         i = atts.index(protocolnamespace.c_str(),nameattr.c_str());
-                        if(i!=-1) {
+                        if(i!=-1)
+                        {
                             tmp = atts.value(i).toStdString();
                             currentnetuse.lastPragmaName = tmp;
                             currentnetuse.pragma[tmp] = "";
@@ -1247,23 +1182,28 @@ cleanup:
                     break;
 
                 case PROTOCOL_STATE_UDP:
-                    if(localName=="source") {
+                    if(localName=="source")
+                    {
                         parsestate = PROTOCOL_STATE_UDP_SOURCE;
                         return true;
                     }
-                    if(localName=="dest") {
+                    if(localName=="dest")
+                    {
                         parsestate = PROTOCOL_STATE_UDP_DEST;
                         return true;
                     }
-                    if(localName=="description") {
+                    if(localName=="description")
+                    {
                         doNetuseLanguage(atts);
                         parsestate = PROTOCOL_STATE_UDP_DESCRIPTION;
                         return true;
                     }
-                    if(localName=="pragma") {
+                    if(localName=="pragma")
+                    {
                         // Grab the pragma name
                         i = atts.index(protocolnamespace.c_str(),nameattr.c_str());
-                        if(i!=-1) {
+                        if(i!=-1)
+                        {
                             tmp = atts.value(i).toStdString();
                             currentnetuse.lastPragmaName = tmp;
                             currentnetuse.pragma[tmp] = "";
@@ -1277,14 +1217,14 @@ cleanup:
                     break;
 
                 case PROTOCOL_STATE_ICMP:
-                    if(localName=="type") {
+                    if(localName=="type")
+                    {
                         currentnetusedetail = ProtocolNetUseDetail();
-                        currentnetusedetail.setAlternate( false );
-                        currentnetusedetail.setRangeType( PORTRANGE_RANGE );
                         currentnetusedetail.setCode( -1 );
                         // Grab the type number
                         i = atts.index(protocolnamespace.c_str(),valueattr.c_str());
-                        if(i==-1) {
+                        if(i==-1)
+                        {
                             errorstate = PROTOCOL_ERROR_TYPE_VALUE_ATTR_NOT_FOUND;
                             return false;
                         }
@@ -1297,7 +1237,8 @@ cleanup:
 
                         // Grab the ICMP code.
                         i = atts.index(protocolnamespace.c_str(),codeattr.c_str());
-                        if(i!=-1) {
+                        if(i!=-1)
+                        {
                             tmp = atts.value(i).toStdString();
                             currentnetusedetail.setCode( boost::lexical_cast<uint>(tmp)); //tmp.toUInt(&ok);
 //                            if(ok==false) {
@@ -1309,15 +1250,18 @@ cleanup:
                         parsestate = PROTOCOL_STATE_ICMP_TYPE;
                         return true;
                     }
-                    if(localName=="description") {
+                    if(localName=="description")
+                    {
                         doNetuseLanguage(atts);
                         parsestate = PROTOCOL_STATE_ICMP_DESCRIPTION;
                         return true;
                     }
-                    if(localName=="pragma") {
+                    if(localName=="pragma")
+                    {
                         // Grab the pragma name
                         i = atts.index(protocolnamespace.c_str(),nameattr.c_str());
-                        if(i!=-1) {
+                        if(i!=-1)
+                        {
                             tmp = atts.value(i).toStdString();
                             currentnetuse.lastPragmaName = tmp;
                             currentnetuse.pragma[tmp] = "";
@@ -1331,15 +1275,18 @@ cleanup:
                     break;
 
                 case PROTOCOL_STATE_IP:
-                    if(localName=="description") {
+                    if(localName=="description")
+                    {
                         doNetuseLanguage(atts);
                         parsestate = PROTOCOL_STATE_IP_DESCRIPTION;
                         return true;
                     }
-                    if(localName=="pragma") {
+                    if(localName=="pragma")
+                    {
                         // Grab the pragma name
                         i = atts.index(protocolnamespace.c_str(),nameattr.c_str());
-                        if(i!=-1) {
+                        if(i!=-1)
+                        {
                             tmp = atts.value(i).toStdString();
                             currentnetuse.lastPragmaName = tmp;
                             currentnetuse.pragma[tmp] = "";
@@ -1356,48 +1303,53 @@ cleanup:
                 case PROTOCOL_STATE_UDP_SOURCE:
                 case PROTOCOL_STATE_TCP_DEST:
                 case PROTOCOL_STATE_UDP_DEST:
-                    if(localName=="port") {
+                    if(localName=="port")
+                    {
                         currentnetusedetail = ProtocolNetUseDetail();
-                        currentnetusedetail.setRangeType( PORTRANGE_RANGE );
-                        currentnetusedetail.setAlternate( false );
-                        currentnetusedetail.setStart( 0 );
-                        currentnetusedetail.setEnd( 0 );
 
                         // Grab the port number
                         i = atts.index(protocolnamespace.c_str(),portnumattr.c_str());
-                        if(i==-1) {
+                        if(i==-1)
+                        {
                             errorstate = PROTOCOL_ERROR_PORT_PORTNUM_ATTR_NOT_FOUND;
                             return false;
                         }
                         tmp = atts.value(i).toStdString();
 
-                        if(tmp=="any") {
+                        if(tmp=="any")
+                        {
                             currentnetusedetail.setRangeType( PORTRANGE_ANY );
-                            currentnetusedetail.setStart( 0 );
-                            currentnetusedetail.setEnd( 65535 );
-                        } else if(tmp=="privileged") {
+                            currentnetusedetail.setEndPort( 65535 );
+                        }
+                        else if(tmp=="privileged")
+                        {
                             currentnetusedetail.setRangeType( PORTRANGE_PRIVILEGED );
-                            currentnetusedetail.setStart( 0 );
-                            currentnetusedetail.setEnd( 1023 );
-                        } else if(tmp=="nonprivileged") {
+                            currentnetusedetail.setEndPort( 1023 );
+                        }
+                        else if(tmp=="nonprivileged")
+                        {
                             currentnetusedetail.setRangeType( PORTRANGE_NONPRIVILEGED );
-                            currentnetusedetail.setStart( 1024 );
-                            currentnetusedetail.setEnd( 65535 );
-                        } else if(tmp=="dynamic") {
+                            currentnetusedetail.setStartPort( 1024 );
+                            currentnetusedetail.setEndPort( 65535 );
+                        }
+                        else if(tmp=="dynamic")
+                        {
                             currentnetusedetail.setRangeType( PORTRANGE_DYNAMIC );
-                            currentnetusedetail.setStart( 1024 );
-                            currentnetusedetail.setEnd( 65535 );
-                        } else {
-                            currentnetusedetail.setStart( boost::lexical_cast<uint>(tmp) ); //tmp.toUInt(&ok);
+                            currentnetusedetail.setStartPort( 1024 );
+                            currentnetusedetail.setEndPort( 65535 );
+                        }
+                        else
+                        {
+                            currentnetusedetail.setStartPort( boost::lexical_cast<uint>(tmp) ); //tmp.toUInt(&ok);
 //                            if(ok==false) {
 //                                errorstate = PROTOCOL_ERROR_PORT_PORTNUM_ATTR_NOT_UINT;
 //                                return false;
 //                            }
-                            currentnetusedetail.setEnd( currentnetusedetail.getStart() );
                         }
                         // Should check for the alternative flag around here somewhere.
 
-                        switch(parsestate) {
+                        switch(parsestate)
+                        {
                             case PROTOCOL_STATE_TCP_SOURCE:
                                 parsestate = PROTOCOL_STATE_TCP_SOURCE_PORT;
                                 break;
@@ -1407,19 +1359,17 @@ cleanup:
                             case PROTOCOL_STATE_TCP_DEST:
                                 parsestate = PROTOCOL_STATE_TCP_DEST_PORT;
                                 break;
-
                             case PROTOCOL_STATE_UDP_DEST:
                                 parsestate = PROTOCOL_STATE_UDP_DEST_PORT;
                                 break;
                             default:
+                                //you're a wizard
                                 break;
                         }
                         return true;
                     }
                     if(localName=="portrange") {
                         currentnetusedetail = ProtocolNetUseDetail();
-                        currentnetusedetail.setRangeType( PORTRANGE_RANGE );
-                        currentnetusedetail.setAlternate( false );
                         // Grab the start port number
                         i = atts.index(protocolnamespace.c_str(),portstartattr.c_str());
                         if(i==-1) {
@@ -1427,7 +1377,7 @@ cleanup:
                             return false;
                         }
                         tmp = atts.value(i).toStdString();
-                        currentnetusedetail.setStart( boost::lexical_cast<uint>(tmp) ); //tmp.toUInt(&ok);
+                        currentnetusedetail.setStartPort( boost::lexical_cast<uint>(tmp) ); //tmp.toUInt(&ok);
 //                        if(ok==false) {
 //                            errorstate = PROTOCOL_ERROR_PORTRANGE_START_ATTR_NOT_UINT;
 //                            return false;
@@ -1440,16 +1390,16 @@ cleanup:
                             return false;
                         }
                         tmp = atts.value(i).toStdString();
-                        currentnetusedetail.setEnd( boost::lexical_cast<uint>(tmp) ); //tmp.toUInt(&ok);
+                        currentnetusedetail.setEndPort( boost::lexical_cast<uint>(tmp) ); //tmp.toUInt(&ok);
 //                        if(ok==false) {
 //                            errorstate = PROTOCOL_ERROR_PORTRANGE_END_ATTR_NOT_UINT;
 //                            return false;
 //                        }
-                        if(currentnetusedetail.getEnd() < currentnetusedetail.getStart())
-                        {
-                            errorstate = PROTOCOL_ERROR_PORTRANGE_END_LESS_START;
-                            return false;
-                        }
+//                        if(currentnetusedetail.getEnd() < currentnetusedetail.getStart())
+//                        {
+//                            errorstate = PROTOCOL_ERROR_PORTRANGE_END_LESS_START;
+//                            return false;
+//                        }
 
                         switch(parsestate) {
                             case PROTOCOL_STATE_TCP_SOURCE:
@@ -1545,9 +1495,8 @@ cleanup:
                     if(currentnetuse.numberSourcePorts()==0) {
                         ProtocolNetUseDetail currentnetusedetail;
                         currentnetusedetail.setRangeType( PORTRANGE_ANY );
-                        currentnetusedetail.setAlternate( false );
-                        currentnetusedetail.setStart( 0 );
-                        currentnetusedetail.setEnd( 65535 );
+                        currentnetusedetail.setStartPort( 0 );
+                        currentnetusedetail.setEndPort( 65535 );
                         currentnetuse.addSource( currentnetusedetail );
 //                        currentnetuse.sourcedetaillist.push_back(currentnetusedetail);
                         //                    currentnetusedetail = 0;
@@ -1555,9 +1504,8 @@ cleanup:
                     if(currentnetuse.numberDestPorts()==0) {
                         ProtocolNetUseDetail currentnetusedetail;
                         currentnetusedetail.setRangeType( PORTRANGE_ANY );
-                        currentnetusedetail.setAlternate( false );
-                        currentnetusedetail.setStart( 0 );
-                        currentnetusedetail.setEnd( 65535 );
+                        currentnetusedetail.setStartPort( 0 );
+                        currentnetusedetail.setEndPort( 65535 );
                         currentnetuse.addDest( currentnetusedetail );
                         //                    currentnetusedetail = 0;
                     }

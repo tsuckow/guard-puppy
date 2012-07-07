@@ -693,10 +693,10 @@ void GuardPuppyDialog_w::on_enableDhcpdCheckBox_stateChanged( int state )
     firewall.setDHCPdEnabled( state );
 }
 
-void GuardPuppyDialog_w::on_userDefinedProtocolBidirectionalCheckBox_stateChanged( int state )
+void GuardPuppyDialog_w::on_userDefinedProtocolBidirectionalCheckBox_stateChanged( int /*state*/ )
 {
     //! \todo implement with User Defined Protocol related functions
-
+    
 }
 
 void GuardPuppyDialog_w::on_logRateSpinBox_valueChanged( int value )

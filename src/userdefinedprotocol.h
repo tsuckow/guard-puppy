@@ -42,10 +42,7 @@ public:
     **/
     bool operator==(UserDefinedProtocol const & that) const
     {
-        return  id              ==  that.id
-                &&  entry       ==  that.entry
-                &&  netuse      ==  that.netuse
-                &&  destdetail  ==  that.destdetail;
+        return entry == that.entry;
     }
 
     UserDefinedProtocol(std::string const & tmpstring, uchar udptype, uint udpstartport, uint udpendport, bool udpbidirectional, ProtocolDB & database, uint newid)
@@ -61,17 +58,17 @@ public:
         entry.addNetwork( netuse);
 
         ProtocolNetUseDetail sourcedetail;
-        sourcedetail.setAlternate( false );
+        //sourcedetail.setAlternate( false );
         sourcedetail.setRangeType( PORTRANGE_ANY );
-        sourcedetail.setStart( 1024 );
-        sourcedetail.setEnd( 65535 );
+        sourcedetail.setStartPort( 1024 );
+        sourcedetail.setEndPort( 65535 );
         netuse.addSource(sourcedetail);
 
         destdetail = ProtocolNetUseDetail();
-        destdetail.setAlternate( false );
+        //destdetail.setAlternate( false );
         destdetail.setRangeType( PORTRANGE_RANGE );
-        destdetail.setStart( 0 );
-        destdetail.setEnd( 0 );
+        destdetail.setStartPort( 0 );
+        destdetail.setEndPort( 0 );
         netuse.addDest(destdetail);
 
         setName(tmpstring);
