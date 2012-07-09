@@ -27,7 +27,6 @@ email                : simon@simonzone.com
 //
 class UserDefinedProtocol
 {
-    uint id;
 public:
     ProtocolEntry entry;
     ProtocolNetUse       netuse;
@@ -45,11 +44,10 @@ public:
         return entry == that.entry;
     }
 
-    UserDefinedProtocol(std::string const & tmpstring, uchar udptype, uint udpstartport, uint udpendport, bool udpbidirectional, ProtocolDB & database, uint newid)
+    UserDefinedProtocol(std::string const & tmpstring, uchar udptype, uint udpstartport, uint udpendport, bool udpbidirectional, ProtocolDB & database, uint /* newid */ )
     {
         entry = ProtocolEntry() ;
-        entry.classification = CLASS_CUSTOM;
-        setID(newid);
+        entry.strClassification = "User Defined";
         netuse =  ProtocolNetUse();
         netuse.type = IPPROTO_TCP;
         netuse.bidirectional = true;
@@ -76,7 +74,6 @@ public:
         setStartPort(udpstartport);
         setEndPort(udpendport);
         setBidirectional(udpbidirectional);
-
         database.addProtocolEntry(entry);
     }
 
@@ -85,20 +82,6 @@ public:
         //    db->takeEntry(entry);
         //    delete entry;
     }
-
-    void setID(uint newid)
-    {
-        id = newid;
-        std::stringstream ss;
-        ss << "userdefined" << id;
-        entry.name = ss.str();
-    }
-
-    uint getID() const
-    {
-        return id;
-    }
-
     void setName(const std::string &n)
     {
         entry.longname = n;

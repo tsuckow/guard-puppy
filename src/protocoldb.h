@@ -109,25 +109,6 @@ enum NetworkEntity
     ENTITY_CLIENT
 };
 
-    /*!
-    **  \brief The different Kinds of Protocols.
-    **  \todo This really is silly. if we change our vecotor<uint> of vector<protocolentry> of blah blah
-    **        to be map<std::string class, vector<protocolentry> > we can support an unlimited number of classes,
-    **        and have it all be done dynamicly.
-    */
-enum Classification
-{
-    CLASS_UNKNOWN=0,
-    CLASS_MAIL,
-    CLASS_CHAT,
-    CLASS_FILE,
-    CLASS_GAME,
-    CLASS_SESSION,
-    CLASS_DATA,
-    CLASS_MEDIA,
-    CLASS_NET,
-    CLASS_CUSTOM
-};
 
 //Holds a single port range
 class ProtocolNetUseDetail
@@ -409,8 +390,7 @@ public:
 
     Score threat;
     Score falsepos;
-    Classification classification;
-
+    std::string strClassification;
 private:
     friend class ProtocolDB;
     std::vector< ProtocolNetUse > networkuse;
@@ -442,7 +422,7 @@ public:
         //    networkuse.setAutoDelete(true);
         threat         = SCORE_UNKNOWN;
         falsepos       = SCORE_UNKNOWN;
-        classification = CLASS_UNKNOWN;
+        strClassification = "Unknown";
     }
 
     ~ProtocolEntry()
@@ -454,7 +434,8 @@ public:
     {
 
         fprintf(stderr,"[ Name: %s Longname: %s Threat: ",name.c_str(),longname.c_str());
-        switch(threat) {
+        switch(threat)
+        {
             case SCORE_LOW:
                 fprintf(stderr,"low");
                 break;
@@ -469,48 +450,12 @@ public:
                 break;
         }
         fprintf(stderr," Classification: ");
-        switch(classification) {
-            case CLASS_UNKNOWN:
-                fprintf(stderr,"unknown");
-                break;
 
-            case CLASS_MAIL:
-                fprintf(stderr,"mail");
-                break;
+        if(strClassification != "")
+            std::cerr << strClassification;
 
-            case CLASS_CHAT:
-                fprintf(stderr,"chat");
-                break;
-
-            case CLASS_FILE:
-                fprintf(stderr,"file");
-                break;
-
-            case CLASS_GAME:
-                fprintf(stderr,"game");
-                break;
-
-            case CLASS_SESSION:
-                fprintf(stderr,"session");
-                break;
-
-            case CLASS_DATA:
-                fprintf(stderr,"data");
-                break;
-
-            case CLASS_MEDIA:
-                fprintf(stderr,"media");
-                break;
-
-            case CLASS_NET:
-                fprintf(stderr,"net");
-                break;
-
-            default:
-                break;
-        }
-
-        BOOST_FOREACH( ProtocolNetUse const & x, networkuse ) {
+        BOOST_FOREACH( ProtocolNetUse const & x, networkuse )
+        {
             x.print();
         }
         fprintf(stderr,"]");
@@ -852,30 +797,7 @@ public:
                         if ( i != -1 )
                         {
                             tmp = atts.value(i).toStdString();
-                            if(tmp=="unknown")
-                                currententry.classification = CLASS_UNKNOWN;
-                            else if(tmp=="mail")
-                                currententry.classification = CLASS_MAIL;
-                            else if(tmp=="chat")
-                                currententry.classification = CLASS_CHAT;
-                            else if(tmp=="file")
-                                currententry.classification = CLASS_FILE;
-                            else if(tmp=="game")
-                                currententry.classification = CLASS_GAME;
-                            else if(tmp=="session")
-                                currententry.classification = CLASS_SESSION;
-                            else if(tmp=="data")
-                                currententry.classification = CLASS_DATA;
-                            else if(tmp=="media")
-                                currententry.classification = CLASS_MEDIA;
-                            else if(tmp=="net")
-                                currententry.classification = CLASS_NET;
-                            else
-                            {
-                                std::cerr << "   errorstate = PROTOCOL_ERROR_CLASSIFICATION_CLASS_UNKNOWN: "<<tmp << std::endl;
-                                errorstate = PROTOCOL_ERROR_CLASSIFICATION_CLASS_UNKNOWN;
-                                return false;
-                            }
+                            currententry.strClassification = tmp;
                         }
                         parsestate = PROTOCOL_STATE_CLASSIFICATION;
                         return true;

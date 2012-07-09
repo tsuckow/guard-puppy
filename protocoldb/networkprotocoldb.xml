@@ -27,7 +27,7 @@
 <!-- Last Modified: 26/11/2006                          -->
 <!--                                                    -->
 <protocoldb lines="3305">
-<protocol name="ftp">
+<protocol name="FTP">
   <longname>FTP - File Transfer Protocol</longname>
   <longname lang="de">FTP - File Transfer Protocol</longname>
   <longname lang="nl">FTP - File Transfer Protocol</longname>
@@ -46,7 +46,7 @@
   ad un altro, attraverso una rete.</description>
   <description lang="es">Protocolo muy común usado para transferir ficheros de un ordenador 
   a otro a través de una red.</description>
-  <classification class="file"/>
+  <classification class="File"/>
   <pragma name="guarddog">ip_conntrack_ftp</pragma>
   <network>
     <tcp source="client" dest="server">
@@ -87,7 +87,7 @@
   FAQ: Firewall Forensics (What am I seeing?)</reference>
 </protocol>
 
-<protocol name="ssh">
+<protocol name="SSH">
   <longname>SSH - Remote Login Protocol</longname>
   <longname lang="de">SSH - Protokoll für die Anmeldung auf einer entfernten Maschine</longname>
   <longname lang="nl">SSH - protocol voor het inloggen op computers op afstand</longname>
@@ -118,7 +118,7 @@
   <description lang="es">El protocolo Secure SHell es usado para conectarse remotamente a un ordenador y darle
   órdenes: ofrece comunicación cifrada y está concebido para su uso sobre una red insegura. Reemplaza
   a los viejos e inseguros protocolos rlogin, rsh y telnet.</description>
-  <classification class="session"/>
+  <classification class="Session"/>
   <network>
     <tcp>
   	  <description>Normal connection</description>
@@ -146,7 +146,7 @@
   FAQ: Firewall Forensics (What am I seeing?)</reference>
 </protocol>
 
-<protocol name="telnet">
+<protocol name="Telnet">
   <longname>Telnet</longname>
   <longname lang="de">Telnet</longname>
   <longname lang="nl">Telnet</longname>
@@ -175,7 +175,7 @@
   <description lang="es">Telnet es usado para conectarse a un ordenador remoto y darle
   órdenes. Es vulnerable a 'sniffing' y 'snooping', por lo que ya no se considera seguro. Su sucesor es SSH, 
   mucho más seguro.</description>
-  <classification class="session"/>
+  <classification class="Session"/>
   <network>
     <tcp>
       <source><port portnum="dynamic"/></source>
@@ -206,7 +206,7 @@
   opera attraverso un programma di navigazione web.</description>
   <description lang="es">Linuxconf es una herramienta de administración de sistema para Linux que opera
   con un sistema de navegación web.</description>
-  <classification class="session"/>
+  <classification class="Session"/>
   <network>
     <tcp>
       <source><port portnum="dynamic"/></source>
@@ -238,7 +238,7 @@
   Este protocolo permite la comunicación entre clientes y servidores de aplicaciones distribuídas,
   independientemente de la plataforma usada, hecho que facilita la integración y la
   interoperabilidad.</description>
-  <classification class="session"/>
+  <classification class="Session"/>
   <network><tcp><dest><port portnum="535"/></dest></tcp>
   <udp source="client" dest="server"><dest><port portnum="535"/></dest></udp></network>
   <security threat="low" falsepos="low"/>
@@ -265,7 +265,7 @@
   <description lang="it">Il protocollo SMTP è usato per trasferire e recapitare posta attraverso una rete. Costituisce lo standard per la trasmissione di posta attraverso Internet.</description>
   <description lang="es">El protocolo SMTP es usado para transferir correo por una red. Es el estandar de
   transmisión de correo por Internet.</description>
-  <classification class="mail"/>
+  <classification class="Mail"/>
   <network>
     <tcp>
       <source><port portnum="dynamic"/></source>
@@ -298,7 +298,7 @@
   <description lang="it">Questo protocollo è usato per ottenere i nomi dei nodi di una rete e per convertirli in indirizzi Internet tipo IPv4: quasi tutti gli altri protocolli di rete dipendono da esso.</description>
   <description lang="es">Este protocolo se usa para buscar un nombre de dominio dado y obtener su
   correspondiente dirección IPv4. Casi todos los otros protocolos dependen de DNS.</description>
-  <classification class="net"/>
+  <classification class="Net"/>
   <network>
     <tcp>
       <dest><port portnum="53"/></dest>
@@ -336,7 +336,7 @@
   </description>
   <description lang="it">Il protocollo Finger fornisce informazioni riguardo ad un utente o a tutti gli utenti connessi ad una macchina remota. I server fingers sono considerati indesiderabili e insicuri a causa della quantità di informazioni sensibili che possono fornire.</description>
   <description lang="es">El protocolo Finger ofrece información de un usuario o varios que estén conectados a una máquina remota. Los servidores finger se consideran inseguros y no son deseables, debido a la cantidad de información potencialmente sensible que pueden dar.</description>
-  <classification class="data"/>
+  <classification class="Data"/>
   <network>
     <tcp>
       <source><port portnum="dynamic"/></source>
@@ -370,7 +370,7 @@
   </description>
   <description lang="it">Il protocollo di trasferimento di ipertesto (HTTP) è usato sul World Wide Web per trasferire documenti in HTML ed altri formati.</description>
   <description lang="es">El protocolo de trasferencia de hipertexto (HTTP) se usa en la World Wide Web para transferir documentos HTML o de otros tipos.</description>
-  <classification class="file"/>
+  <classification class="File"/>
   <network>
     <tcp>
       <source><port portnum="dynamic"/></source>
@@ -414,7 +414,7 @@
   Il est généralement utilisé pour les transactions de commerce électronique par le Web.</description>
   <description lang="it">Il protocollo di trasferimento di ipertesto è reso sicuro, per lo scambio di documenti in HTML ed altri formati, usando il Secure Socket Layer (SSL). A differenza del normale HTTP, HTTPS è un protocollo sicuro che non può essere facilmente 'sniffed' o 'snooped' da una terza parte. E' comunemente usato per rendere sicuro il commercio elettronico sul web.</description>
   <description lang="es">El protocolo seguro de trasferencia de hipertexto (HTTP), usado para el intercambio de documentos HTML o de otros tipos usando SSL (Secure Socket Layer). A diferencia del HTTP normal, no puede ser fácilmente 'sniffed' o 'snooped' por un tercero. Se usa comúnmente para la entrega segura de correo por el web.</description>
-  <classification class="file"/>
+  <classification class="File"/>
   <network>
     <tcp>
       <source><port portnum="dynamic"/></source>
@@ -432,7 +432,7 @@
   <longname lang="fr">Système de fichiers distribué (NFS) - Sun Microsystems</longname>
   <longname lang="it">Network File System - Sun Microsystems</longname>
   <longname lang="es">Network File System - Sun Microsystems</longname>
-  <classification class="file"/>
+  <classification class="File"/>
   <network>
   	<tcp>
   	  <description>RPC port mapper service</description>
@@ -521,7 +521,7 @@
   </description>
   <description lang="it">Questo protocollo è usato da macchine client per ricevere posta da un server di posta elettronica.</description>
   <description lang="es">Este protocolo es usado por la máquina cliente para recoger correo de un servidor de correo electrónico.</description>
-  <classification class="mail"/>
+  <classification class="Mail"/>
   <network>
     <tcp>
       <source><port portnum="dynamic"/></source>
@@ -552,7 +552,7 @@
   </description>
   <description lang="it">Questo protocollo è usato da macchine client per ricevere posta da un server di posta elettronica.</description>
   <description lang="es">Este protocolo es usado por la máquina cliente para recoger correo de un servidor de correo electrónico.</description>
-  <classification class="mail"/>
+  <classification class="Mail"/>
   <network>
     <tcp>
       <source><port portnum="dynamic"/></source>
@@ -571,7 +571,7 @@
   <longname lang="fr">SUN - Appel de procédure à distance (RPC)</longname>
   <longname lang="it">Procedura di chiamata remota di SUN Microsystems</longname>
   <longname lang="es">Llamada de procedimiento remoto de SUN Microsystems</longname>
-  <classification class="session"/>
+  <classification class="Session"/>
   <network>
   	<tcp>
   	  <dest><port portnum="111"/></dest>
@@ -607,7 +607,7 @@
   pour leurs journalisations des connexions entrantes.</description>
   <description lang="it">Questo protocollo è usato per identificare il possessore di una connessione TCP. Molti server (FTP, POP3 etc) lo interrogano quando ricevono la richiesta di una connessione in arrivo.</description>
   <description lang="es">Este protocolo se utiliza para conocer al propietario de una conexión TCP. Muchos servidores (FTP, POP3 etc) preguntan esto cuando registran una conexión entrante.</description>
-  <classification class="net"/>
+  <classification class="Net"/>
   <network>
   	<tcp>
       <source><port portnum="dynamic"/></source>
@@ -636,7 +636,7 @@
   </description>
   <description lang="it">Usato per trasmettere in rete messaggi di tipo news group.</description>
   <description lang="es">Usado para transmitir mensajes de foros de discusión.</description>
-  <classification class="mail"/>
+  <classification class="Mail"/>
   <network>
     <tcp>
       <source><port portnum="dynamic"/></source>
@@ -666,7 +666,7 @@
   <description lang="it">Questo protcollo è protocollo usato da reti di computer basate su Windows per condividerefile e stampanti. Vedi anche la documentazione di Microsoft SMB su TCP</description>
   <description lang="es">Usado en redes basadas en MS Windows para compartir impresoras y ficheros. Vea
   también "Microsoft SMB sobre TCP".</description>
-  <classification class="net"/>
+  <classification class="Net"/>
   <network>
     <tcp source="client" dest="server">
       <description>NETBIOS Name Service</description>
@@ -794,7 +794,7 @@
   Básicamente es Server Message Block (SMB) funcionando directamente sobre TCP sin utilizar NETBIOS. Vea
   también "Windows Networking (NETBIOS)".
   </description>
-  <classification class="net"/>
+  <classification class="Net"/>
   <network>
     <tcp source="client" dest="server">
       <description>SMB over TCP</description>
@@ -829,7 +829,7 @@
   <description lang="it">Questo protocollo è usato da macchine client per leggere e gestire la posta elettronica residente su un server di posta.</description>
   <description lang="es">Usado por una máquina cliente para leer y gestionar correo que esté en un servidor
   de correo.</description>
-  <classification class="mail"/>
+  <classification class="Mail"/>
   <network>
     <tcp source="client" dest="server">
       <source><port portnum="dynamic"/></source>
@@ -849,7 +849,7 @@
   <longname lang="fr">Serveur mandataire Socks pour applications communiquantes</longname>
   <longname lang="it">Applicazione Proxy tipo Socks</longname>
   <longname lang="es">Proxy de aplicaciones tipo Socks</longname>
-  <classification class="net"/>
+  <classification class="Net"/>
   <network>
     <tcp source="client" dest="server">
       <source><port portnum="dynamic"/></source>
@@ -869,7 +869,7 @@
   <longname lang="fr">Serveur mandataire HTTP Squid</longname>
   <longname lang="it">Proxy HTTP tipo Squid</longname>
   <longname lang="es">Proxy HTTP Squid</longname>
-  <classification class="net"/>
+  <classification class="Net"/>
   <network>
     <tcp source="client" dest="server">
       <source><port portnum="dynamic"/></source>
@@ -889,7 +889,7 @@
   <longname lang="fr">pcANYWHERE stat</longname>
   <longname lang="it">pcANYWHEREstat</longname>
   <longname lang="es">pcANYWHEREstat</longname>
-  <classification class="session"/>
+  <classification class="Session"/>
   <network>
     <tcp source="client" dest="server">
       <source><port portnum="dynamic"/></source>
@@ -914,7 +914,7 @@
   <longname lang="fr">Système X Window</longname>
   <longname lang="it">Sistema X Window</longname>
   <longname lang="es">Sistema X Window</longname>
-  <classification class="session"/>
+  <classification class="Session"/>
   <network>
     <tcp source="client" dest="server">
       <source><port portnum="dynamic"/></source>
@@ -932,7 +932,7 @@
   <longname lang="fr">Traceroute tel qu'implémenté par Van Jacobson</longname>
   <longname lang="it">Traceroute come implementato da Van Jacobson</longname>
   <longname lang="es">Traceroute implementado por Van Jacobson</longname>
-  <classification class="net"/>
+  <classification class="Net"/>
   <network>
     <udp><dest><portrange start="33434" end="33600"/></dest></udp>
   </network>
@@ -947,7 +947,7 @@
   <longname lang="fr">Messagerie instantannée ICQ</longname>
   <longname lang="it">Chat ICQ</longname>
   <longname lang="es">Chat ICQ</longname>
-  <classification class="chat"/>
+  <classification class="Chat"/>
   <network>
     <udp source="client" dest="server" direction="both"><dest><port portnum="5190"/></dest></udp>
     <tcp source="client" dest="server">
@@ -975,7 +975,7 @@
   <longname lang="fr">Messagerie instantannée PowWow</longname>
   <longname lang="it">Chat PowWow</longname>
   <longname lang="es">Chat PowWow</longname>
-  <classification class="chat"/>
+  <classification class="Chat"/>
   <network>
     <tcp>
       <dest><port portnum="13223"/></dest>
@@ -994,7 +994,7 @@
   <longname lang="fr">IRC - Service de clavardage</longname>
   <longname lang="it">Chat IRC</longname>
   <longname lang="es">Chat IRC</longname>
-  <classification class="chat"/>
+  <classification class="Chat"/>
   <pragma name="guarddog">ip_conntrack_irc</pragma>
   <network>
     <tcp source="client" dest="server">
@@ -1021,7 +1021,7 @@
   <longname lang="fr">Serveur de données PostgreSQL</longname>
   <longname lang="it">Server di gestione archivi PostgreSQL</longname>
   <longname lang="es">Servidor de base de datos PostgreSQL</longname>
-  <classification class="data"/>
+  <classification class="Data"/>
   <network>
     <tcp source="client" dest="server">
       <source><port portnum="dynamic"/></source>
@@ -1038,7 +1038,7 @@
   <longname lang="fr">Serveur de données MySQL</longname>
   <longname lang="it">Server di gestione archivi MySQL</longname>
   <longname lang="es">Servidor de base de datos MySQL</longname>
-  <classification class="data"/>
+  <classification class="Data"/>
   <network>
     <tcp source="client" dest="server">
       <source><port portnum="dynamic"/></source>
@@ -1055,7 +1055,7 @@
   <longname lang="fr">Ping</longname>
   <longname lang="it">Ping</longname>
   <longname lang="es">Ping</longname>
-  <classification class="net"/>
+  <classification class="Net"/>
   <network>
     <icmp source="client" dest="server">
       <type value="8"/>
@@ -1085,7 +1085,7 @@
   <longname lang="fr">Quake</longname>
   <longname lang="it">Quake</longname>
   <longname lang="es">Quake</longname>
-  <classification class="game"/>
+  <classification class="Game"/>
   <network>
     <udp source="client" dest="server" direction="both">
       <dest><port portnum="26000"/></dest>
@@ -1102,7 +1102,7 @@
   <longname lang="fr">QuakeWorld</longname>
   <longname lang="it">QuakeWorld</longname>
   <longname lang="es">QuakeWorld</longname>
-  <classification class="game"/>
+  <classification class="Game"/>
   <network>
     <udp source="client" dest="server" direction="both">
       <dest><port portnum="27500"/></dest>
@@ -1119,7 +1119,7 @@
   <longname lang="fr">Quake 2</longname>
   <longname lang="it">Quake 2</longname>
   <longname lang="es">Quake 2</longname>
-  <classification class="game"/>
+  <classification class="Game"/>
   <network>
     <udp source="client" dest="server" direction="both">
       <dest><port portnum="27910"/></dest>
@@ -1136,7 +1136,7 @@
   <longname lang="fr">Recherche Who Is</longname>
   <longname lang="it">Who Is</longname>
   <longname lang="es">Who Is</longname>
-  <classification class="net"/>
+  <classification class="Net"/>
   <network>
     <tcp source="client" dest="server">
       <source><port portnum="dynamic"/></source>
@@ -1155,7 +1155,7 @@
   <longname lang="fr">Webmin - Administration des systèmes Unix par navigateur Web</longname>
   <longname lang="it">Webmin: amministrazione di sistemi Unix via web</longname>
   <longname lang="es">Webmin: administración de sistemas Unix mediante web</longname>
-  <classification class="session"/>
+  <classification class="Session"/>
   <network>
     <tcp source="client" dest="server">
       <source><port portnum="dynamic"/></source>
@@ -1173,7 +1173,7 @@
   <longname lang="fr">Limitation de production ICMP</longname>
   <longname lang="it">ICMP Source Quench</longname>
   <longname lang="es">ICMP Source Quench</longname>
-  <classification class="net"/>
+  <classification class="Net"/>
   <network>
     <icmp >
       <type value="4"/>
@@ -1190,7 +1190,7 @@
   <longname lang="fr">Redirection ICMP</longname>
   <longname lang="it">Redirezione ICMP</longname>
   <longname lang="es">Redirección ICMP</longname>
-  <classification class="net"/>
+  <classification class="Net"/>
   <network>
     <icmp source="server" dest="client">
       <type value="5"/>
@@ -1208,7 +1208,7 @@
   <longname lang="fr">Real Audio</longname>
   <longname lang="it">Real Audio</longname>
   <longname lang="es">Real Audio</longname>
-  <classification class="media"/>
+  <classification class="Media"/>
   <network>
     <tcp source="client" dest="server"><dest>
       <port portnum="554"/><port portnum="7070"/></dest>
@@ -1227,7 +1227,7 @@
   <longname lang="fr">Gestionnaire d'impression en ligne LP</longname>
   <longname lang="it">LPR - Gestore di stampanti in linea</longname>
   <longname lang="es">LPR - Gestor de impresoras en línea</longname>
-  <classification class="net"/>
+  <classification class="Net"/>
   <network>
     <tcp>
       <dest><port portnum="515"/></dest>
@@ -1243,7 +1243,7 @@
   <longname lang="fr">syslog - Journalisation du système</longname>
   <longname lang="it">syslog - Registro di sistema - </longname>
   <longname lang="es">syslog - Registro de sistema</longname>
-  <classification class="net"/>
+  <classification class="Net"/>
   <network>
     <udp source="client" dest="server">
       <dest><port portnum="514"/></dest>
@@ -1259,7 +1259,7 @@
   <longname lang="fr">NTP - Protocole de synchronisation de temps</longname>
   <longname lang="it">NTP - Protocollo temporale di rete</longname>
   <longname lang="es">NTP - Protocolo de sincronización de hora</longname>
-  <classification class="data"/>
+  <classification class="Data"/>
   <network>
     <udp source="client" dest="server" direction="both">
       <dest><port portnum="123"/></dest>
@@ -1279,7 +1279,7 @@
   <longname lang="fr">Gnutella - Réseau de partage de fichiers</longname>
   <longname lang="it">Gnutella - Protocollo per la condivisione di file</longname>
   <longname lang="es">Gnutella - Red de compartición de ficheros</longname>
-  <classification class="file"/>
+  <classification class="File"/>
   <network><tcp source="client" dest="server"><dest><port portnum="6346"/></dest></tcp></network>
   <security threat="low" falsepos="low"/>
   <reference href="http://gnutella.wego.com/go/wego.pages.page?groupId=116705&amp;view=page&amp;pageId=200448&amp;folderId=118398&amp;panelId=119597&amp;action=view">
@@ -1293,7 +1293,7 @@
   <longname lang="fr">AudioGalaxy - Partage de morceaux musicaux</longname>
   <longname lang="it">AudioGalaxy - Protocollo per la condivisione di musica</longname>
   <longname lang="es">AudioGalaxy - Protocolo para compartición de música</longname>
-  <classification class="file"/>
+  <classification class="File"/>
   <network>
     <tcp source="client" dest="server">
       <description>Web connection to the Audiogalaxy site.</description>
@@ -1337,7 +1337,7 @@
   <longname lang="fr">Logiciel de conférence NetMeeting - H.323</longname>
   <longname lang="it">Chat NetMeeting - H.323</longname>
   <longname lang="es">Chat NetMeeting - H.323</longname>
-  <classification class="chat"/>
+  <classification class="Chat"/>
   <network>
     <tcp source="client" dest="server">
       <description>Internet Locator Service (ILS)</description>
@@ -1417,7 +1417,7 @@
   <longname lang="fr">SNMP - Protocole simple d'administration de réseau</longname>
   <longname lang="it">SNMP - Protocollo semplice di amministrazione di rete</longname>
   <longname lang="es">SNMP - Protocolo simple de administración de red</longname>
-  <classification class="session"/>
+  <classification class="Session"/>
   <network>
     <udp source="client" dest="server" direction="both">
       <source><port portnum="dynamic"/></source>
@@ -1440,7 +1440,7 @@
   <description lang="it">LDAP è un protocollo di gestione di rubriche che permette a dei client di accedere automaticamente ai servizi di rubriche in linea.</description>
   <description lang="es">LDAP (Lightweight Directory Access Protocol) es un protocolo que permite a un
   cliente acceder a servicios de directorio.</description>
-  <classification class="data"/>
+  <classification class="Data"/>
   <network>
     <tcp source="client" dest="server">
       <source><port portnum="dynamic"/></source>
@@ -1457,7 +1457,7 @@
   <longname lang="fr">LDAP SSL - Protocole LDAP sécurisé par SSL</longname>
   <longname lang="it">LDAP SSL - LDAP via SSL</longname>
   <longname lang="es">LDAP SSL - LDAP por SSL</longname>
-  <classification class="data"/>
+  <classification class="Data"/>
   <network>
     <tcp source="client" dest="server">
       <source><port portnum="dynamic"/></source>
@@ -1474,7 +1474,7 @@
   <longname lang="fr">Diablo II</longname>
   <longname lang="it">Diablo II</longname>
   <longname lang="es">Diablo II</longname>
-  <classification class="game"/>
+  <classification class="Game"/>
   <network>
     <tcp source="client" dest="server">
       <dest><port portnum="6112"/></dest>
@@ -1520,7 +1520,7 @@
   server Samba SMB. Vedi anche la documentazioe su Windows Networking.</description>
   <description lang="es">Herramienta de administración por web de un servidor Samba SMB. Consulte "Windows
   Networking".</description>
-  <classification class="session"/>
+  <classification class="Session"/>
   <network>
     <tcp>
       <source><port portnum="dynamic"/></source>
@@ -1549,7 +1549,7 @@
   IPP (Internet Printing Protocol) est le protocole utilisé par CUPS (Common Unix Printing System).</description>
   <description lang="es">Protocolo para el uso de impresoras a través de una red TCP. IPP (Internet Printing
   Protocol) es el protocolo usado por CUPS (Common Unix Printing System).</description>
-  <classification class="session"/>
+  <classification class="Session"/>
   <network>
     <tcp>
       <source><port portnum="dynamic"/></source>
@@ -1573,7 +1573,7 @@
   <description lang="fr">Outil d'audit de la sécurité.</description>
   <description lang="it">Strumento per l'analisi della sicurezza.</description>
   <description lang="es">Herramienta para analizar la seguridad.</description>
-  <classification class="session"/>
+  <classification class="Session"/>
   <network>
     <tcp>
       <source><port portnum="dynamic"/></source>
@@ -1591,7 +1591,7 @@
   <longname lang="fr">XDMCP - Protocole de contrôle de Xdm</longname>
   <longname lang="it">Protocollo per il controllo di X Display Manager</longname>
   <longname lang="es">Protocolo de control de X Display Manager</longname>
-  <classification class="session"/>
+  <classification class="Session"/>
   <network>
     <udp source="client" dest="server" direction="both"><dest><port portnum="177"/></dest></udp>
   </network>
@@ -1612,7 +1612,7 @@
   <description lang="it">Questo protocollo è usato da molti giochi per gestire situazioni multi giocatore.</description>
   <description lang="es">Este protocolo es usado por muchos juegos para controlar entornos de varios
   jugadores.</description>
-  <classification class="game"/>
+  <classification class="Game"/>
   <network>
     <tcp source="client" dest="server">
       <description>Primary Connection</description>
@@ -1676,7 +1676,7 @@
   <description lang="fr">Half-life et autres jeux tirant parti de son moteur de jeu (notamment Counterstrike).</description>
   <description lang="it">Halflife ed altri giochi basati sul motore di Halflife (per esempio: Counterstrike).</description>
   <description lang="es">Halflife y otros juegos basados en el motor Halflife (Counterstrike, por ejemplo).</description>
-  <classification class="game"/>
+  <classification class="Game"/>
   <network>
     <tcp source="client" dest="server">
       <description>Won Authentication Port</description>
@@ -1729,7 +1729,7 @@
   <description lang="it">Protocollo di accesso ed autenticazione per gli utenti australiani che usano il sistema BigPond Cable della Telstra.</description>
   <description lang="es">Apertura de sesión y autenticación de usuarios australianos que usan el sistema
   BigPond Cable, de Telstra.</description>
-  <classification class="net"/>
+  <classification class="Net"/>
   <network>
     <tcp source="client" dest="server">
       <description>Authentication</description>
@@ -1774,7 +1774,7 @@
   <description lang="it">Questo protocollo è usato da molti esecutori di CD musicali per ottenere nome e traccia da un CD.</description>
   <description lang="es">Este protocolo es usado por muchos reproductores de CD musicales para obtener el
   nombre y los datos de un CD.</description>
-  <classification class="data"/>
+  <classification class="Data"/>
   <network>
     <tcp>
       <source><port portnum="dynamic"/></source>
@@ -1803,7 +1803,7 @@
   sur l'infrastructure d'un réseau public.</description>
   <description lang="it">Si tratta di un protocollo da Punto a Punto (PPP) incapsulato attraverso una rete IP e comunemente usato per far funzionare una Rete Privata Virtuale (VPN).</description>
   <description lang="es">Protocolo punto a punto canalizado (Point-to-Point Tunneling Protocol) a través de una red IP. Se utiliza comúnmente para establecer redes privadas virtuales (VPN).</description>
-  <classification class="net"/>
+  <classification class="Net"/>
   <network>
     <tcp source="client" dest="server">
       <source><port portnum="dynamic"/></source>
@@ -1843,7 +1843,7 @@
   travailler sur le bureau d'un ordinateur distant via un réseau IP.</description>
   <description lang="it">Il protocollo VNC è usato per lavorare in modo remoto sui desktop di calcolatori collegati attraverso una rete IP.</description>
   <description lang="es">El protocolo VNC se usa para trabajar sobre un escritorio remoto a través de una red IP.</description>
-  <classification class="session"/>
+  <classification class="Session"/>
   <network>
     <tcp source="client" dest="server">
       <source><port portnum="dynamic"/></source>
@@ -1888,7 +1888,7 @@
   <description lang="it">Microsoft Network Messenger: è un programma per inviare e ricevere messaggi istantanei.</description>
   <description lang="es">Microsoft Network Messenger. Un programa de mensajería instantánea.
   </description>
-  <classification class="chat"/>
+  <classification class="Chat"/>
   <network>
     <tcp source="client" dest="server">
       <source><port portnum="dynamic"/></source>
@@ -1919,7 +1919,7 @@
   (Vedi anche Sessione/klogin).</description>
   <description lang="es">El sistema Kerberos autentica usuarios individuales en una red
   (Vea tambien Sesion/klogin).</description>
-  <classification class="net"/>
+  <classification class="Net"/>
   <network>
     <udp source="client" dest="server" direction="both">
       <description>Ticket requests</description>
@@ -2001,7 +2001,7 @@
   Ne s'appuie pas sur le contenu des fichiers .rhost tel qu'un rlogin.
   </description>
   <description lang="it">rlogin usando l'autenticazione di Kerberos invece dei file .rhosts.</description>
-  <classification class="session"/>
+  <classification class="Session"/>
   <description lang="es">Apertura de sesión remota por autenticación Kerberos, en lugar de usar ficheros
   .rhost.
   </description>
@@ -2028,9 +2028,9 @@
   van Kerberos-authenticatie.</description>
   <description lang="fr">Fonctionnalités permettant d'exécuter des commandes à distance via une authentification Kerberos.</description>
   <description lang="it">Strumento per l'esecuzione remota di comandi usando Kerberos.</description>
-  <classification class="session"/>
+  <classification class="Session"/>
   <description lang="es">Funciones que permiten la ejecución remota de comandos usando Kerberos.</description>
-  <classification class="session"/>
+  <classification class="Session"/>
   <network>
     <tcp source="client" dest="server">
       <source><port portnum="dynamic"/></source>
@@ -2062,7 +2062,7 @@
   </description>
   <description lang="it">Questo protocollo è usato per condividere gli account utenti e le informazioni di accesso attraverso una rete. Il NIS e' stato anche conosciuto come le Pagine Gialle di Sun Microsystems (YP)</description>
   <description lang="es">Sistema para compartir información de cuentas de usuario e información de acceso a través de una red. El servicio de Información en red (Network Information Service-NIS) era antiguamente conocido como Páginas Amarillas de Sun (Yellow Pages-YP)</description>
-  <classification class="net"/>
+  <classification class="Net"/>
   <network>
   	<tcp>
   	  <description>RPC port mapper service</description>
@@ -2132,7 +2132,7 @@
   <description lang="es">Usado por máquinas cliente para leer y gestionar mensajes en un servidor de correo.
   Este protocolo no es otro que IMAP funcionando con SSL para cifrado de los datos y la
   autenticación.</description>
-  <classification class="mail"/>
+  <classification class="Mail"/>
   <network>
     <tcp source="client" dest="server">
       <source><port portnum="dynamic"/></source>
@@ -2166,7 +2166,7 @@
   <description lang="es">Este protocolo es usado por la máquina cliente para recoger correo de un servidor de
   correo electrónico. No es otro que POP3 funcionando con SSL para cifrado de los datos y la
   autenticación.</description>
-  <classification class="mail"/>
+  <classification class="Mail"/>
   <network>
     <tcp>
       <source><port portnum="dynamic"/></source>
@@ -2194,7 +2194,7 @@
    <description lang="it">Protocollo di assegnamento e di amministrazione delle chiavi di sicurezza Interne (ISAKMP - RFC2408).</description>
   <description lang="es">Internet Security Association and Key Management Protocol
   (ISAKMP). RFC2408.</description>
-  <classification class="net"/>
+  <classification class="Net"/>
   <network>
   	<udp direction="both">
       <source><port portnum="any"/></source>
@@ -2229,7 +2229,7 @@
   <description lang="it">Il protocollo CVS è un sistema per amministrare versioni diverse di codice sorgente.</description>
   <description lang="es">CVS es un sistema para administrar diferentes versiones de ficheros de código
   fuente.</description>
-  <classification class="file"/>
+  <classification class="File"/>
   <network>
     <tcp>
       <source><port portnum="dynamic"/></source>
@@ -2263,7 +2263,7 @@
   serveur. Décrit dans la RFC 2229</description>
   <description lang="it">E' un protocollo usato da una macchina client per ottenere da un server definizioni da dizionari (vedi anche RFC 2229).</description>
   <description lang="es">Es un protocolo usado por una máquina cliente para buscar definiciones en un servidor de diccionario (ver RFC 2229).</description>
-  <classification class="data"/>
+  <classification class="Data"/>
   <network>
     <tcp>
       <source><port portnum="dynamic"/></source>
@@ -2293,7 +2293,7 @@
   <description lang="it">Il protocollo IPSEC provvede l'integrità dei dati e la loro cifratura Viene usato comunemente per far funzionare una Rete Privata Virtuale (VPN).</description>
   <description lang="es">El protocolo IPSEC se usa comunmente para funcionar en una red privada virtual (VPN)
   proveyendo cifrado e integridad de datos.</description>
-  <classification class="net"/>
+  <classification class="Net"/>
   <network>
     <ip source="client" dest="server" protocol="50" direction="both">
       <description>GRE, user data</description>
@@ -2329,7 +2329,7 @@
   <description lang="it">Questo protocollo IPSEC provvede l'integrità dei dati. Viene usato comunemente per far funzionare una rete privata di tipo virtuale (VPN).</description>
   <description lang="es">Este protocolo IPSEC ofrece integridad de datos. Se usa comunmente para funcionar en
   una red privada virtual (VPN).</description>
-  <classification class="net"/>
+  <classification class="Net"/>
   <network>
     <ip source="client" dest="server" protocol="51" direction="both">
       <description>GRE, user data</description>
@@ -2371,7 +2371,7 @@
   <description lang="es">AOL Instant Messenger (AIM) es unprograma desarrollado para facilitar la
   comunicación sobre Internet. Mediante cortos mensajes, puede comunicarse con sus amigos o
   compañeros.</description>
-  <classification class="chat"/>
+  <classification class="Chat"/>
   <network>
     <tcp source="client" dest="server">
       <source><port portnum="dynamic"/></source>
@@ -2418,7 +2418,7 @@
   <description lang="es">FastTrack es un protocolo de compartición de ficheros usado por aplicaciones como
   Kazaa, iMesh, Grokste y otros. Tenga en cuenta que la fase de registro de iMesh puede requerir que ICMP
   esté permitido.</description>
-  <classification class="file"/>
+  <classification class="File"/>
   <network>
     <tcp source="client" dest="server">
       <source><port portnum="dynamic"/></source>
@@ -2448,7 +2448,7 @@
   <description lang="fr">Blubster est un logiciel de partage de morceaux musicaux.</description>
   <description lang="it">Blubster è un'altra applicazione per la condivisione di file audio.</description>
   <description lang="es">Blubster es otra aplicación de compartición de música.</description>
-  <classification class="file"/>
+  <classification class="File"/>
   <network>
     <udp source="client" dest="server">
       <description>Data download</description>
@@ -2493,7 +2493,7 @@
   <description lang="it">La connessione diretta (Direct Connect) è costruita su un idea di peer-to-peer. Offre una rete controllata dall'utente e orientata alla comunità.</description>
   <description lang="es">La conexión directa (Direct Connect) está basada en un sistema de comunicación entre
   pares (peer-to-peer). Ofrece una red comunal y controlada por el usuario.</description>
-  <classification class="file"/>
+  <classification class="File"/>
   <network>
     <tcp source="client" dest="server">
       <description>This is used for connecting to hubs and other users</description>
@@ -2587,7 +2587,7 @@
   milioni di altri utenti attraverso la rete decentralizzata peer di WinMX.</description>
   <description lang="es">WinMX permite conectar, descargar y compartir ficheros con millones de usuarios de
   la red WinMX de pares (peer-to-peer) descentralizada.</description>
-  <classification class="file"/>
+  <classification class="File"/>
   <network>
     <tcp source="server" dest="client">
       <source><port portnum="nonprivileged"/></source>
@@ -2637,7 +2637,7 @@
   <description lang="fr">Yahoo! Messagerie instantannée.</description>
   <description lang="it">Messaggi istantanei di Yahoo!.</description>
   <description lang="es">Mensajería instantanea de Yahoo!.</description>
-  <classification class="chat"/>
+  <classification class="Chat"/>
   <network>
     <tcp source="client" dest="server">
       <description>Login to network</description>
@@ -2695,7 +2695,7 @@
   <description lang="it">Jabber è un protocollo aperto e gratuito per lo scambio di messaggi, segnalazione di presenza e chiacchierate.</description>
   <description lang="es">Jabber es un protocolo abierto y gratuito para mensajería instantánea, notificación
   de presencia y chat.</description>
-  <classification class="chat"/>
+  <classification class="Chat"/>
   <network>
     <tcp source="client" dest="server">
       <source><port portnum="dynamic"/></source>
@@ -2717,7 +2717,7 @@
   <longname lang="fr">EsounD - Démon de son réseau</longname>
   <longname lang="it">EsounD - Demone sonoro di rete</longname>
   <longname lang="es">EsounD - Demonio de sonido en red</longname>
-  <classification class="session"/>
+  <classification class="Session"/>
   <network>
     <tcp source="client" dest="server">
       <source><port portnum="dynamic"/></source>
@@ -2739,7 +2739,7 @@
   <description></description>  
   <description lang="it">Protocollo Privoxy per il filtraggio HTTP su proxy.</description>
   <description lang="es">Protocolo Privoxy de filtrado HTTP sobre proxy.</description>
-  <classification class="net"/>
+  <classification class="Net"/>
 
   <network>
     <tcp source="client" dest="server">
@@ -2768,7 +2768,7 @@
   <description lang="it">Il server Macromedia ColdFusion (stand-alone per windows o interno per Unix) è usato principalmente per lo sviluppo di applicazioni ColdFusion.</description>
   <description lang="es">El servidor Macromedia ColdFusion (autónomo para Windows o interno para Unix) se usa
   principalmente para el desarrollo de aplicaciones ColdFusion.</description>
-  <classification class="file"/>
+  <classification class="File"/>
 
   <!-- According to the documentation, the Developer edition server only listens on 127.0.0.1 -->
   <network>
@@ -2793,7 +2793,7 @@
   <description lang="fr">Réseau de partage de fichiers poste à poste.</description>
   <description lang="it">Questo protocollo viene usato un per condividere file su rete di tipo peer-to-peer.</description>
   <description lang="es">Red de pares (peer-to-peer) de compartición de ficheros.</description>
-  <classification class="file"/>
+  <classification class="File"/>
   <network>
     <tcp source="client" dest="server">
       <source><port portnum="dynamic"/></source>
@@ -2824,7 +2824,7 @@
   <longname lang="fr">EverQuest</longname>
   <longname lang="it">EverQuest</longname>
   <longname lang="es">EverQuest</longname>
-  <classification class="game"/>
+  <classification class="Game"/>
   <network>
     <tcp source="client" dest="server">
       <source><port portnum="dynamic"/></source>
@@ -2864,7 +2864,7 @@
  web cache e proxy. </description>
  <description lang="es">El Protocolo de caché de Internet (ICP) es usado para comunicaciones entre proxies y
  cachés de web (Web Caches).</description>
-  <classification class="net"/>
+  <classification class="Net"/>
   <network>
     <udp source="client" dest="client" direction="both">
       <source><port portnum="nonprivileged"/></source>
@@ -2882,7 +2882,7 @@
    <longname lang="nl">Spellen bij Yahoo.com</longname>
   <longname lang="it">Protocollo giochi su Yahoo.com</longname>
   <longname lang="es">Juegos sobre Yahoo.com</longname>
-  <classification class="game"/>
+  <classification class="Game"/>
   <network>
     <tcp source="client" dest="server">
       <source><port portnum="dynamic"/></source>
@@ -2907,7 +2907,7 @@
   <description lang="it">E' un protocollo usato da molti riproduttori CD per ottenere nomi e tracce da un CD.</description>
   <description lang="es">Usado por muchos reproductores de CD para obtener datos sobre el CD que
   reproducen.</description>
-  <classification class="data"/>
+  <classification class="Data"/>
   <network>
     <tcp source="client" dest="server">
       <source><port portnum="dynamic"/></source>
@@ -2932,7 +2932,7 @@
   <description lang="it">Elster è un protocollo usato dal sistema fiscale tedesco per trasmettere via rete le dichiarazioni fiscali.</description>
   <description lang="es">Elster es un protocolo usado por el sistema fiscal alemán para transmitir
   declaraciones fiscales.</description>
-  <classification class="data"/>
+  <classification class="Data"/>
   <network>
     <tcp source="client" dest="server">
       <source><port portnum="dynamic"/></source>
@@ -2954,7 +2954,7 @@
   <description lang="fr">Legato Networker Version 5.5 et ultérieure.</description>
   <description lang="it">Legato Networker versione 5.5 e successive.</description>
   <description lang="es">Legato Networker versión 5.5 y posteriores.</description>
-  <classification class="file"/>
+  <classification class="File"/>
   <network>
     <tcp source="client" dest="server">
       <source><port portnum="dynamic"/></source>
@@ -2995,7 +2995,7 @@
   <description lang="it">Il Protocollo Time è un protocollo molto semplice per ricevere il tempo corrente da un server: è usato dal comando Unix rdate(1).</description>
   <description lang="es">El protocolo de hora (Time Protocol) es un protocolo muy ligero para extraer la
   fecha y la hora de un servidor. Es usado por el comando de Unix rdate(1).</description>
-  <classification class="data"/>
+  <classification class="Data"/>
   <network>
     <udp source="client" dest="server">
       <dest><port portnum="37"/></dest>
@@ -3016,7 +3016,7 @@
   <longname lang="fr">Système de fichiers NCPFS - Protocole de Novell NetWare(TM)</longname>
   <longname lang="it">NCP File System - Protocollo Novell tipo NetWare(TM)</longname>
   <longname lang="es">NCP File System - Protocolo de Novell NetWare(TM)</longname>
-  <classification class="file"/>
+  <classification class="File"/>
   <network>
     <tcp source="client" dest="server">
       <description>NCP Requests</description>
@@ -3084,7 +3084,7 @@
   het downloaden van Bittorent-leden co&#246;rdineert.</description>
   <description lang="es">Protocolo para conectar con un coordinador (Tracker) de descargas peer-to-peer
   BitTorrent.</description>
-  <classification class="file"/>
+  <classification class="File"/>
   <network>
     <tcp source="client" dest="server">
       <source><port portnum="dynamic"/></source>
@@ -3108,7 +3108,7 @@
   met BitTorrent-leden.</description>
   <description lang="es">Protocolo para el intercambio de fragmentos de ficheros entre pares
   BitTorrent.</description>
-  <classification class="file"/>
+  <classification class="File"/>
   <network>
     <tcp source="client" dest="client">
       <source><port portnum="dynamic"/></source>
@@ -3127,7 +3127,7 @@
   <longname lang="it">rsync - Trasferitore incrementale di file</longname>
   <longname lang="nl">rsync - incrementele bestandsoverdracht</longname>
   <longname lang="es">rsync - Trasferencia incremental de ficheros</longname>
-  <classification class="file"/>
+  <classification class="File"/>
   <network>
     <tcp source="client" dest="server">
       <source><port portnum="dynamic"/></source>
@@ -3144,7 +3144,7 @@
   <longname lang="it">distcc - Compilatore C distribuito</longname>
   <longname lang="nl">distcc - gedistributeerde C compiler</longname>
   <longname lang="es">distcc - Compilador C distribuido</longname>
-  <classification class="data"/>
+  <classification class="Data"/>
   <network>
     <tcp source="client" dest="server">
       <source><port portnum="dynamic"/></source>
@@ -3163,7 +3163,7 @@
   <longname lang="de">gkrellm - GNU Krell Monitor</longname>
   <longname lang="nl">gkrellm - GNU Krell Monitor</longname>
   <longname lang="es">gkrellm - GNU Krell Monitor</longname>
-  <classification class="data"/>
+  <classification class="Data"/>
   <network>
     <tcp source="client" dest="server">
       <source><port portnum="dynamic"/></source>
@@ -3202,7 +3202,7 @@
   <description lang="it">Questo protocollo viene usato per flussi Windows Media quando siano usati da Windows Media Player.</description>
   <description lang="es">Se usa para enviar flujos (streams) de Windows Media cuando son solicitados por
   Windows Media Player.</description>
-  <classification class="media"/>
+  <classification class="Media"/>
   <network>
     <tcp source="client" dest="server"><dest>
       <port portnum="1755"/></dest>
@@ -3227,7 +3227,7 @@
 <protocol name="tftp">
   <longname>TFTP - Trivial File Transfer Protocol</longname>
   <description>A simple protocol used for transfering files during the boot process of diskless clients.</description>
-  <classification class="net"/>
+  <classification class="Net"/>
   <pragma name="guarddog">ip_conntrack_tftp</pragma>
   <network>
      <udp source="client" dest="server" direction="both">
@@ -3242,7 +3242,7 @@
 <protocol name="netconsole">
   <longname>netconsole</longname>
   <description>A protocol used for kernel debugging.</description>
-  <classification class="session"/>
+  <classification class="Session"/>
   <network>
     <udp source="client" dest="server" direction="both">
       <source><port portnum="6665"/></source>
@@ -3257,7 +3257,7 @@
 <protocol name="rdesktop">
   <longname>rdesktop - Windows Terminal Service</longname>
   <description>Protocol used for remotely using Windows desktops.</description>
-  <classification class="session"/>
+  <classification class="Session"/>
   <network>
     <tcp source="client" dest="server">
       <description>Request connection.</description>
@@ -3273,7 +3273,7 @@
 <protocol name="svnserve">
   <longname>subversion - svn simple server</longname>
   <description>Protocol used for accessing remote subversion repositories.</description>
-  <classification class="file"/>
+  <classification class="File"/>
   <network>
     <tcp source="client" dest="server">
       <description>Request connection.</description>
@@ -3292,12 +3292,21 @@
   for mail transmission is deprecated and you should use TLS instead which
   uses the normal port 25 instead.
   </description>
-  <classification class="mail"/>
+  <classification class="Mail"/>
   <network>
     <tcp source="client" dest="server">
       <source><port portnum="dynamic"/></source>
       <dest><port portnum="465"/></dest>
     </tcp>
+  </network>
+  <security threat="low" falsepos="low"/>
+</protocol>
+<protocol name="AyuAyu">
+  <longname>AyuAyu Genai, MO~!</longname>
+  <description>Exists for no other reason that to prove i can have dynamic network classes!
+  </description>
+  <classification class="Uguu~!"/>
+  <network>
   </network>
   <security threat="low" falsepos="low"/>
 </protocol>

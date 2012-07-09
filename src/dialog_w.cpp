@@ -331,20 +331,7 @@ void GuardPuppyDialog_w::createProtocolPages()
 {
     protocolTreeWidget->clear();
 
-    QTreeWidgetItem * categoryList[10];
-
-    categoryList[0] = new QTreeWidgetItem( protocolTreeWidget, QStringList( "Unknown" ) );
-    categoryList[1] = new QTreeWidgetItem( protocolTreeWidget, QStringList( "Mail" ) );
-    categoryList[2] = new QTreeWidgetItem( protocolTreeWidget, QStringList( "Chat" ) );
-    categoryList[3] = new QTreeWidgetItem( protocolTreeWidget, QStringList( "File" ) );
-    categoryList[4] = new QTreeWidgetItem( protocolTreeWidget, QStringList( "Game" ) );
-    categoryList[5] = new QTreeWidgetItem( protocolTreeWidget, QStringList( "Session" ) );
-    categoryList[6] = new QTreeWidgetItem( protocolTreeWidget, QStringList( "Data" ) );
-    categoryList[7] = new QTreeWidgetItem( protocolTreeWidget, QStringList( "Media" ) );
-    categoryList[8] = new QTreeWidgetItem( protocolTreeWidget, QStringList( "Net" ) );
-    categoryList[9] = new QTreeWidgetItem( protocolTreeWidget, QStringList( "Custom" ) );
-
-    protocolTreeWidget->setColumnCount( 1 );
+    //protocolTreeWidget->setColumnCount( 1 );
 
     std::vector< std::string > connectedZones = firewall.getConnectedZones( currentProtocolZoneName() );
     QStringList columns;
@@ -356,14 +343,29 @@ void GuardPuppyDialog_w::createProtocolPages()
 
     protocolTreeWidget->setHeaderLabels( columns );
 
-    //! \todo This widget is calling getProtocolDataBase which should be calling
+    /**! \todo This widget is calling getProtocolDataBase which should be calling
     //  a function in firewall to do the work needed (traversal of the protocolDB)
     //  to get the items for this list.  When this is moved, then getProtocolDataBase()
     //  can be deleted from firewall.h
+    **/
     std::vector< ProtocolEntry > const & protocolDB = firewall.getProtocolDataBase();
     BOOST_FOREACH( ProtocolEntry const & pe, protocolDB )
     {
-        QTreeWidgetItem *item = new QTreeWidgetItem( categoryList[pe.classification], QStringList( pe.longname.c_str() ) );
+        int index(0);
+        QTreeWidgetItem * parent = 0;
+        for(; index < protocolTreeWidget->topLevelItemCount() && !parent; index++)
+        {
+            if(pe.strClassification == protocolTreeWidget->topLevelItem(index)->text(0).toStdString())
+                parent = protocolTreeWidget->topLevelItem(index);
+        }
+        if(!parent)
+        {//add new top level parent of the same class.
+            parent = new QTreeWidgetItem( QStringList( pe.strClassification.c_str() ) );
+            protocolTreeWidget->addTopLevelItem( parent );
+        }
+        QTreeWidgetItem * item = new QTreeWidgetItem(parent, QStringList( pe.longname.c_str() ) );
+
+        //QTreeWidgetItem *item = new QTreeWidgetItem( categoryList[pe.classification], QStringList( pe.longname.c_str() ) );
         item->setFlags( item->flags() | Qt::ItemIsUserCheckable );
 
         for ( size_t i = 0; i < connectedZones.size(); i++ )
@@ -725,9 +727,10 @@ void GuardPuppyDialog_w::on_userDefinedProtocolNameLineEdit_returnPressed()
     std::string s = userDefinedProtocolNameLineEdit->text().toStdString();
     UserDefinedProtocol const * c = &firewall.getUserDefinedProtocols()[row];
     const_cast<UserDefinedProtocol * >(c)->setName(s);
+    rebuildGui();
 //this may not be strong enough, because unless something else triggers the protocol tree to get redrawn...
 // bad times.
-    createUdpTableWidget();
+ //   createUdpTableWidget();
 }
 void GuardPuppyDialog_w::on_userDefinedProtocolPortStartSpinBox_valueChanged( int /* value */ )
 {

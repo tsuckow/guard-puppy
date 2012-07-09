@@ -626,7 +626,7 @@ public:
         {
             //                UserDefinedProtocol & currentudp = userdefinedprotocols.at(i);
             stream<<"# [UserDefinedProtocol]\n";
-            stream<<"# ID="<<(currentudp.getID())<<"\n";
+            stream<<"# ID="<<(0/*currentudp.getID()*/)<<"\n";
             stream<<"# NAME="<<(currentudp.getName())<<"\n";
             stream<<"# TYPE="<<(currentudp.getType()==IPPROTO_TCP ? "TCP" : "UDP")<<"\n";
             stream<<"# PORT="<<currentudp.getStartPort()<<":"<<currentudp.getEndPort()<<"\n";
