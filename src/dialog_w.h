@@ -39,6 +39,28 @@ class GuardPuppyDialog_w : public QDialog, Ui::GuardPuppyDialog
     bool guiReady;
     GuardPuppyFireWall & firewall;
 
+    class AddProtocolToTable_
+    {
+    GuardPuppyDialog_w & g;
+    std::vector<std::string> connectedZones;
+    public:
+        AddProtocolToTable_(GuardPuppyDialog_w & i, std::vector<std::string> s):g(i), connectedZones(s)
+        {}
+        void operator()(ProtocolEntry const & pe);
+    };
+    class changeProtocolName_
+    {
+        std::string s;
+    public:
+        changeProtocolName_(std::string s_):s(s_)
+        {}
+        void operator()(ProtocolEntry & pe)
+        {
+            pe.setName(s);
+        }
+    };
+
+
 public:
     GuardPuppyDialog_w( GuardPuppyFireWall & _firewall )
         : guiReady( false ), firewall( _firewall )
@@ -62,7 +84,7 @@ public:
     void setZoneAddressGUI( ::Zone const & zone);
     void setZonePageEnabled( ::Zone const & thisZone, bool enabled);
     void setZoneConnectionGUI( ::Zone const & zone);
-    void setUserDefinedProtocolGUI( UserDefinedProtocol const & userprotocol) ;
+    void setUserDefinedProtocolGUI( std::string const &) ;
     void buildConnectionGUI() ;
     void createProtocolPages();
     void setProtocolPagesEnabled(bool enabled);

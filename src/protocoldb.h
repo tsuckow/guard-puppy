@@ -219,6 +219,8 @@ public:
 
     uchar         getType() const { return type; }   // IPPROTO_TCP, IPPROTO_UDP or IPPROTO_ICMP
 
+    friend class ProtocolEntry;//ya it sucks. get over it
+    friend class GuardPuppyFireWall;
 private:
     std::vector<ProtocolNetUseDetail> sourcedetaillist;     // A list of source port ranges.
     std::vector<ProtocolNetUseDetail> destdetaillist;       // A list of dest port ranges.
@@ -262,13 +264,14 @@ public:
     }
 
 
-    ProtocolNetUse()
+    ProtocolNetUse(uchar t = IPPROTO_TCP, bool bi = true, NetworkEntity sr = ENTITY_CLIENT, NetworkEntity des = ENTITY_SERVER)
     {
         //    sourcedetaillist.setAutoDelete(true);
         //    destdetaillist.setAutoDelete(true);
-        source = ENTITY_CLIENT;
-        dest = ENTITY_SERVER;
-        bidirectional = false;
+        type = t;
+        source = sr;
+        dest = des;
+        bidirectional = bi;
     }
 
     bool isBidirectional() const
@@ -367,9 +370,8 @@ public:
         }
         return false;
     }
-
-
 };
+
 enum Score
 {
     SCORE_UNKNOWN=0,
@@ -390,9 +392,10 @@ public:
 
     Score threat;
     Score falsepos;
-    std::string strClassification;
+    std::string Classification;
 private:
     friend class ProtocolDB;
+    friend class GuardPuppyFireWall;
     std::vector< ProtocolNetUse > networkuse;
 public:
     std::string lastPragmaName;
@@ -422,7 +425,7 @@ public:
         //    networkuse.setAutoDelete(true);
         threat         = SCORE_UNKNOWN;
         falsepos       = SCORE_UNKNOWN;
-        strClassification = "Unknown";
+        Classification = "Unknown";
     }
 
     ~ProtocolEntry()
@@ -451,8 +454,8 @@ public:
         }
         fprintf(stderr," Classification: ");
 
-        if(strClassification != "")
-            std::cerr << strClassification;
+        if(Classification != "")
+            std::cerr << Classification;
 
         BOOST_FOREACH( ProtocolNetUse const & x, networkuse )
         {
@@ -461,14 +464,66 @@ public:
         fprintf(stderr,"]");
     }
 
-
+    std::string getName() const
+    {return name;}
+    uchar getType() const
+    {return networkuse[0].type;}
+    
+    uint getStartPortUDP() const
+        {return networkuse[0].destdetaillist[0].getStart();}
+    void setStartPortUDP(uint i)
+        {networkuse[0].destdetaillist[0].setStartPort(i);}
+    uint getEndPortUDP() const
+        {return networkuse[0].destdetaillist[0].getEnd();}
+    void setEndPortUDP(uint i)
+        {networkuse[0].destdetaillist[0].setEndPort(i);}
+    bool isBidirectional() const
+        {return networkuse[0].isBidirectional();}
+    void setBidirectional(bool on)
+        {networkuse[0].bidirectional = on;}
 
 };
 
+
+
+
+
 class ProtocolDB : public QXmlDefaultHandler
 {
-
 public:
+    //f is any function pointer, or functor that takes in a protocol entry.
+    //it has full access to all members and info about that Protocol.
+    template <typename func>
+    void ApplyToDB(func f)
+    {
+        BOOST_FOREACH(ProtocolEntry i, protocolDataBase)
+        {
+            f(i);
+        }
+    }
+
+    template<class T>
+    void ApplyToNthInClass(T func, int i, std::string c)
+    {
+    int n = 0;
+        BOOST_FOREACH(ProtocolEntry ent, protocolDataBase)
+        {
+            if(ent.Classification == c)
+            {
+                n++;
+                if(n == i)
+                {
+                    func(ent);
+                    break;
+                }
+            }
+        }
+        if (n != i)
+        {
+            std::cerr << "Index too great" << std::endl;
+        }
+    }
+
     std::vector< ProtocolEntry > const & getProtocolDataBase() const
     {
         return protocolDataBase;
@@ -477,6 +532,19 @@ public:
     void addProtocolEntry( ProtocolEntry const & pe )
     {
         protocolDataBase.push_back( pe );
+    }
+    
+    void UserDefinedProtocol(std::string name, uchar udptype, uint startp, uint endp, bool bi)
+    {
+        ProtocolEntry entry( name );
+        entry.Classification = "User Defined";
+        ProtocolNetUse netuse;
+        netuse.addSource(ProtocolNetUseDetail(PORTRANGE_ANY, 1024 , 65535));
+        netuse.addDest(ProtocolNetUseDetail(PORTRANGE_RANGE, startp, endp));
+        netuse.setType(udptype);
+        netuse.setBidirectional(bi);
+        entry.addNetwork(netuse);
+        addProtocolEntry(entry);
     }
 
     void deleteProtocolEntry( std::string const & name )
@@ -797,7 +865,7 @@ public:
                         if ( i != -1 )
                         {
                             tmp = atts.value(i).toStdString();
-                            currententry.strClassification = tmp;
+                            currententry.Classification = tmp;
                         }
                         parsestate = PROTOCOL_STATE_CLASSIFICATION;
                         return true;
@@ -1684,9 +1752,6 @@ public:
             }
         }
         return *pit;
-
-//        X x(name );
-//        return std::find_if( protocolDataBase.begin(), protocolDataBase.end(), x );
     }
 
 

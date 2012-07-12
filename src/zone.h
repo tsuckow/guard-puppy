@@ -9,6 +9,7 @@
 #include <boost/spirit/home/phoenix/operator.hpp>
 #include <boost/spirit/home/phoenix/bind.hpp>
 
+#include "protocoldb.h"
 #include "iprange.h"
 
 /*

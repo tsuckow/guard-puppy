@@ -23,7 +23,6 @@
 #include <boost/spirit/home/phoenix/bind.hpp>
 
 #include "protocoldb.h"
-#include "userdefinedprotocol.h"
 #include "zone.h"
 
 //#define SYSTEM_RC_FIREWALL "/etc/rc.firewall"
@@ -85,24 +84,25 @@ class GuardPuppyFireWall
     std::string dhcpdinterfacename;
     bool allowtcptimestamps;
 
-    std::vector< UserDefinedProtocol > userdefinedprotocols;
+//  time to get serious
+//    std::vector< UserDefinedProtocol > userdefinedprotocols;
 
 public:
     std::string description;
 
-    //! \todo delete this once the FOREACH code in dialog_w.cpp is
-    //  ported to a function here.
-    std::vector< ProtocolEntry > const & getProtocolDataBase() const
-    {
-        return pdb.getProtocolDataBase();
-    }
+
+//    //! \todo delete this once the FOREACH code in dialog_w.cpp is
+//    //  ported to a function here.
+//    std::vector< ProtocolEntry > const & getProtocolDataBase() const
+//    {
+//        return pdb.getProtocolDataBase();
+//    }
 
     /*!
     ** \brief Get the protocol description given a name of a protocol
     */
     std::string getProtocolText( std::string const & protocol )
     {
-        //default case: if we can't find it in the database return "Not Found"
         std::string text = "Not found";
         try
         {
@@ -335,37 +335,21 @@ public:
     }
 
     /*!
-    **  \brief return list of user defined protocols
-    **
-    **  \todo Generally, these types of functions are indicators there needs to be more refactoring
-    */
-    std::vector< UserDefinedProtocol > const & getUserDefinedProtocols() const
-    {
-        return userdefinedprotocols;
-    }
-
-    /*!
     **  \brief Adds a new UDP with the given information
-    **
-    **
     */
     void newUserDefinedProtocol(std::string name, uchar udpType, uint udpStartPort, uint udpEndPort, bool bi)
-    {
-        //! \todo get a way to generate a udpid... or is it even needed... probably not.
-        UserDefinedProtocol p (name, udpType, udpStartPort, udpEndPort, bi, pdb, /*udpid*/ 0);
-        userdefinedprotocols.push_back(p);
+    {//we still have udps, we just will not access them the same way. This function will likely go away
+        pdb.UserDefinedProtocol(name, udpType, udpStartPort, udpEndPort, bi);
+        //userdefinedprotocols.push_back(p);
     }
 
     /*!
     **  \brief Deletes a User Defined Protocol
     **
-    **  gets the udp by position in vector?
     */
-    void deleteUserDefinedProtocol( uint const i )
-    {//this is removing it from the list of UDPs but not the list of REAL protocols
-        pdb.deleteProtocolEntry(userdefinedprotocols[i].getName());
-        if( i < userdefinedprotocols.size())
-            userdefinedprotocols.erase(userdefinedprotocols.begin()+i);
+    void deleteUserDefinedProtocol( std::string i )
+    {
+        pdb.deleteProtocolEntry(i);
     }
 
     /*!
@@ -515,43 +499,8 @@ public:
     std::vector< ProtocolNetUse > getNetworkUse( std::string const & protocolName ) const
     {
         std::vector< ProtocolNetUse > protos = pdb.getNetworkUses( protocolName );
-        BOOST_FOREACH( UserDefinedProtocol const & udp, userdefinedprotocols )
-        {
-            protos.push_back( udp.netuse );
-        }
         return protos;
     }
-
-    ///////////////////////////////////////////////////////////////////////////
-#if 0
-    UserDefinedProtocol *newUserDefinedProtocol() {
-        UserDefinedProtocol *newudp;
-        uint i;
-        bool hit;
-
-        // Find a unique ID. It's O(n^2) but the list should always be small.
-        // ooooh I always feel guilty coding a O(n^2) algo.
-        hit = true;
-        i = 0;
-        while(hit) {
-            i++;
-            hit = false;
-            //        for(p=userdefinedprotocols.first(); p!=0; p=userdefinedprotocols.next()) {
-            BOOST_FOREACH( UserDefinedProtocol const & p, userdefinedprotocols ) {
-                if(p.getID()==i) {
-                    hit = true;
-                    break;
-                }
-            }
-        }
-
-        newudp = new UserDefinedProtocol(&pdb,i);
-        newudp->setName(("new"));
-        userdefinedprotocols.append(newudp);
-        return newudp;
-        }
-    }
-#endif
 
     /*!
     **  \brief Save firewall to filename
@@ -622,16 +571,9 @@ public:
 
         // Output the User Defined Protocols
         //            for(size_t i=0; i<userdefinedprotocols.size(); i++)
-        BOOST_FOREACH( UserDefinedProtocol const & currentudp, getUserDefinedProtocols() )
-        {
-            //                UserDefinedProtocol & currentudp = userdefinedprotocols.at(i);
-            stream<<"# [UserDefinedProtocol]\n";
-            stream<<"# ID="<<(0/*currentudp.getID()*/)<<"\n";
-            stream<<"# NAME="<<(currentudp.getName())<<"\n";
-            stream<<"# TYPE="<<(currentudp.getType()==IPPROTO_TCP ? "TCP" : "UDP")<<"\n";
-            stream<<"# PORT="<<currentudp.getStartPort()<<":"<<currentudp.getEndPort()<<"\n";
-            stream<<"# BIDIRECTIONAL="<<(currentudp.isBidirectional() ? 1 : 0)<<"\n";
-        }
+        //
+        //
+        pdb.ApplyToDB(OutputUDP(stream));
 
         // Go over each Zone and output which protocols are allowed to whom.
         BOOST_FOREACH( Zone const & toZone, zones )
@@ -716,6 +658,28 @@ public:
             "true\n";
     }
 private:
+    
+    //helper functor for save
+    class OutputUDP
+    {
+        std::ofstream & o;
+        public:
+        OutputUDP(std::ofstream & _o):o(_o)
+        {}
+        void operator()(ProtocolEntry const i)
+        {
+            if(i.Classification == "User Defined")
+            {
+                o<<"# [UserDefinedProtocol]\n";
+                o<<"# ID="<<("0"/*currentudp.getID()*/)<<"\n";
+                o<<"# NAME="<<(i.getName())<<"\n";
+                o<<"# TYPE="<<(i.getType()==IPPROTO_TCP ? "TCP" : "UDP")<<"\n";
+                o<<"# PORT="<<i.getStartPortUDP()<<":"<<i.getEndPortUDP()<<"\n";
+                o<<"# BIDIRECTIONAL="<<(i.isBidirectional() ? 1 : 0)<<"\n";
+            }
+        }
+    };
+
     /*!
     **  \brief Helper function for writing firewall
     */
@@ -1957,8 +1921,8 @@ public:
             catch(...)
             {//we couldn't find it!
             //so make it and add it to the list
-                UserDefinedProtocol udp(tmpstring, udptype, udpstartport, udpendport, udpbidirectional, pdb, udpid);
-                userdefinedprotocols.push_back( udp );
+                pdb.UserDefinedProtocol(tmpstring, udptype, udpstartport, udpendport, udpbidirectional);
+                //userdefinedprotocols.push_back( udp );
             }
 
             std::getline( stream, s );
@@ -2158,5 +2122,51 @@ private:
         if ( rv == -1 ) throw std::string( "system command returned error" );
     }
 
+public:
+//TODO make these safe to call with bad strings.
+    std::string getNameUDP(std::string s) const
+    {
+        return pdb.lookup(s).name;
+    }
+    uchar getTypeUDP(std::string s) const
+    {
+        return pdb.lookup(s).networkuse[0].type;
+    }
+
+    uint getStartPortUDP(std::string s) const
+    {
+        return pdb.lookup(s).networkuse[0].destdetaillist[0].getStart();
+    }
+    void setStartPortUDP(std::string s, uint i)
+    {
+        pdb.lookup(s).networkuse[0].destdetaillist[0].setStartPort(i);
+    }
+    uint getEndPortUDP(std::string s) const
+    {
+        return pdb.lookup(s).networkuse[0].destdetaillist[0].getEnd();
+    }
+    void setEndPortUDP(std::string s, uint i)
+    {
+        pdb.lookup(s).networkuse[0].destdetaillist[0].setEndPort(i);
+    }
+    bool isBidirectional(std::string s) const
+    {
+        return pdb.lookup(s).networkuse[0].isBidirectional();
+    }
+    void setBidirectional(std::string s,bool on)
+    {
+        pdb.lookup(s).networkuse[0].bidirectional = on;
+    }
+
+    template <class T>
+    void ApplyToDB(T func)
+    {
+        pdb.ApplyToDB(func);
+    }
+    template<class T>
+    void ApplyToNthInClass(T func, int i, std::string c)
+    {
+        pdb.ApplyToNthInClass(func, i, c);
+    }
 };
 
