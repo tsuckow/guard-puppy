@@ -468,7 +468,12 @@ public:
     {return name;}
     uchar getType() const
     {return networkuse[0].type;}
-    
+
+    std::string getRangeStringUDP() const
+    {
+        return networkuse[0].destdetaillist[0].getRangeString();
+    }
+
     uint getStartPortUDP() const
         {return networkuse[0].destdetaillist[0].getStart();}
     void setStartPortUDP(uint i)
@@ -494,7 +499,7 @@ public:
     //f is any function pointer, or functor that takes in a protocol entry.
     //it has full access to all members and info about that Protocol.
     template <typename func>
-    void ApplyToDB(func f)
+    void ApplyToDB(func & f)
     {
         BOOST_FOREACH(ProtocolEntry i, protocolDataBase)
         {
@@ -503,7 +508,7 @@ public:
     }
 
     template<class T>
-    void ApplyToNthInClass(T func, int i, std::string c)
+    void ApplyToNthInClass(T & func, int i, std::string c)
     {
     int n = 0;
         BOOST_FOREACH(ProtocolEntry ent, protocolDataBase)
@@ -537,6 +542,7 @@ public:
     void UserDefinedProtocol(std::string name, uchar udptype, uint startp, uint endp, bool bi)
     {
         ProtocolEntry entry( name );
+        entry.longname = name;
         entry.Classification = "User Defined";
         ProtocolNetUse netuse;
         netuse.addSource(ProtocolNetUseDetail(PORTRANGE_ANY, 1024 , 65535));
@@ -842,20 +848,6 @@ public:
                             loaddescription = true;
                             currententry.descriptionlanguage = tmp;
                         }
-//                        else
-//                        {
-                            // Which language is more important?
-                            // (Which appears first in the list of acceptable
-                            // languages.)
-                            //                        i = languagelist.indexOf(currententry.descriptionlanguage);
-                            //                        i = i==-1 ? 10000 : i;
-                            //                        j = languagelist.indexOf(tmp);
-                            //                        j = j==-1 ? 10000 : j;
-                            //                        if(j<i) {
-                            //                            loaddescription = true;
-                            //                            currententry.descriptionlanguage = tmp;
-                            //                        }
-//                        }
                         parsestate = PROTOCOL_STATE_DESCRIPTION;
                         return true;
                     }
@@ -1438,17 +1430,7 @@ public:
         }
         else
         {
-            // Which language is more important?
-            // (Which appears first in the list of acceptable
-            // languages.)
-            //        i = languagelist.indexOf(currentnetuse.descriptionlanguage);
-            //        i = i==-1 ? 10000 : i;
-            //        j = languagelist.indexOf(tmp);
-            //        j = j==-1 ? 10000 : j;
-            //        if(j<i) {
-            //            loaddescription = true;
-            //            currentnetuse.descriptionlanguage = tmp;
-            //        }
+
         }
     }
 

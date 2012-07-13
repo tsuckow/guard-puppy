@@ -123,11 +123,6 @@ void GuardPuppyDialog_w::on_deleteZonePushButton_clicked()
     {
         delete item;
     }
-//    QListWidgetItem * item2 = protocolZoneListWidget->takeItem( protocolZoneListWidget->currentRow() );
-//    if ( item2 )
-//    {
-//        delete item2;
-//    }
 }
 
 
@@ -288,16 +283,9 @@ void GuardPuppyDialog_w::createProtocolPages()
     }
 
     protocolTreeWidget->setHeaderLabels( columns );
-
-    /**! \todo This widget is calling getProtocolDataBase which should be calling
-    //  a function in firewall to do the work needed (traversal of the protocolDB)
-    //  to get the items for this list.  When this is moved, then getProtocolDataBase()
-    //  can be deleted from firewall.h
-    **/
-    //rewrite this to use Firewall::ApplyToClassification() ?
-//    std::vector< ProtocolEntry > const & protocolDB = firewall.getProtocolDataBase();
-
-    firewall.ApplyToDB(AddProtocolToTable_(*this, connectedZones));
+    
+    AddProtocolToTable_ aptt(*this, connectedZones);
+    firewall.ApplyToDB(aptt);
 
 }
 
@@ -539,21 +527,13 @@ void GuardPuppyDialog_w::setUserDefinedProtocolGUI(std::string const & s)
 
 void GuardPuppyDialog_w::createUdpTableWidget()
 {
-
-//
-//  std::vector< UserDefinedProtocol > const & udp = firewall.getUserDefinedProtocols();
-//  //first clear it
-//  for(int i=userDefinedProtocolTableWidget->rowCount()-1; i >= 0; --i)
-//  {
-//      userDefinedProtocolTableWidget->removeRow(i);
-//  }
-//  BOOST_FOREACH( UserDefinedProtocol const & u, udp )
-//  {
-//      userDefinedProtocolTableWidget->insertRow( userDefinedProtocolTableWidget->rowCount() );
-//      userDefinedProtocolTableWidget->setItem( userDefinedProtocolTableWidget->rowCount()-1, 0, new QTableWidgetItem( u.getName().c_str() ) );
-//      userDefinedProtocolTableWidget->setItem( userDefinedProtocolTableWidget->rowCount()-1, 1, new QTableWidgetItem( u.getType()==IPPROTO_TCP ? QObject::tr("TCP") : QObject::tr("UDP") ) );
-//      userDefinedProtocolTableWidget->setItem( userDefinedProtocolTableWidget->rowCount()-1, 2, new QTableWidgetItem( u.getRangeString().c_str() ) );
-//  }
+    //first clear it
+    for(int i=userDefinedProtocolTableWidget->rowCount()-1; i >= 0; --i)
+    {
+        userDefinedProtocolTableWidget->removeRow(i);
+    }
+    AddUDPToTable_ audptt(userDefinedProtocolTableWidget);
+    firewall.ApplyToDB(audptt);
 }
 
 void GuardPuppyDialog_w::setAdvancedPageEnabled(bool enabled)
@@ -562,8 +542,10 @@ void GuardPuppyDialog_w::setAdvancedPageEnabled(bool enabled)
     localPortRangeHighSpinBox->setEnabled(enabled);
 
     //std::vector< UserDefinedProtocol > const & udp = firewall.getUserDefinedProtocols();
-
-    bool gotudps = /*firewall.numberOfUserDefinedProtocols() >*/ 0 ;
+    numberOfUDP_ count;
+    firewall.ApplyToDB(count);
+    bool gotudps = count.value();///*firewall.numberOfUserDefinedProtocols() >*/ 1 ;
+    std::cerr << count.value();
     userDefinedProtocolTableWidget->setEnabled(enabled);
     userDefinedProtocolNameLineEdit->setEnabled(enabled && gotudps);
     newUserDefinedProtocolPushButton->setEnabled(enabled);
@@ -679,7 +661,9 @@ void GuardPuppyDialog_w::on_userDefinedProtocolNameLineEdit_returnPressed()
 {
     int row = userDefinedProtocolTableWidget->currentRow();
     std::string s = userDefinedProtocolNameLineEdit->text().toStdString();
-    firewall.ApplyToNthInClass(changeProtocolName_(s), row, "User Defined");
+    std::cerr << s;
+    changeProtocolName_ cpn(s);
+    firewall.ApplyToNthInClass(cpn, row, "User Defined");
     rebuildGui();
 //this may not be strong enough, because unless something else triggers the protocol tree to get redrawn...
 // bad times.

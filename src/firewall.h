@@ -91,13 +91,6 @@ public:
     std::string description;
 
 
-//    //! \todo delete this once the FOREACH code in dialog_w.cpp is
-//    //  ported to a function here.
-//    std::vector< ProtocolEntry > const & getProtocolDataBase() const
-//    {
-//        return pdb.getProtocolDataBase();
-//    }
-
     /*!
     ** \brief Get the protocol description given a name of a protocol
     */
@@ -573,8 +566,10 @@ public:
         //            for(size_t i=0; i<userdefinedprotocols.size(); i++)
         //
         //
-        pdb.ApplyToDB(OutputUDP(stream));
-
+        {//kill the functor we don't care about it after it does it's work.
+            OutputUDP OutputUDPm(stream);
+            pdb.ApplyToDB(OutputUDPm);
+        }
         // Go over each Zone and output which protocols are allowed to whom.
         BOOST_FOREACH( Zone const & toZone, zones )
         {
@@ -710,57 +705,8 @@ private:
             "\n"
             "# Load any special kernel modules.\n"
             "[ $GUARDDOG_VERBOSE -eq 1 ] && echo \""<<("Loading kernel modules.")<<"\"\n";
-/* seems like none of this is needed
 
-        // Examine all of the allowed protocols in all the zones etc and look for
-        // guarddog pragmas that indicate extra kernel modules that should be loaded.
-        // Build a list of the extra kernel modules we need.
 
-        // 'From' zone loop
-        BOOST_FOREACH( Zone & zit, zones )
-        {
-            // 'To' zone loop
-            BOOST_FOREACH( Zone & zit2, zones )
-            {
-                if ( zit != zit2 )
-                {
-#if 0
-                    protodictit = zit2->current()->newPermitProtocolZoneIterator(zit->current());
-                    if(protodictit!=0)
-                    {
-                        for(;protodictit->current(); ++(*protodictit))
-                        {
-                            pragmanameit = protodictit->current()->pragmaname.begin();
-                            pragmavalueit = protodictit->current()->pragmavalue.begin();
-                            for(; pragmanameit!=protodictit->current()->pragmaname.end(); ++pragmanameit)
-                            {
-                                if(*pragmanameit =="guarddog")
-                                {
-                                    // Only add a module to the list if we don't have it already.
-                                    gotmodule = false;
-                                    for(moduleit = modules.begin(); moduleit!=modules.end(); ++moduleit)
-                                    {
-                                        if(*moduleit==*pragmavalueit)
-                                        {
-                                            gotmodule = true;
-                                            break;
-                                        }
-                                    }
-                                    if(gotmodule==false)
-                                    {
-                                        modules.append(*pragmavalueit);
-                                    }
-                                }
-                                ++pragmavalueit;
-                            }
-                        }
-                        delete protodictit;
-                    }
-#endif
-                }
-            }
-        }
-*/
         std::vector< std::string > modules;
         BOOST_FOREACH( std::string const & m, modules )
         {
@@ -1394,27 +1340,6 @@ private:
                                 stream<<" -j REJECT --reject-with icmp-port-unreachable\n";
                             }
                         }
-                        /*
-                        // We do *not* actually add this rule below, like we need to in the ipchains code.
-                        // We rely on connection tracking to handle return packets. Actually, this code
-                        // below is a security flaw.
-                        if(netuse.bidirectional) {
-                        stream<<"iptables -A f"<<tozone<<"to"<<fromzone<<" -p udp"
-                        " --sport "<<(detailptr2->getStart(tozonePRI))<<":"<<(detailptr2->getEnd(tozonePRI))<<
-                        " --dport "<<(detailptr->getStart(fromzonePRI))<<":"<<(detailptr->getEnd(fromzonePRI));
-                        if(permit) {
-                        // Permitted.
-                        stream<<" -j ACCEPT\n";
-                        } else {
-                        // Not permitted.
-                        if(log) {
-                        stream<<" -j logreject\n";
-                        } else {
-                        stream<<" -j REJECT --reject-with icmp-port-unreachable\n";
-                        }
-                        }
-                        }
-                         */
                     }
                 }
                 break;
@@ -2159,12 +2084,13 @@ public:
     }
 
     template <class T>
-    void ApplyToDB(T func)
+    void ApplyToDB(T & func)
     {
         pdb.ApplyToDB(func);
     }
+
     template<class T>
-    void ApplyToNthInClass(T func, int i, std::string c)
+    void ApplyToNthInClass(T & func, int i, std::string c)
     {
         pdb.ApplyToNthInClass(func, i, c);
     }

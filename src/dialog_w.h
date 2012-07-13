@@ -48,6 +48,42 @@ class GuardPuppyDialog_w : public QDialog, Ui::GuardPuppyDialog
         {}
         void operator()(ProtocolEntry const & pe);
     };
+    
+    class AddUDPToTable_
+    {
+    QTableWidget * t;
+    public:
+        AddUDPToTable_( QTableWidget * t_):t(t_)
+        {}
+        void operator()(ProtocolEntry const & pe)
+        {
+            if(pe.Classification == "User Defined")
+            {
+                t->insertRow( t->rowCount() );
+                t->setItem( t->rowCount()-1, 0, new QTableWidgetItem( pe.getName().c_str() ) );
+                t->setItem( t->rowCount()-1, 1, new QTableWidgetItem( pe.getType()==IPPROTO_TCP ? QObject::tr("TCP") : QObject::tr("UDP") ) );
+                t->setItem( t->rowCount()-1, 2, new QTableWidgetItem( pe.getRangeStringUDP().c_str() ) );
+            }
+        }
+    };
+
+    class numberOfUDP_
+    {
+        int count;
+    public:
+        numberOfUDP_():count(0)
+        {}
+        int value(){return count;}
+        void reset() {count = 0;}
+        void operator()(ProtocolEntry const & pe)
+        {
+            if(pe.Classification == "User Defined")
+            {
+                count++;
+                std::cerr << "UDP FOUND:" << count << std::endl;
+            }
+        }
+    };
     class changeProtocolName_
     {
         std::string s;
@@ -56,7 +92,8 @@ class GuardPuppyDialog_w : public QDialog, Ui::GuardPuppyDialog
         {}
         void operator()(ProtocolEntry & pe)
         {
-            pe.setName(s);
+            pe.name = s;
+            pe.longname = s;
         }
     };
 
