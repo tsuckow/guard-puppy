@@ -668,7 +668,7 @@ private:
                 o<<"# [UserDefinedProtocol]\n";
                 o<<"# ID="<<("0"/*currentudp.getID()*/)<<"\n";
                 o<<"# NAME="<<(i.getName())<<"\n";
-                o<<"# TYPE="<<(i.getType()==IPPROTO_TCP ? "TCP" : "UDP")<<"\n";
+                o<<"# TYPE="<<(i.getTypeUDP()==IPPROTO_TCP ? "TCP" : "UDP")<<"\n";
                 o<<"# PORT="<<i.getStartPortUDP()<<":"<<i.getEndPortUDP()<<"\n";
                 o<<"# BIDIRECTIONAL="<<(i.isBidirectional() ? 1 : 0)<<"\n";
             }

@@ -61,7 +61,7 @@ class GuardPuppyDialog_w : public QDialog, Ui::GuardPuppyDialog
             {
                 t->insertRow( t->rowCount() );
                 t->setItem( t->rowCount()-1, 0, new QTableWidgetItem( pe.getName().c_str() ) );
-                t->setItem( t->rowCount()-1, 1, new QTableWidgetItem( pe.getType()==IPPROTO_TCP ? QObject::tr("TCP") : QObject::tr("UDP") ) );
+                t->setItem( t->rowCount()-1, 1, new QTableWidgetItem( pe.getTypeUDP()==IPPROTO_TCP ? QObject::tr("TCP") : QObject::tr("UDP") ) );
                 t->setItem( t->rowCount()-1, 2, new QTableWidgetItem( pe.getRangeStringUDP().c_str() ) );
             }
         }
@@ -80,8 +80,18 @@ class GuardPuppyDialog_w : public QDialog, Ui::GuardPuppyDialog
             if(pe.Classification == "User Defined")
             {
                 count++;
-                std::cerr << "UDP FOUND:" << count << std::endl;
             }
+        }
+    };
+    class changeProtocolType_
+    {
+        uchar s;
+    public:
+        changeProtocolType_(uchar s_):s(s_)
+        {}
+        void operator()(ProtocolEntry & pe)
+        {
+            pe.setTypeUDP(s);
         }
     };
     class changeProtocolName_
@@ -94,6 +104,41 @@ class GuardPuppyDialog_w : public QDialog, Ui::GuardPuppyDialog
         {
             pe.name = s;
             pe.longname = s;
+        }
+    };
+    class changeProtocolBi_
+    {
+        bool s;
+    public:
+        changeProtocolBi_(bool s_):s(s_)
+        {}
+        void operator()(ProtocolEntry & pe)
+        {
+            pe.setBidirectional(s);
+        }
+    };
+    class changeProtocolPort_
+    {
+        int s;
+        QTableWidgetItem * t;
+        bool start;
+        bool changeother;
+    public:
+        changeProtocolPort_(int s_, QTableWidgetItem * t_, bool start_ = true):s(s_), t(t_), start(start_), changeother(false)
+        {}
+        bool pChange(){return changeother;}
+        void operator()(ProtocolEntry & pe)
+        {
+            if(start)
+            {
+                pe.setStartPortUDP(s);
+            }
+            else
+            {
+                pe.setEndPortUDP(s);
+            }
+            changeother = pe.getEndPortUDP() == pe.getStartPortUDP();
+            t->setText(pe.getRangeStringUDP().c_str());
         }
     };
 
@@ -183,8 +228,8 @@ private slots:
     void on_localPortRangeLowSpinBox_valueChanged( int value );
     void on_localPortRangeHighSpinBox_valueChanged( int value );
 
-//    void on_userDefinedProtocolTypeComboBox_currentIndexChanged(int value);     //
-    void on_userDefinedProtocolNameLineEdit_returnPressed();  //
+    void on_userDefinedProtocolTypeComboBox_currentIndexChanged(int value);     //
+    void on_userDefinedProtocolNameLineEdit_textEdited(QString const & text);  //
     void on_userDefinedProtocolPortStartSpinBox_valueChanged( int value );      //
     void on_userDefinedProtocolPortEndSpinBox_valueChanged( int value );        //
 

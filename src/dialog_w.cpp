@@ -545,7 +545,6 @@ void GuardPuppyDialog_w::setAdvancedPageEnabled(bool enabled)
     numberOfUDP_ count;
     firewall.ApplyToDB(count);
     bool gotudps = count.value();///*firewall.numberOfUserDefinedProtocols() >*/ 1 ;
-    std::cerr << count.value();
     userDefinedProtocolTableWidget->setEnabled(enabled);
     userDefinedProtocolNameLineEdit->setEnabled(enabled && gotudps);
     newUserDefinedProtocolPushButton->setEnabled(enabled);
@@ -617,6 +616,7 @@ void GuardPuppyDialog_w::on_logTcpOptionsCheckBox_stateChanged( int state )
 void GuardPuppyDialog_w::on_disableFirewallCheckBox_stateChanged( int state )
 {
     firewall.setDisabled( state );
+    rebuildGui();
 }
 void GuardPuppyDialog_w::on_allowTcpTimeStampsCheckBox_stateChanged( int state )
 {
@@ -631,10 +631,14 @@ void GuardPuppyDialog_w::on_enableDhcpdCheckBox_stateChanged( int state )
     firewall.setDHCPdEnabled( state );
 }
 
-void GuardPuppyDialog_w::on_userDefinedProtocolBidirectionalCheckBox_stateChanged( int /*state*/ )
+void GuardPuppyDialog_w::on_userDefinedProtocolBidirectionalCheckBox_stateChanged( int state )
 {
-    //! \todo implement with User Defined Protocol related functions
-    
+    int row = userDefinedProtocolTableWidget->currentRow();
+    if(row>=0)
+    {
+        changeProtocolBi_ cpb((bool)state);
+        firewall.ApplyToNthInClass(cpb, row, "User Defined");
+    }
 }
 
 void GuardPuppyDialog_w::on_logRateSpinBox_valueChanged( int value )
@@ -657,25 +661,47 @@ void GuardPuppyDialog_w::on_localPortRangeHighSpinBox_valueChanged( int value )
 {
     firewall.setLocalDynamicPortRangeEnd( value );
 }
-void GuardPuppyDialog_w::on_userDefinedProtocolNameLineEdit_returnPressed()
+void GuardPuppyDialog_w::on_userDefinedProtocolTypeComboBox_currentIndexChanged(int value)
 {
     int row = userDefinedProtocolTableWidget->currentRow();
-    std::string s = userDefinedProtocolNameLineEdit->text().toStdString();
-    std::cerr << s;
-    changeProtocolName_ cpn(s);
-    firewall.ApplyToNthInClass(cpn, row, "User Defined");
-    rebuildGui();
-//this may not be strong enough, because unless something else triggers the protocol tree to get redrawn...
-// bad times.
- //   createUdpTableWidget();
+    if(row>=0)
+    {
+        changeProtocolType_ cpn(value == 0?IPPROTO_TCP:IPPROTO_UDP);
+        firewall.ApplyToNthInClass(cpn, row, "User Defined");
+        userDefinedProtocolTableWidget->item(row, 1 )->setText(value == 0?"TCP":"UDP");
+    }
 }
-void GuardPuppyDialog_w::on_userDefinedProtocolPortStartSpinBox_valueChanged( int /* value */ )
+void GuardPuppyDialog_w::on_userDefinedProtocolNameLineEdit_textEdited(QString const & text)
 {
-    //! \todo implement with User Defined Protocol related functions
-   // firewall.
+    int row = userDefinedProtocolTableWidget->currentRow();
+    if(row>=0)
+    {
+        std::string s = text.toStdString();
+        changeProtocolName_ cpn(s);
+        firewall.ApplyToNthInClass(cpn, row, "User Defined");
+        userDefinedProtocolTableWidget->item(row, 0 )->setText(s.c_str());
+    }
 }
-void GuardPuppyDialog_w::on_userDefinedProtocolPortEndSpinBox_valueChanged( int /* value */ )
+void GuardPuppyDialog_w::on_userDefinedProtocolPortStartSpinBox_valueChanged( int  value )
 {
-    //! \todo implement with User Defined Protocol related functions
+    int row = userDefinedProtocolTableWidget->currentRow();
+    if(row>=0)
+    {
+        changeProtocolPort_ cpn(value, userDefinedProtocolTableWidget->item(row,2));
+        firewall.ApplyToNthInClass(cpn, row, "User Defined");
+        if(cpn.pChange())
+            userDefinedProtocolPortEndSpinBox->setValue(value);
+    }
+}
+void GuardPuppyDialog_w::on_userDefinedProtocolPortEndSpinBox_valueChanged( int value )
+{
+    int row = userDefinedProtocolTableWidget->currentRow();
+    if(row >= 0)
+    {
+        changeProtocolPort_ cpn(value, userDefinedProtocolTableWidget->item(row, 2), false);
+        firewall.ApplyToNthInClass(cpn, row, "User Defined");
+        if(cpn.pChange())
+            userDefinedProtocolPortStartSpinBox->setValue(value);
+    }
 }
 

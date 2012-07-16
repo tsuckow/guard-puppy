@@ -466,9 +466,10 @@ public:
 
     std::string getName() const
     {return name;}
-    uchar getType() const
+    uchar getTypeUDP() const
     {return networkuse[0].type;}
-
+    void setTypeUDP(uchar t)
+    {networkuse[0] = t;}
     std::string getRangeStringUDP() const
     {
         return networkuse[0].destdetaillist[0].getRangeString();
@@ -511,16 +512,16 @@ public:
     void ApplyToNthInClass(T & func, int i, std::string c)
     {
     int n = 0;
-        BOOST_FOREACH(ProtocolEntry ent, protocolDataBase)
+        BOOST_FOREACH(ProtocolEntry & ent, protocolDataBase)
         {
             if(ent.Classification == c)
             {
-                n++;
                 if(n == i)
                 {
                     func(ent);
                     break;
                 }
+                n++;
             }
         }
         if (n != i)
