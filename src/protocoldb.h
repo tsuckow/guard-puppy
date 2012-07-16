@@ -469,7 +469,7 @@ public:
     uchar getTypeUDP() const
     {return networkuse[0].type;}
     void setTypeUDP(uchar t)
-    {networkuse[0] = t;}
+    {networkuse[0].type = t;}
     std::string getRangeStringUDP() const
     {
         return networkuse[0].destdetaillist[0].getRangeString();
