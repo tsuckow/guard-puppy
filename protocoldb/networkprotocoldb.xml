@@ -1815,14 +1815,16 @@
       <description lang="it">Controllo connessione</description>
       <description lang="es">Conexión de control</description>
     </tcp>
-    <ip source="client" dest="server" protocol="47" direction="both">
+    <udp source="client" dest="server" direction="both">
       <description>GRE, user data</description>
       <description lang="de">GRE, Benutzerdaten</description>
       <description lang="nl">GRE, gebruikersdata</description>
       <description lang="fr">GRE, données utilisateur</description>
       <description lang="it">GRE, dati utente</description>
       <description lang="es">GRE, datos de usuario</description>
-    </ip>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="47"/></dest>
+    </udp>
   </network>
 </protocol>
 
@@ -3298,15 +3300,6 @@
       <source><port portnum="dynamic"/></source>
       <dest><port portnum="465"/></dest>
     </tcp>
-  </network>
-  <security threat="low" falsepos="low"/>
-</protocol>
-<protocol name="AyuAyu">
-  <longname>AyuAyu Genai, MO~!</longname>
-  <description>Exists for no other reason that to prove i can have dynamic network classes!
-  </description>
-  <classification class="Uguu~!"/>
-  <network>
   </network>
   <security threat="low" falsepos="low"/>
 </protocol>
