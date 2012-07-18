@@ -374,13 +374,23 @@
   <network>
     <tcp>
       <source><port portnum="dynamic"/></source>
-      <dest>
-        <port portnum="80"/>
-        <port portnum="8080" stance="alternate"/>
-        <port portnum="8008" stance="alternate"/>
-        <port portnum="8000" stance="alternate"/>
-        <port portnum="8888" stance="alternate"/>
-      </dest>
+      <dest><port portnum="80"/></dest>
+    </tcp>
+    <tcp>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="8080" stance="alternate"/></dest>
+    </tcp>
+    <tcp>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="8000" stance="alternate"/></dest>
+    </tcp>
+    <tcp>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="8008" stance="alternate"/></dest>
+    </tcp>
+    <tcp>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="8888" stance="alternate"/></dest>
     </tcp>
   </network>
   <security threat="medium" falsepos="low"/>
@@ -685,10 +695,19 @@
       <description lang="fr">Service de gestion des noms NETBIOS</description>
       <description lang="it">Servizio Nomi NETBIOS </description>
       <description lang="es">Servicio de nombres NETBIOS</description>
-      <source><port portnum="dynamic"/><port portnum="137"/></source>
+      <source><port portnum="dynamic"/></source>
       <dest><port portnum="137"/></dest>
     </udp>
-
+    <udp source="client" dest="server" direction="both">
+      <description>NETBIOS Name Service</description>
+      <description lang="de">NETBIOS Name Service</description>
+      <description lang="nl">NETBIOS Name Service</description>
+      <description lang="fr">Service de gestion des noms NETBIOS</description>
+      <description lang="it">Servizio Nomi NETBIOS </description>
+      <description lang="es">Servicio de nombres NETBIOS</description>
+      <source><port portnum="137"/></source>
+      <dest><port portnum="137"/></dest>
+    </udp>
     <!-- This kind of sucks. We need this entry to explicitly allow -->
     <!-- reply NS lookup UDP packets. Unfortunately, the entry above -->
     <!-- won't work because a client will send a query to the broadcast -->
@@ -707,7 +726,7 @@
       <description lang="es">El Servicio de nombres NETBIOS gestiona la declaración de nombres de ordenadores
       y la respuesta a peticiones de búsqueda de nombres.</description>
       <source><port portnum="137"/></source>
-      <dest><port portnum="dynamic"/><port portnum="137"/></dest>
+      <dest><port portnum="dynamic"/></dest>
     </udp>
 
     <udp source="client" dest="server" direction="both">
@@ -1210,8 +1229,11 @@
   <longname lang="es">Real Audio</longname>
   <classification class="Media"/>
   <network>
-    <tcp source="client" dest="server"><dest>
-      <port portnum="554"/><port portnum="7070"/></dest>
+    <tcp source="client" dest="server">
+      <dest><port portnum="554"/></dest>
+    </tcp>
+    <tcp source="client" dest="server">
+      <dest><port portnum="7070"/></dest>
     </tcp>
     <udp source="server" dest="client" direction="both">
       <dest><portrange start="6970" end="7170"/></dest>
@@ -2504,10 +2526,16 @@
       <description lang="it">Questo protocollo è usato per connettersi a degli hub e ad altri utenti.</description>
       <description lang="es">Usado para conectar a los hub y a otros usuarios.</description>
       <source><port portnum="dynamic"/></source>
-      <dest>
-        <portrange start="411" end="415"/>
-        <portrange start="1411" end="1415" stance="alternate"/>
-      </dest>
+      <dest><portrange start="411" end="415"/></dest>
+    </tcp>
+    <tcp source="client" dest="server">
+      <description>This is used for connecting to hubs and other users</description>
+      <description lang="nl">Dit wordt gebruikt voor de verbindingsopbouw
+      naar hubs en andere gebruikers</description>
+      <description lang="it">Questo protocollo è usato per connettersi a degli hub e ad altri utenti.</description>
+      <description lang="es">Usado para conectar a los hub y a otros usuarios.</description>
+      <source><port portnum="dynamic"/></source>
+      <dest><portrange start="1411" end="1415" stance="alternate"/></dest>
     </tcp>
     <udp source="client" dest="server">
       <description>This is used for connecting to hubs and other users</description>
@@ -2516,10 +2544,16 @@
      <description lang="it">Questo protocollo è usato per connettersi a degli hub e ad altri utenti.</description>
      <description lang="es">Usado para conectar a los hub y a otros usuarios.</description>
       <source><port portnum="dynamic"/></source>
-      <dest>
-        <portrange start="411" end="415"/>
-        <portrange start="1411" end="1415" stance="alternate"/>
-      </dest>
+      <dest><portrange start="411" end="415"/></dest>
+    </udp>
+    <udp source="client" dest="server">
+      <description>This is used for connecting to hubs and other users</description>
+      <description lang="nl">Dit wordt gebruikt voor de verbindingsopbouw naar hubs en andere 
+     gebruikers</description>
+     <description lang="it">Questo protocollo è usato per connettersi a degli hub e ad altri utenti.</description>
+     <description lang="es">Usado para conectar a los hub y a otros usuarios.</description>
+      <source><port portnum="dynamic"/></source>
+      <dest><portrange start="1411" end="1415" stance="alternate"/></dest>
     </udp>
     <tcp source="client" dest="server">
       <description>DC Active mode - usable by an unprivileged user</description>
@@ -2647,10 +2681,15 @@
       <description lang="it">Accesso alla rete</description>
       <description lang="es">Acceso a la red</description>
       <source><port portnum="dynamic"/></source>
-      <dest>
-        <port portnum="5050"/>
-        <port portnum="23" stance="alternate"/>
-      </dest>
+      <dest><port portnum="5050"/></dest>
+    </tcp>
+    <tcp source="client" dest="server">
+      <description>Login to network</description>
+      <description lang="nl">Inloggen in netwerk</description>
+      <description lang="it">Accesso alla rete</description>
+      <description lang="es">Acceso a la red</description>
+      <source><port portnum="dynamic"/></source>
+      <dest><port portnum="23" stance="alternate"/></dest>
     </tcp>
     <tcp source="client" dest="server">
       <description>Conference</description>
@@ -2960,17 +2999,19 @@
   <network>
     <tcp source="client" dest="server">
       <source><port portnum="dynamic"/></source>
-      <dest>
-        <portrange start="7937" end="9936"/>
-        <portrange start="10001" end="30000"/>
-      </dest>
+      <dest><portrange start="7937" end="9936"/></dest>
     </tcp>
     <udp source="client" dest="server" direction="both">
       <source><port portnum="dynamic"/></source>
-      <dest>
-        <portrange start="7937" end="9936"/>
-        <portrange start="10001" end="30000"/>
-      </dest>
+      <dest><portrange start="7937" end="9936"/></dest>
+    </udp>
+    <tcp source="client" dest="server">
+      <source><port portnum="dynamic"/></source>
+      <dest><portrange start="10001" end="30000"/></dest>
+    </tcp>
+    <udp source="client" dest="server" direction="both">
+      <source><port portnum="dynamic"/></source>
+      <dest><portrange start="10001" end="30000"/></dest>
     </udp>
   </network>
   <security threat="medium" falsepos="low"/>
