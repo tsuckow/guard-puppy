@@ -61,8 +61,8 @@ class GuardPuppyDialog_w : public QDialog, Ui::GuardPuppyDialog
             {
                 t->insertRow( t->rowCount() );
                 t->setItem( t->rowCount()-1, 0, new QTableWidgetItem( pe.getName().c_str() ) );
-                t->setItem( t->rowCount()-1, 1, new QTableWidgetItem( pe.getTypeUDP()==IPPROTO_TCP ? QObject::tr("TCP") : QObject::tr("UDP") ) );
-                t->setItem( t->rowCount()-1, 2, new QTableWidgetItem( pe.getRangeStringUDP().c_str() ) );
+                t->setItem( t->rowCount()-1, 1, new QTableWidgetItem( pe.getTypes()[0]==IPPROTO_TCP ? QObject::tr("TCP") : QObject::tr("UDP") ) );
+                t->setItem( t->rowCount()-1, 2, new QTableWidgetItem( pe.getRangeStrings()[0].c_str() ) );
             }
         }
     };
@@ -91,7 +91,7 @@ class GuardPuppyDialog_w : public QDialog, Ui::GuardPuppyDialog
         {}
         void operator()(ProtocolEntry & pe)
         {
-            pe.setTypeUDP(s);
+            pe.setType(s);
         }
     };
     class changeProtocolName_
@@ -131,14 +131,14 @@ class GuardPuppyDialog_w : public QDialog, Ui::GuardPuppyDialog
         {
             if(start)
             {
-                pe.setStartPortUDP(s);
+                pe.setStartPort(s);
             }
             else
             {
-                pe.setEndPortUDP(s);
+                pe.setEndPort(s);
             }
-            changeother = pe.getEndPortUDP() == pe.getStartPortUDP();
-            t->setText(pe.getRangeStringUDP().c_str());
+            changeother = pe.getEndPorts()[0] == pe.getStartPorts()[0];
+            t->setText(pe.getRangeStrings()[0].c_str());
         }
     };
 

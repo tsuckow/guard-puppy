@@ -668,9 +668,9 @@ private:
                 o<<"# [UserDefinedProtocol]\n";
                 o<<"# ID="<<("0"/*currentudp.getID()*/)<<"\n";
                 o<<"# NAME="<<(i.getName())<<"\n";
-                o<<"# TYPE="<<(i.getTypeUDP()==IPPROTO_TCP ? "TCP" : "UDP")<<"\n";
-                o<<"# PORT="<<i.getStartPortUDP()<<":"<<i.getEndPortUDP()<<"\n";
-                o<<"# BIDIRECTIONAL="<<(i.isBidirectional() ? 1 : 0)<<"\n";
+                o<<"# TYPE="<<(i.getTypes()[0]==IPPROTO_TCP ? "TCP" : "UDP")<<"\n";
+                o<<"# PORT="<<i.getStartPorts()[0]<<":"<<i.getEndPorts()[0]<<"\n";
+                o<<"# BIDIRECTIONAL="<<(i.getBidirectionals()[0] ? 1 : 0)<<"\n";
             }
         }
     };
@@ -1279,202 +1279,175 @@ private:
             ProtocolNetUse const & netuse, bool permit = true, bool log = false)
     {
         const char *icmpname;
-
-        // Source and dest ports specified. Each source port spec <-> dest port
-        // spec needs to be covered. Basically a cartesian product of the two
-        // lists. In reality, this should be rare, fortunately.
+        ProtocolNetUseDetail const & source = netuse.sourcedetaillist;
+        ProtocolNetUseDetail const & dest = netuse.destdetaillist;
         switch(netuse.type)
         {
             case IPPROTO_TCP:
-                BOOST_FOREACH( ProtocolNetUseDetail const & source, netuse.sourceDetails() )
+                stream<<"iptables -A "<<fromzone<<"_to_"<<tozone<<" -p tcp"
+                    " --sport "<<(source.getStart(fromzonePRI))<<":"<<(source.getEnd(fromzonePRI))<<
+                    " --dport "<<(dest.getStart(tozonePRI))<<":"<<(dest.getEnd(tozonePRI))<<
+                    " -m state --state NEW";
+                if(permit)
                 {
-                    BOOST_FOREACH( ProtocolNetUseDetail const & dest, netuse.destDetails() )
+                    // Permitted
+                    stream<<" -j ACCEPT\n";
+                }
+                else
+                {
+                    // Not permitted.
+                    if(log)
                     {
-                        stream<<"iptables -A "<<fromzone<<"_to_"<<tozone<<" -p tcp"
-                            " --sport "<<(source.getStart(fromzonePRI))<<":"<<(source.getEnd(fromzonePRI))<<
-                            " --dport "<<(dest.getStart(tozonePRI))<<":"<<(dest.getEnd(tozonePRI))<<
-                            " -m state --state NEW";
-                        if(permit)
-                        {
-                            // Permitted
-                            stream<<" -j ACCEPT\n";
-                        }
-                        else
-                        {
-                            // Not permitted.
-                            if(log)
-                            {
-                                stream<<" -j logreject\n";
-                            }
-                            else
-                            {
-                                stream<<" -j REJECT --reject-with tcp-reset\n";
-                            }
-                        }
+                        stream<<" -j logreject\n";
+                    }
+                    else
+                    {
+                        stream<<" -j REJECT --reject-with tcp-reset\n";
                     }
                 }
                 break;
 
             case IPPROTO_UDP:
-                BOOST_FOREACH( ProtocolNetUseDetail const & source, netuse.sourceDetails() )
+                stream<<"iptables -A "<<fromzone<<"_to_"<<tozone<<" -p udp"
+                    " --sport "<<(source.getStart(fromzonePRI))<<":"<<(source.getEnd(fromzonePRI))<<
+                    " --dport "<<(dest.getStart(tozonePRI))<<":"<<(dest.getEnd(tozonePRI));
+                if(permit)
                 {
-                    BOOST_FOREACH( ProtocolNetUseDetail const & dest, netuse.destDetails() )
+                    // Permitted.
+                    stream<<" -j ACCEPT\n";
+                }
+                else
+                {
+                    // Not permitted.
+                    if(log)
                     {
-                        stream<<"iptables -A "<<fromzone<<"_to_"<<tozone<<" -p udp"
-                            " --sport "<<(source.getStart(fromzonePRI))<<":"<<(source.getEnd(fromzonePRI))<<
-                            " --dport "<<(dest.getStart(tozonePRI))<<":"<<(dest.getEnd(tozonePRI));
-                        if(permit)
-                        {
-                            // Permitted.
-                            stream<<" -j ACCEPT\n";
-                        }
-                        else
-                        {
-                            // Not permitted.
-                            if(log)
-                            {
-                                stream<<" -j logreject\n";
-                            }
-                            else
-                            {
-                                stream<<" -j REJECT --reject-with icmp-port-unreachable\n";
-                            }
-                        }
+                        stream<<" -j logreject\n";
+                    }
+                    else
+                    {
+                        stream<<" -j REJECT --reject-with icmp-port-unreachable\n";
                     }
                 }
                 break;
 
             case IPPROTO_ICMP:
-                BOOST_FOREACH( ProtocolNetUseDetail const & source, netuse.sourceDetails() )
+                // Map the type/code into a name that iptables can understand.
+                // Actuall this isn't strictly neccessary, but it does make the
+                // generated much easier for people to read and audit.
+                switch(source.getType())
                 {
-                    // Map the type/code into a name that iptables can understand.
-                    // Actuall this isn't strictly neccessary, but it does make the
-                    // generated much easier for people to read and audit.
-                    switch(source.getType()) {
-                        case 0:
-                            icmpname = "echo-reply";
-                            break;
-                        case 3:
-                            icmpname = "destination-unreachable";
-                            switch(source.getCode()) {
-                                case 0: icmpname = "network-unreachable"; break;
-                                case 1: icmpname = "host-unreachable"; break;
-                                case 2: icmpname = "protocol-unreachable"; break;
-                                case 3: icmpname = "port-unreachable"; break;
-                                case 4: icmpname = "fragmentation-needed"; break;
-                                case 5: icmpname = "source-route-failed"; break;
-                                case 6: icmpname = "network-unknown"; break;
-                                case 7: icmpname = "host-unknown"; break;
-                                case 9: icmpname = "network-prohibited"; break;
-                                case 10: icmpname = "host-prohibited"; break;
-                                case 11: icmpname = "TOS-network-unreachable"; break;
-                                case 12: icmpname = "TOS-host-unreachable"; break;
-                                case 13: icmpname = "communication-prohibited"; break;
-                                case 14: icmpname = "host-precedence-violation"; break;
-                                case 15: icmpname = "precedence-cutoff"; break;
-                                default: break;
-                            }
-                            break;
-                        case 4:
-                            icmpname = "source-quench";
-                            break;
-                        case 5:
-                            icmpname = "redirect";
-                            switch(source.getCode()) {
-                                case 0: icmpname = "network-redirect"; break;
-                                case 1: icmpname = "host-redirect"; break;
-                                case 2: icmpname = "TOS-network-redirect"; break;
-                                case 3: icmpname = "TOS-host-redirect"; break;
-                                default: break;
-                            }
-                            break;
-                        case 8:
-                            icmpname = "echo-request";
-                            break;
-                        case 9:
-                            icmpname = "router-advertisement";
-                            break;
-                        case 10:
-                            icmpname = "router-solicitation";
-                            break;
-                        case 11:
-                            icmpname = "time-exceeded";
-                            switch(source.getCode()) {
-                                case 0: icmpname = "ttl-zero-during-transit"; break;
-                                case 1: icmpname = "ttl-zero-during-reassembly"; break;
-                                default: break;
-                            }
-                            break;
-                        case 12:
-                            icmpname = "parameter-problem";
-                            switch(source.getCode()) {
-                                case 0: icmpname = "ip-header-bad"; break;
-                                case 1: icmpname = "required-option-missing"; break;
-                                default: break;
-                            }
-                            break;
-                        case 13:
-                            icmpname = "timestamp-request";
-                            break;
-                        case 14:
-                            icmpname = "timestamp-reply";
-                            break;
-                        case 17:
-                            icmpname = "address-mask-request";
-                            break;
-                        case 18:
-                            icmpname = "address-mask-reply";
-                            break;
-                        default:
-                            icmpname = 0;
-                            break;
-                    }
-
-                    stream<<"iptables -A "<<fromzone<<"_to_"<<tozone<<" -p icmp --icmp-type ";
-                    if(icmpname!=0)
-                    {
-                        stream<<(icmpname);
-                    }
-                    else
-                    {
-                        stream<<(source.getType());
-                        if(source.getCode()!=-1)
+                    case 0:
+                        icmpname = "echo-reply";
+                        break;
+                    case 3:
+                        icmpname = "destination-unreachable";
+                        switch(source.getCode())
                         {
-                            stream<<"/"<<(source.getCode());
+                            case 0: icmpname = "network-unreachable"; break;
+                            case 1: icmpname = "host-unreachable"; break;
+                            case 2: icmpname = "protocol-unreachable"; break;
+                            case 3: icmpname = "port-unreachable"; break;
+                            case 4: icmpname = "fragmentation-needed"; break;
+                            case 5: icmpname = "source-route-failed"; break;
+                            case 6: icmpname = "network-unknown"; break;
+                            case 7: icmpname = "host-unknown"; break;
+                            case 9: icmpname = "network-prohibited"; break;
+                            case 10: icmpname = "host-prohibited"; break;
+                            case 11: icmpname = "TOS-network-unreachable"; break;
+                            case 12: icmpname = "TOS-host-unreachable"; break;
+                            case 13: icmpname = "communication-prohibited"; break;
+                            case 14: icmpname = "host-precedence-violation"; break;
+                            case 15: icmpname = "precedence-cutoff"; break;
+                            default: break;
                         }
-                    }
-
-                    if(permit)
-                    {
-                        // Permitted.
-                        stream<<" -j ACCEPT\n";
-                    }
-                    else
-                    {
-                        // Not permitted.
-                        if(log)
+                        break;
+                    case 4:
+                        icmpname = "source-quench";
+                        break;
+                    case 5:
+                        icmpname = "redirect";
+                        switch(source.getCode())
                         {
-                            stream<<" -j logreject\n";
+                            case 0: icmpname = "network-redirect"; break;
+                            case 1: icmpname = "host-redirect"; break;
+                            case 2: icmpname = "TOS-network-redirect"; break;
+                            case 3: icmpname = "TOS-host-redirect"; break;
+                            default: break;
                         }
-                        else
+                        break;
+                    case 8:
+                        icmpname = "echo-request";
+                        break;
+                    case 9:
+                        icmpname = "router-advertisement";
+                        break;
+                    case 10:
+                        icmpname = "router-solicitation";
+                        break;
+                    case 11:
+                        icmpname = "time-exceeded";
+                        switch(source.getCode())
                         {
-                            stream<<" -j DROP\n";   // We can't REJECT icmp really. But
-                            // we can't just ACCEPT it either.
+                            case 0: icmpname = "ttl-zero-during-transit"; break;
+                            case 1: icmpname = "ttl-zero-during-reassembly"; break;
+                            default: break;
                         }
-                    }
+                        break;
+                    case 12:
+                        icmpname = "parameter-problem";
+                        switch(source.getCode())
+                        {
+                            case 0: icmpname = "ip-header-bad"; break;
+                            case 1: icmpname = "required-option-missing"; break;
+                            default: break;
+                        }
+                        break;
+                    case 13:
+                        icmpname = "timestamp-request";
+                        break;
+                    case 14:
+                        icmpname = "timestamp-reply";
+                        break;
+                    case 17:
+                        icmpname = "address-mask-request";
+                        break;
+                    case 18:
+                        icmpname = "address-mask-reply";
+                        break;
+                    default:
+                        icmpname = 0;
+                        break;
                 }
+
+                stream<<"iptables -A "<<fromzone<<"_to_"<<tozone<<" -p icmp --icmp-type ";
+                if(icmpname!=0)
+                    stream<<(icmpname);
+                else
+                {
+                    stream<<(source.getType());
+                    if(source.getCode()!=-1)
+                        stream<<"/"<<(source.getCode());
+                }
+
+                if(permit)                      // Permitted.
+                    stream<<" -j ACCEPT\n";
+                else                            // Not permitted.
+                    if(log)
+                        stream<<" -j logreject\n";
+                    else
+                        stream<<" -j DROP\n";   // We can't REJECT icmp really. But
+                                                // we can't just ACCEPT it either.
                 break;
 
-            default:    // Every other protocol.
+            default:                            // Every other protocol.
                 if(permit)
-                {
                     stream<<"iptables -A "<<fromzone<<"_to_"<<tozone<<
                         " -p "<<netuse.getType()<<
                         " -j ACCEPT\n";
                     // Unlike the ipchains code, we don't need to check for
-                    // bidirectionness. We can just relay on connection tracking
+                    // bidirectionness. We can just rely on connection tracking
                     // to handle that.
-                }
+                    //TODO shouldn't we handle dropped, or logged?
                 break;
         }
     }
@@ -2049,38 +2022,38 @@ private:
 
 public:
 //TODO make these safe to call with bad strings.
-    std::string getNameUDP(std::string s) const
+    std::string getName(std::string s) const
     {
-        return pdb.lookup(s).name;
+        return pdb.lookup(s).getName();
     }
-    uchar getTypeUDP(std::string s) const
+    std::vector<uchar> getTypes(std::string s) const
     {
-        return pdb.lookup(s).networkuse[0].type;
+        return pdb.lookup(s).getTypes();
     }
 
-    uint getStartPortUDP(std::string s) const
+    std::vector<uint> getStartPorts(std::string s) const
     {
-        return pdb.lookup(s).networkuse[0].destdetaillist[0].getStart();
+        return pdb.lookup(s).getStartPorts();
     }
-    void setStartPortUDP(std::string s, uint i)
+    void setStartPort(std::string s, uint i)
     {
-        pdb.lookup(s).networkuse[0].destdetaillist[0].setStartPort(i);
+        pdb.lookup(s).setStartPort(i);
     }
-    uint getEndPortUDP(std::string s) const
+    std::vector<uint> getEndPorts(std::string s) const
     {
-        return pdb.lookup(s).networkuse[0].destdetaillist[0].getEnd();
+        return pdb.lookup(s).getEndPorts();
     }
-    void setEndPortUDP(std::string s, uint i)
+    void setEndPort(std::string s, uint i)
     {
-        pdb.lookup(s).networkuse[0].destdetaillist[0].setEndPort(i);
+        pdb.lookup(s).setEndPort(i);
     }
-    bool isBidirectional(std::string s) const
+    std::vector<bool> getBidirectionals(std::string s) const
     {
-        return pdb.lookup(s).networkuse[0].isBidirectional();
+        return pdb.lookup(s).getBidirectionals();
     }
     void setBidirectional(std::string s,bool on)
     {
-        pdb.lookup(s).networkuse[0].bidirectional = on;
+        pdb.lookup(s).setBidirectional(on);
     }
 
     template <class T>

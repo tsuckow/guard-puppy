@@ -518,11 +518,11 @@ void GuardPuppyDialog_w::setUserDefinedProtocolGUI(std::string const & s)
         //save s for later use here please!
 
         userDefinedProtocolNameLineEdit->setText(s.c_str());
-        userDefinedProtocolTypeComboBox->setCurrentIndex(firewall.getTypeUDP(s) == IPPROTO_TCP ? 0 : 1);
-        userDefinedProtocolPortStartSpinBox->setValue(firewall.getStartPortUDP(s));
-        userDefinedProtocolPortEndSpinBox->setValue(firewall.getEndPortUDP(s));
-        userDefinedProtocolBidirectionalCheckBox->setEnabled(firewall.getTypeUDP(s)==IPPROTO_UDP);
-        userDefinedProtocolBidirectionalCheckBox->setChecked(firewall.isBidirectional(s));
+        userDefinedProtocolTypeComboBox->setCurrentIndex(firewall.getTypes(s)[0] == IPPROTO_TCP ? 0 : 1);
+        userDefinedProtocolPortStartSpinBox->setValue(firewall.getStartPorts(s)[0]);
+        userDefinedProtocolPortEndSpinBox->setValue(firewall.getEndPorts(s)[0]);
+        userDefinedProtocolBidirectionalCheckBox->setEnabled(firewall.getTypes(s)[0]==IPPROTO_UDP);
+        userDefinedProtocolBidirectionalCheckBox->setChecked(firewall.getBidirectionals(s)[0]);
 }
 
 void GuardPuppyDialog_w::createUdpTableWidget()

@@ -221,9 +221,9 @@ public:
 
     friend class ProtocolEntry;//ya it sucks. get over it
     friend class GuardPuppyFireWall;
-private:
-    std::vector<ProtocolNetUseDetail> sourcedetaillist;     // A list of source port ranges.
-    std::vector<ProtocolNetUseDetail> destdetaillist;       // A list of dest port ranges.
+
+    ProtocolNetUseDetail sourcedetaillist;     // A list of source port ranges.
+    ProtocolNetUseDetail destdetaillist;       // A list of dest port ranges.
 
 public:
     std::string lastPragmaName;
@@ -236,17 +236,8 @@ public:
     }
 
 
-    std::vector<ProtocolNetUseDetail> const & sourceDetails() const
-    {
-        return sourcedetaillist;
-    }
-    std::vector<ProtocolNetUseDetail> const & destDetails() const
-    {
-        return destdetaillist;
-    }
-
-    size_t numberSourcePorts() const { return sourcedetaillist.size(); }
-    size_t numberDestPorts() const { return destdetaillist.size(); }
+    size_t numberSourcePorts() const { return 1; }
+    size_t numberDestPorts() const { return 1; }
 
     void setType( uchar t ) { type = t; }
     void setSource( NetworkEntity s ) { source = s; }
@@ -255,19 +246,18 @@ public:
 
     void addSource( ProtocolNetUseDetail const & source )
     {
-        sourcedetaillist.push_back( source );
+        sourcedetaillist = source;
     }
 
     void addDest( ProtocolNetUseDetail const & dest )
     {
-        destdetaillist.push_back( dest );
+        destdetaillist = dest;
     }
 
 
     ProtocolNetUse(uchar t = IPPROTO_TCP, bool bi = true, NetworkEntity sr = ENTITY_CLIENT, NetworkEntity des = ENTITY_SERVER)
+    : sourcedetaillist(PORTRANGE_ANY), destdetaillist(PORTRANGE_ANY)
     {
-        //    sourcedetaillist.setAutoDelete(true);
-        //    destdetaillist.setAutoDelete(true);
         type = t;
         source = sr;
         dest = des;
@@ -280,12 +270,10 @@ public:
     }
 
 
-    ///////////////////////////////////////////////////////////////////////////
     ~ProtocolNetUse() {
 
     }
 
-    ///////////////////////////////////////////////////////////////////////////
     void print() const
     {
 
@@ -308,65 +296,29 @@ public:
                 break;
         }
         fprintf(stderr," Source: ");
-        BOOST_FOREACH( ProtocolNetUseDetail const & x, sourcedetaillist )
-        {
-            x.print();
-        }
+        sourcedetaillist.print();
         fprintf(stderr," Dest: ");
-        BOOST_FOREACH( ProtocolNetUseDetail const & x, destdetaillist )
-        {
-            x.print();
-        }
+        destdetaillist.print();
         fprintf(stderr,"]");
     }
-    ///////////////////////////////////////////////////////////////////////////
-    bool sourcePortEquals(uint port) {
-
-        //    p=sourcedetaillist.first();
-        if(sourcedetaillist.empty()) {
-            return true;    //An empty list matches anything.
-        }
-        BOOST_FOREACH( ProtocolNetUseDetail const & p, sourcedetaillist ) {
-            if ( p.inRange( port ) ) //port>=p.start && port<=p.end)
-            {    // It must be in range.
-                return true;
-            }
-        }
-        return false;
+    bool sourcePortEquals(uint port)
+    {
+        return sourcedetaillist.inRange( port );
     }
-    ///////////////////////////////////////////////////////////////////////////
-    bool destPortEquals(uint port) {
-
-        //    p=destdetaillist.first();
-        if ( destdetaillist.empty() ) {
-            return true;    // An empty list matches anything.
-        }
-        BOOST_FOREACH( ProtocolNetUseDetail const & p, destdetaillist ) {
-            if(p.inRange( port ) ) { //>=p.start && port<=p.end) {
-                return true;
-            }
-        }
-        return false;
+    bool destPortEquals(uint port)
+    {
+        return destdetaillist.inRange( port );
     }
-    ///////////////////////////////////////////////////////////////////////////
+
     bool icmpTypeCodeEquals(uint type, int code)
     {
-        BOOST_FOREACH( ProtocolNetUseDetail const & p, sourcedetaillist )
+        if ( type==sourcedetaillist.getType() )
         {
-            if ( type==p.getType() )
-            {
-                if (p.getCode()==-1)
-                {    // -1 is the wild card.
+            if (sourcedetaillist.getCode()==-1)
+                return true;
+            else
+                if(sourcedetaillist.getCode()==code)
                     return true;
-                }
-                else
-                {
-                    if(p.getCode()==code)
-                    {
-                        return true;
-                    }
-                }
-            }
         }
         return false;
     }
@@ -417,7 +369,6 @@ public:
         networkuse.push_back( net );
     }
 
-    void setName( std::string const & n ) { name = n; }
 
     ProtocolEntry( std::string const & _name = "" )
      : name( _name )
@@ -464,29 +415,59 @@ public:
         fprintf(stderr,"]");
     }
 
-    std::string getName() const
-    {return name;}
-    uchar getTypeUDP() const
-    {return networkuse[0].type;}
-    void setTypeUDP(uchar t)
-    {networkuse[0].type = t;}
-    std::string getRangeStringUDP() const
+    std::string getName() const        { return name; }
+    void setName( std::string const & n ) { name = n; }
+
+    std::vector<uchar> getTypes() const
     {
-        return networkuse[0].destdetaillist[0].getRangeString();
+        std::vector<uchar> temp;
+        temp.push_back( networkuse[0].type );
+        return temp;
+    }
+    void setType(uchar t)
+    {
+        networkuse[0].type = t;
     }
 
-    uint getStartPortUDP() const
-        {return networkuse[0].destdetaillist[0].getStart();}
-    void setStartPortUDP(uint i)
-        {networkuse[0].destdetaillist[0].setStartPort(i);}
-    uint getEndPortUDP() const
-        {return networkuse[0].destdetaillist[0].getEnd();}
-    void setEndPortUDP(uint i)
-        {networkuse[0].destdetaillist[0].setEndPort(i);}
-    bool isBidirectional() const
-        {return networkuse[0].isBidirectional();}
+    std::vector<std::string> getRangeStrings() const
+    {
+        std::vector<std::string> temp;
+        temp.push_back( networkuse[0].destdetaillist.getRangeString() );
+        return temp;
+    }
+
+    std::vector<uint> getStartPorts() const
+    {
+        std::vector<uint> temp;
+        temp.push_back( networkuse[0].destdetaillist.getStart() );
+        return temp;
+    }
+    void setStartPort(uint i)
+    {
+        networkuse[0].destdetaillist.setStartPort(i);
+    }
+
+    std::vector<uint> getEndPorts() const
+    {
+        std::vector<uint> temp;
+        temp.push_back( networkuse[0].destdetaillist.getEnd() );
+        return temp;
+    }
+    void setEndPort(uint i)
+    {
+        networkuse[0].destdetaillist.setEndPort(i);
+    }
+
+    std::vector<bool> getBidirectionals() const
+    {
+        std::vector<bool> temp;
+        temp.push_back( networkuse[0].isBidirectional() );
+        return temp;
+    }
     void setBidirectional(bool on)
-        {networkuse[0].bidirectional = on;}
+    {
+        networkuse[0].bidirectional = on;
+    }
 
 };
 
