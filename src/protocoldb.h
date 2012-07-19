@@ -236,9 +236,6 @@ public:
     }
 
 
-    size_t numberSourcePorts() const { return 1; }
-    size_t numberDestPorts() const { return 1; }
-
     void setType( uchar t ) { type = t; }
     void setSource( NetworkEntity s ) { source = s; }
     void setDest( NetworkEntity d ) { dest = d; }
@@ -421,7 +418,8 @@ public:
     std::vector<uchar> getTypes() const
     {
         std::vector<uchar> temp;
-        temp.push_back( networkuse[0].type );
+        BOOST_FOREACH( ProtocolNetUse const & nu, networkuse)
+            temp.push_back( nu.type );
         return temp;
     }
     void setType(uchar t)
@@ -432,14 +430,16 @@ public:
     std::vector<std::string> getRangeStrings() const
     {
         std::vector<std::string> temp;
-        temp.push_back( networkuse[0].destdetaillist.getRangeString() );
+        BOOST_FOREACH( ProtocolNetUse const & nu, networkuse)
+            temp.push_back( nu.destdetaillist.getRangeString() );
         return temp;
     }
 
     std::vector<uint> getStartPorts() const
     {
         std::vector<uint> temp;
-        temp.push_back( networkuse[0].destdetaillist.getStart() );
+        BOOST_FOREACH( ProtocolNetUse const & nu, networkuse)
+            temp.push_back( nu.destdetaillist.getStart() );
         return temp;
     }
     void setStartPort(uint i)
@@ -450,7 +450,8 @@ public:
     std::vector<uint> getEndPorts() const
     {
         std::vector<uint> temp;
-        temp.push_back( networkuse[0].destdetaillist.getEnd() );
+        BOOST_FOREACH( ProtocolNetUse const & nu, networkuse)
+            temp.push_back( nu.destdetaillist.getEnd() );
         return temp;
     }
     void setEndPort(uint i)
@@ -461,7 +462,8 @@ public:
     std::vector<bool> getBidirectionals() const
     {
         std::vector<bool> temp;
-        temp.push_back( networkuse[0].isBidirectional() );
+        BOOST_FOREACH( ProtocolNetUse const & nu, networkuse)
+            temp.push_back( nu.isBidirectional() );
         return temp;
     }
     void setBidirectional(bool on)
@@ -478,15 +480,11 @@ public:
 class ProtocolDB : public QXmlDefaultHandler
 {
 public:
-    //f is any function pointer, or functor that takes in a protocol entry.
-    //it has full access to all members and info about that Protocol.
     template <typename func>
     void ApplyToDB(func & f)
     {
-        BOOST_FOREACH(ProtocolEntry i, protocolDataBase)
-        {
+        BOOST_FOREACH(ProtocolEntry & i, protocolDataBase)
             f(i);
-        }
     }
 
     template<class T>
@@ -506,9 +504,7 @@ public:
             }
         }
         if (n != i)
-        {
             std::cerr << "Index too great" << std::endl;
-        }
     }
 
     std::vector< ProtocolEntry > const & getProtocolDataBase() const
@@ -520,7 +516,7 @@ public:
     {
         protocolDataBase.push_back( pe );
     }
-    
+
     void UserDefinedProtocol(std::string name, uchar udptype, uint startp, uint endp, bool bi)
     {
         ProtocolEntry entry( name );
@@ -590,7 +586,8 @@ private:
 
 
     // Go state machine go! XML parser states.
-    enum ParserState {
+    enum ParserState
+    {
         PROTOCOL_STATE_OUTSIDE,
         PROTOCOL_STATE_PROTOCOLDB,
         PROTOCOL_STATE_ENTRY,
@@ -697,11 +694,9 @@ public:
         return lookup( protocolName ).networkuse;
     }
 
-    ///////////////////////////////////////////////////////////////////////////
     bool loadDB(const std::string &filename, std::vector< std::string > const & languages)
     {
         bool rc;
-        //    currententry = 0;
         parsestate = PROTOCOL_STATE_OUTSIDE;
         errorstate = PROTOCOL_ERROR_NOERROR;
         unknowndepth = 0;
@@ -709,16 +704,15 @@ public:
         // Copy the list of permitted languages one by one. Convert things
         // like 'en_GB' to just 'en'.
         BOOST_FOREACH( std::string const & l, languages )
-        {
             languagelist.push_back( l.substr(0,2) );
-        }
 
         /*!
         **  \todo Need to eliminate the dependence on QFile
         **       for the XML parsing.
         */
         QFile xmlfile( filename.c_str() );
-        if(!xmlfile.open(QIODevice::ReadOnly)) {
+        if(!xmlfile.open(QIODevice::ReadOnly))
+        {
             errorstate = PROTOCOL_ERROR_OPEN_ERROR;
             std::cout << "unable to open: " << filename << std::endl;
             return false;
@@ -798,20 +792,6 @@ public:
                             loadlongname = true;
                             currententry.longnamelanguage = tmp;
                         }
-//                        else
-//                        {
-                            // Which language is more important?
-                            // (Which appears first in the list of acceptable
-                            // languages.)
-                            //                        i = languagelist.indexOf(currententry.longnamelanguage);
-                            //                        i = i==-1 ? 10000 : i;
-                            //                        j = languagelist.indexOf(tmp);
-                            //                        j = j==-1 ? 10000 : j;
-                            //                        if(j<i) {
-                            //                            loadlongname = true;
-                            //                            currententry.longnamelanguage = tmp;
-                            //                        }
-//                        }
 
                         parsestate = PROTOCOL_STATE_LONGNAME;
                         return true;
@@ -904,9 +884,6 @@ public:
                             currententry.lastPragmaName = tmp;
                             currententry.pragma[tmp] = "";
                         }
-//                        else {
-//                            currententry.addPragmaname(std::string());  // Null string.
-//                        }
                         parsestate = PROTOCOL_STATE_ENTRY_PRAGMA;
                         return true;
                     }
@@ -928,7 +905,7 @@ public:
                                 currentnetuse.setSource( ENTITY_SERVER );
                             else
                             {
-                                std::cerr<<"   errorstate = PROTOCOL_ERROR_TCP_SOURCE_UNKNOWN " << std::endl;
+                                std::cerr << "   errorstate = PROTOCOL_ERROR_TCP_SOURCE_UNKNOWN " << std::endl;
                                 errorstate = PROTOCOL_ERROR_TCP_SOURCE_UNKNOWN;
                                 return false;
                             }
@@ -944,7 +921,7 @@ public:
                                 currentnetuse.setDest( ENTITY_SERVER );
                             else
                             {
-                                std::cerr<<"   errorstate = PROTOCOL_ERROR_TCP_DEST_UNKNOWN " << std::endl;
+                                std::cerr << "   errorstate = PROTOCOL_ERROR_TCP_DEST_UNKNOWN " << std::endl;
                                 errorstate = PROTOCOL_ERROR_TCP_DEST_UNKNOWN;
                                 return false;
                             }
@@ -967,7 +944,7 @@ public:
                                 currentnetuse.setSource( ENTITY_SERVER );
                             else
                             {
-                                std::cerr<<"   errorstate = PROTOCOL_ERROR_UDP_SOURCE_UNKNOWN"<<std::endl;
+                                std::cerr << "   errorstate = PROTOCOL_ERROR_UDP_SOURCE_UNKNOWN" << std::endl;
                                 errorstate = PROTOCOL_ERROR_UDP_SOURCE_UNKNOWN;
                                 return false;
                             }
@@ -983,7 +960,7 @@ public:
                                 currentnetuse.setDest( ENTITY_SERVER );
                             else
                             {
-                                std::cerr<<"   errorstate = PROTOCOL_ERROR_UDP_DEST_UNKNOWN"<<std::endl;
+                                std::cerr << "   errorstate = PROTOCOL_ERROR_UDP_DEST_UNKNOWN" << std::endl;
                                 errorstate = PROTOCOL_ERROR_UDP_DEST_UNKNOWN;
                                 return false;
                             }
@@ -1027,7 +1004,7 @@ public:
                                 currentnetuse.setDest( ENTITY_SERVER );
                             else
                             {
-                                std::cerr<<"   errorstate = PROTOCOL_ERROR_ICMP_SOURCE_UNKNOWN"<<std::endl;
+                                std::cerr << "   errorstate = PROTOCOL_ERROR_ICMP_SOURCE_UNKNOWN" << std::endl;
                                 errorstate = PROTOCOL_ERROR_ICMP_DEST_UNKNOWN;
                                 return false;
                             }
@@ -1101,9 +1078,9 @@ public:
 
                         // Check for direction attribute
                         i = atts.index(protocolnamespace.c_str(),directionattr.c_str());
-                        if(i!=-1) {
+                        if(i!=-1)
                             currentnetuse.setBidirectional( true );
-                        }
+
                         parsestate = PROTOCOL_STATE_IP;
                         return true;
                     }
@@ -1137,9 +1114,6 @@ public:
                             currentnetuse.lastPragmaName = tmp;
                             currentnetuse.pragma[tmp] = "";
                         }
-//                        else {
-//                            currentnetuse.addPragmaname(std::string());  // Null string.
-//                        }
                         parsestate = PROTOCOL_STATE_TCP_PRAGMA;
                         return true;
                     }
@@ -1172,9 +1146,6 @@ public:
                             currentnetuse.lastPragmaName = tmp;
                             currentnetuse.pragma[tmp] = "";
                         }
-//                        else {
-//                            currentnetuse.addPragmaname(std::string());  // Null string.
-//                        }
                         parsestate = PROTOCOL_STATE_UDP_PRAGMA;
                         return true;
                     }
@@ -1194,10 +1165,6 @@ public:
                         }
                         tmp = atts.value(i).toStdString();
                         currentnetusedetail.setType( boost::lexical_cast<uint>(tmp) ); //tmp.toUInt(&ok);
-//                        if(ok==false) {
-//                            errorstate = PROTOCOL_ERROR_TYPE_VALUE_ATTR_NOT_UINT;
-//                            return false;
-//                        }
 
                         // Grab the ICMP code.
                         i = atts.index(protocolnamespace.c_str(),codeattr.c_str());
@@ -1205,10 +1172,6 @@ public:
                         {
                             tmp = atts.value(i).toStdString();
                             currentnetusedetail.setCode( boost::lexical_cast<uint>(tmp)); //tmp.toUInt(&ok);
-//                            if(ok==false) {
-//                                errorstate = PROTOCOL_ERROR_TYPE_CODE_ATTR_NOT_UINT;
-//                                return false;
-//                            }
                         }
 
                         parsestate = PROTOCOL_STATE_ICMP_TYPE;
@@ -1230,9 +1193,6 @@ public:
                             currentnetuse.lastPragmaName = tmp;
                             currentnetuse.pragma[tmp] = "";
                         }
-//                        else {
-//                            currentnetuse.addPragmaname(std::string());  // Null string.
-//                        }
                         parsestate = PROTOCOL_STATE_ICMP_PRAGMA;
                         return true;
                     }
@@ -1255,9 +1215,6 @@ public:
                             currentnetuse.lastPragmaName = tmp;
                             currentnetuse.pragma[tmp] = "";
                         }
-//                        else {
-//                            currentnetuse.addPragmaname(std::string());  // Null string.
-//                        }
                         parsestate = PROTOCOL_STATE_IP_PRAGMA;
                         return true;
                     }
@@ -1303,14 +1260,7 @@ public:
                             currentnetusedetail.setEndPort( 65535 );
                         }
                         else
-                        {
                             currentnetusedetail.setStartPort( boost::lexical_cast<uint>(tmp) ); //tmp.toUInt(&ok);
-//                            if(ok==false) {
-//                                errorstate = PROTOCOL_ERROR_PORT_PORTNUM_ATTR_NOT_UINT;
-//                                return false;
-//                            }
-                        }
-                        // Should check for the alternative flag around here somewhere.
 
                         switch(parsestate)
                         {
@@ -1327,45 +1277,35 @@ public:
                                 parsestate = PROTOCOL_STATE_UDP_DEST_PORT;
                                 break;
                             default:
-                                //you're a wizard
                                 break;
                         }
                         return true;
                     }
-                    if(localName=="portrange") {
+                    if(localName=="portrange")
+                    {
                         currentnetusedetail = ProtocolNetUseDetail();
                         // Grab the start port number
                         i = atts.index(protocolnamespace.c_str(),portstartattr.c_str());
-                        if(i==-1) {
+                        if(i==-1)
+                        {
                             errorstate = PROTOCOL_ERROR_PORTRANGE_START_ATTR_NOT_FOUND;
                             return false;
                         }
                         tmp = atts.value(i).toStdString();
-                        currentnetusedetail.setStartPort( boost::lexical_cast<uint>(tmp) ); //tmp.toUInt(&ok);
-//                        if(ok==false) {
-//                            errorstate = PROTOCOL_ERROR_PORTRANGE_START_ATTR_NOT_UINT;
-//                            return false;
-//                        }
+                        currentnetusedetail.setStartPort( boost::lexical_cast<uint>(tmp) );
 
                         // Grab the end port number
                         i = atts.index(protocolnamespace.c_str(),portendattr.c_str());
-                        if(i==-1) {
+                        if(i==-1)
+                        {
                             errorstate = PROTOCOL_ERROR_PORTRANGE_END_ATTR_NOT_FOUND;
                             return false;
                         }
                         tmp = atts.value(i).toStdString();
-                        currentnetusedetail.setEndPort( boost::lexical_cast<uint>(tmp) ); //tmp.toUInt(&ok);
-//                        if(ok==false) {
-//                            errorstate = PROTOCOL_ERROR_PORTRANGE_END_ATTR_NOT_UINT;
-//                            return false;
-//                        }
-//                        if(currentnetusedetail.getEnd() < currentnetusedetail.getStart())
-//                        {
-//                            errorstate = PROTOCOL_ERROR_PORTRANGE_END_LESS_START;
-//                            return false;
-//                        }
+                        currentnetusedetail.setEndPort( boost::lexical_cast<uint>(tmp) );
 
-                        switch(parsestate) {
+                        switch(parsestate)
+                        {
                             case PROTOCOL_STATE_TCP_SOURCE:
                                 parsestate = PROTOCOL_STATE_TCP_SOURCE_PORTRANGE;
                                 break;
@@ -1375,7 +1315,6 @@ public:
                             case PROTOCOL_STATE_TCP_DEST:
                                 parsestate = PROTOCOL_STATE_TCP_DEST_PORTRANGE;
                                 break;
-
                             case PROTOCOL_STATE_UDP_DEST:
                                 parsestate = PROTOCOL_STATE_UDP_DEST_PORTRANGE;
                                 break;
@@ -1401,27 +1340,23 @@ public:
 
         loaddescription = false;
         i = atts.index(protocolnamespace.c_str(),langattr.c_str());
-        if(i!=-1) {
+        if(i!=-1)
             tmp = atts.value(i).toStdString();
-        } else {
+        else
             tmp = "en";
-        }
-        if(currentnetuse.descriptionlanguage.empty()) {
+        if(currentnetuse.descriptionlanguage.empty())
+        {
             loaddescription = true;
             currentnetuse.descriptionlanguage = tmp;
         }
-        else
-        {
-
-        }
     }
 
-    ///////////////////////////////////////////////////////////////////////////
     bool endElement(const QString &/*namespaceURI*/, const QString &/*localName*/, const QString &/*qName*/)
     {
         if(unknowndepth==0)
         {
-            switch(parsestate) {
+            switch(parsestate)
+            {
                 case PROTOCOL_STATE_PROTOCOLDB:
                     parsestate = PROTOCOL_STATE_FINISHED;
                     return true;
@@ -1443,31 +1378,9 @@ public:
 
                 case PROTOCOL_STATE_TCP:
                 case PROTOCOL_STATE_UDP:
-                    // If no port info was given for the source ports or dest ports,
-                    // then we assume that they mean any port. So we just add an any
-                    // port range entry to the list.
-                    if(currentnetuse.numberSourcePorts()==0) {
-                        ProtocolNetUseDetail currentnetusedetail;
-                        currentnetusedetail.setRangeType( PORTRANGE_ANY );
-                        currentnetusedetail.setStartPort( 0 );
-                        currentnetusedetail.setEndPort( 65535 );
-                        currentnetuse.addSource( currentnetusedetail );
-//                        currentnetuse.sourcedetaillist.push_back(currentnetusedetail);
-                        //                    currentnetusedetail = 0;
-                    }
-                    if(currentnetuse.numberDestPorts()==0) {
-                        ProtocolNetUseDetail currentnetusedetail;
-                        currentnetusedetail.setRangeType( PORTRANGE_ANY );
-                        currentnetusedetail.setStartPort( 0 );
-                        currentnetusedetail.setEndPort( 65535 );
-                        currentnetuse.addDest( currentnetusedetail );
-                        //                    currentnetusedetail = 0;
-                    }
-                    // This fall through is intentional.
                 case PROTOCOL_STATE_ICMP:
                 case PROTOCOL_STATE_IP:
                     currententry.addNetwork( currentnetuse ); //networkuse.push_back(currentnetuse);
-                    //                currentnetuse = 0;
                     parsestate = PROTOCOL_STATE_NETWORK;
                     return true;
 
@@ -1503,28 +1416,24 @@ public:
                 case PROTOCOL_STATE_TCP_SOURCE_PORT:
                 case PROTOCOL_STATE_TCP_SOURCE_PORTRANGE:
                     currentnetuse.addSource(currentnetusedetail);
-                    //                currentnetusedetail = 0;
                     parsestate = PROTOCOL_STATE_TCP_SOURCE;
                     return true;
 
                 case PROTOCOL_STATE_TCP_DEST_PORT:
                 case PROTOCOL_STATE_TCP_DEST_PORTRANGE:
                     currentnetuse.addDest(currentnetusedetail);
-                    //                currentnetusedetail = 0;
                     parsestate = PROTOCOL_STATE_TCP_DEST;
                     return true;
 
                 case PROTOCOL_STATE_UDP_SOURCE_PORT:
                 case PROTOCOL_STATE_UDP_SOURCE_PORTRANGE:
                     currentnetuse.addSource(currentnetusedetail);
-                    //                currentnetusedetail = 0;
                     parsestate = PROTOCOL_STATE_UDP_SOURCE;
                     return true;
 
                 case PROTOCOL_STATE_UDP_DEST_PORT:
                 case PROTOCOL_STATE_UDP_DEST_PORTRANGE:
                     currentnetuse.addDest(currentnetusedetail);
-                    //                currentnetusedetail = 0;
                     parsestate = PROTOCOL_STATE_UDP_DEST;
                     return true;
 
@@ -1539,24 +1448,18 @@ public:
     bool characters(const QString &ch)
     {
         if ( unknowndepth )
-        {
             return true;
-        }
 
         switch ( parsestate )
         {
             case PROTOCOL_STATE_LONGNAME:
                 if(loadlongname)
-                {
                     currententry.longname = ch.toStdString();
-                }
                 return true;
 
             case PROTOCOL_STATE_DESCRIPTION:
                 if ( loaddescription )
-                {
                     currententry.description = ch.toStdString();
-                }
                 return true;
 
             case PROTOCOL_STATE_ENTRY_PRAGMA:
@@ -1567,9 +1470,7 @@ public:
             case PROTOCOL_STATE_UDP_DESCRIPTION:
             case PROTOCOL_STATE_ICMP_DESCRIPTION:
                 if ( loaddescription )
-                {
                     currentnetuse.description = ch.toStdString();
-                }
                 return true;
 
             case PROTOCOL_STATE_TCP_PRAGMA:
@@ -1584,7 +1485,6 @@ public:
         return true;
     }
 
-    ///////////////////////////////////////////////////////////////////////////
     bool error(const QXmlParseException &exception)
     {
         printParseException(exception);
@@ -1592,7 +1492,6 @@ public:
         return false;
     }
 
-    ///////////////////////////////////////////////////////////////////////////
     bool fatalError(const QXmlParseException &exception)
     {
         printParseException(exception);
@@ -1600,7 +1499,6 @@ public:
         return false;
     }
 
-    ///////////////////////////////////////////////////////////////////////////
     bool warning(const QXmlParseException &exception)
     {
         printParseException(exception);
@@ -1608,7 +1506,6 @@ public:
         return false;
     }
 
-    ///////////////////////////////////////////////////////////////////////////
     QString errorString() const
     {
         switch(errorstate)
@@ -1621,9 +1518,7 @@ public:
                 {
                     std::string message( "XML Parse error:\n");
                     BOOST_FOREACH( std::string const & s, parseerror )
-                    {
                         message += s;
-                    }
                     return message.c_str();
                 }
             case PROTOCOL_ERROR_ENTRY_NAME_ATTR_NOT_FOUND:
@@ -1676,13 +1571,12 @@ public:
         }
     }
 
-    ///////////////////////////////////////////////////////////////////////////
     void printParseException(const QXmlParseException &exception)
     {
         std::stringstream ss;
-        ss << "Line: " << exception.lineNumber() << ", "
-            << "Column: " << exception.columnNumber() << " " << exception.systemId().toStdString() << ", "
-            << exception.publicId().toStdString() << ", " << exception.message().toStdString() << std::endl;
+        ss << "Line: "   << exception.lineNumber()   << ", "
+           << "Column: " << exception.columnNumber() << " "  << exception.systemId().toStdString() << ", "
+           << exception.publicId().toStdString()     << ", " << exception.message().toStdString()  << std::endl;
         parseerror.push_back( ss.str() );
     }
 
