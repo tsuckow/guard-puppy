@@ -1279,8 +1279,8 @@ private:
             ProtocolNetUse const & netuse, bool permit = true, bool log = false)
     {
         const char *icmpname;
-        ProtocolNetUseDetail const & source = netuse.sourcedetaillist;
-        ProtocolNetUseDetail const & dest = netuse.destdetaillist;
+        ProtocolNetUseDetail const & source = netuse.sourcedetail;
+        ProtocolNetUseDetail const & dest = netuse.destdetail;
         switch(netuse.type)
         {
             case IPPROTO_TCP:
