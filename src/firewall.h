@@ -2035,25 +2035,25 @@ public:
     {
         return pdb.lookup(s).getStartPorts();
     }
-    void setStartPort(std::string s, uint i)
+    void setStartPort(std::string s, uint i, int j)
     {
-        pdb.lookup(s).setStartPort(i);
+        pdb.lookup(s).setStartPort(i, j);
     }
     std::vector<uint> getEndPorts(std::string s) const
     {
         return pdb.lookup(s).getEndPorts();
     }
-    void setEndPort(std::string s, uint i)
+    void setEndPort(std::string s, uint i, int j)
     {
-        pdb.lookup(s).setEndPort(i);
+        pdb.lookup(s).setEndPort(i, j);
     }
     std::vector<bool> getBidirectionals(std::string s) const
     {
         return pdb.lookup(s).getBidirectionals();
     }
-    void setBidirectional(std::string s,bool on)
+    void setBidirectional(std::string s, bool on, int j)
     {
-        pdb.lookup(s).setBidirectional(on);
+        pdb.lookup(s).setBidirectional(on, j);
     }
 
     template <class T>

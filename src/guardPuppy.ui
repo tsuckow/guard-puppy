@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>866</width>
-    <height>680</height>
+    <width>864</width>
+    <height>658</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -70,8 +70,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>102</width>
-              <height>102</height>
+              <width>270</width>
+              <height>424</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -328,19 +328,6 @@
                 <string>Defined network Zones (From):</string>
                </property>
               </widget>
-             </item>
-             <item>
-              <spacer name="horizontalSpacer_4">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
              </item>
             </layout>
            </item>
@@ -819,16 +806,55 @@
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_10">
             <item>
-             <widget class="QTableWidget" name="userDefinedProtocolTableWidget">
+             <widget class="QTreeWidget" name="userDefinedProtocolTreeWidget">
               <property name="editTriggers">
                <set>QAbstractItemView::NoEditTriggers</set>
+              </property>
+              <property name="alternatingRowColors">
+               <bool>true</bool>
               </property>
               <property name="selectionBehavior">
                <enum>QAbstractItemView::SelectRows</enum>
               </property>
+              <property name="allColumnsShowFocus">
+               <bool>true</bool>
+              </property>
+              <property name="columnCount">
+               <number>3</number>
+              </property>
+              <attribute name="headerVisible">
+               <bool>false</bool>
+              </attribute>
+              <attribute name="headerCascadingSectionResizes">
+               <bool>false</bool>
+              </attribute>
+              <attribute name="headerDefaultSectionSize">
+               <number>100</number>
+              </attribute>
+              <attribute name="headerMinimumSectionSize">
+               <number>30</number>
+              </attribute>
+              <attribute name="headerStretchLastSection">
+               <bool>true</bool>
+              </attribute>
+              <attribute name="headerCascadingSectionResizes">
+               <bool>false</bool>
+              </attribute>
+              <attribute name="headerDefaultSectionSize">
+               <number>100</number>
+              </attribute>
+              <attribute name="headerVisible">
+               <bool>false</bool>
+              </attribute>
+              <attribute name="headerMinimumSectionSize">
+               <number>30</number>
+              </attribute>
+              <attribute name="headerStretchLastSection">
+               <bool>true</bool>
+              </attribute>
               <column>
                <property name="text">
-                <string>Name</string>
+                <string>Protocol</string>
                </property>
               </column>
               <column>
@@ -838,7 +864,7 @@
               </column>
               <column>
                <property name="text">
-                <string>Port</string>
+                <string>Range</string>
                </property>
               </column>
              </widget>
@@ -872,6 +898,24 @@
               </item>
               <item>
                <widget class="QLineEdit" name="userDefinedProtocolNameLineEdit"/>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_14">
+              <item>
+               <widget class="QPushButton" name="NewPortRangePushButton">
+                <property name="text">
+                 <string>New Port Range</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="DeletePortRangepushButton">
+                <property name="text">
+                 <string>Delete Port Range</string>
+                </property>
+               </widget>
               </item>
              </layout>
             </item>
@@ -912,24 +956,6 @@
                </widget>
               </item>
               <item>
-               <widget class="QCheckBox" name="userDefinedProtocolBidirectionalCheckBox">
-                <property name="text">
-                 <string>Bidirectional</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_21">
-              <item>
-               <widget class="QLabel" name="label_19">
-                <property name="text">
-                 <string>Type:</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QComboBox" name="userDefinedProtocolTypeComboBox">
                 <item>
                  <property name="text">
@@ -943,7 +969,17 @@
                 </item>
                </widget>
               </item>
+              <item>
+               <widget class="QCheckBox" name="userDefinedProtocolBidirectionalCheckBox">
+                <property name="text">
+                 <string>Bidirectional</string>
+                </property>
+               </widget>
+              </item>
              </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_21"/>
             </item>
            </layout>
           </widget>

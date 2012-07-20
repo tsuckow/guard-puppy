@@ -251,7 +251,6 @@ public:
         destdetail = dest;
     }
 
-
     ProtocolNetUse(uchar t = IPPROTO_TCP, bool bi = true, NetworkEntity sr = ENTITY_CLIENT, NetworkEntity des = ENTITY_SERVER)
     : sourcedetail(PORTRANGE_ANY), destdetail(PORTRANGE_ANY)
     {
@@ -267,15 +266,15 @@ public:
     }
 
 
-    ~ProtocolNetUse() {
-
-    }
+    ~ProtocolNetUse()
+    { }
 
     void print() const
     {
 
         fprintf(stderr,"[Description: %s ",(const char *)description.c_str());
-        switch(type) {
+        switch(type)
+        {
             case IPPROTO_TCP:
                 fprintf(stderr," Type: tcp ");
                 break;
@@ -422,9 +421,9 @@ public:
             temp.push_back( nu.type );
         return temp;
     }
-    void setType(uchar t)
+    void setType(uchar t, int j)
     {
-        networkuse[0].type = t;
+        networkuse[j].type = t;
     }
 
     std::vector<std::string> getRangeStrings() const
@@ -442,9 +441,9 @@ public:
             temp.push_back( nu.destdetail.getStart() );
         return temp;
     }
-    void setStartPort(uint i)
+    void setStartPort(uint i, int j)
     {
-        networkuse[0].destdetail.setStartPort(i);
+        networkuse[j].destdetail.setStartPort(i);
     }
 
     std::vector<uint> getEndPorts() const
@@ -454,9 +453,9 @@ public:
             temp.push_back( nu.destdetail.getEnd() );
         return temp;
     }
-    void setEndPort(uint i)
+    void setEndPort(uint i, int j)
     {
-        networkuse[0].destdetail.setEndPort(i);
+        networkuse[j].destdetail.setEndPort(i);
     }
 
     std::vector<bool> getBidirectionals() const
@@ -466,9 +465,9 @@ public:
             temp.push_back( nu.isBidirectional() );
         return temp;
     }
-    void setBidirectional(bool on)
+    void setBidirectional(bool on, int j)
     {
-        networkuse[0].bidirectional = on;
+        networkuse[j].bidirectional = on;
     }
 
 };
@@ -490,7 +489,7 @@ public:
     template<class T>
     void ApplyToNthInClass(T & func, int i, std::string c)
     {
-    int n = 0;
+        int n = 0;
         BOOST_FOREACH(ProtocolEntry & ent, protocolDataBase)
         {
             if(ent.Classification == c)
@@ -544,7 +543,6 @@ public:
             }
         }
         protocolDataBase.erase(pit);
-
     }
 
 private:
@@ -1582,7 +1580,6 @@ public:
 
     ProtocolEntry & lookup( std::string const & name )
     {
-
         std::vector< ProtocolEntry >::iterator pit = std::find_if( protocolDataBase.begin(), protocolDataBase.end(), boost::phoenix::bind( &ProtocolEntry::name, boost::phoenix::arg_names::arg1) == name );
         if ( pit == protocolDataBase.end() )
         {
@@ -1598,7 +1595,6 @@ public:
 
     ProtocolEntry const & lookup( std::string const & name ) const
     {
-
         std::vector< ProtocolEntry >::const_iterator pit = std::find_if( protocolDataBase.begin(), protocolDataBase.end(), boost::phoenix::bind( &ProtocolEntry::name, boost::phoenix::arg_names::arg1) == name );
         if ( pit == protocolDataBase.end() )
         {
@@ -1611,7 +1607,5 @@ public:
         }
         return *pit;
     }
-
-
 };
 

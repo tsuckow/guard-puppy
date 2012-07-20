@@ -51,18 +51,28 @@ class GuardPuppyDialog_w : public QDialog, Ui::GuardPuppyDialog
     
     class AddUDPToTable_
     {
-    QTableWidget * t;
+    QTreeWidget * t;
     public:
-        AddUDPToTable_( QTableWidget * t_):t(t_)
+        AddUDPToTable_( QTreeWidget * t_):t(t_)
         {}
         void operator()(ProtocolEntry const & pe)
         {
             if(pe.Classification == "User Defined")
             {
-                t->insertRow( t->rowCount() );
-                t->setItem( t->rowCount()-1, 0, new QTableWidgetItem( pe.getName().c_str() ) );
-                t->setItem( t->rowCount()-1, 1, new QTableWidgetItem( pe.getTypes()[0]==IPPROTO_TCP ? QObject::tr("TCP") : QObject::tr("UDP") ) );
-                t->setItem( t->rowCount()-1, 2, new QTableWidgetItem( pe.getRangeStrings()[0].c_str() ) );
+                //create an empty item
+                QTreeWidgetItem* parent = new QTreeWidgetItem(t, 0);
+                std::string s = pe.getName();
+                parent->setText(0, s.c_str());//set the name for the parent
+                //next get the list of types and range strings
+                std::vector<uchar> types = pe.getTypes();
+                std::vector<std::string> rngs = pe.getRangeStrings();
+                for(uint i(0); i < rngs.size(); i++)
+                {
+                    QTreeWidgetItem * child = new QTreeWidgetItem(parent);
+                    child->setText(0, s.c_str() );
+                    child->setText(1, types[i]==IPPROTO_TCP ? QObject::tr("TCP") : QObject::tr("UDP") );
+                    child->setText(2, rngs[i].c_str() );
+                }
             }
         }
     };
@@ -86,12 +96,13 @@ class GuardPuppyDialog_w : public QDialog, Ui::GuardPuppyDialog
     class changeProtocolType_
     {
         uchar s;
+        int j;
     public:
-        changeProtocolType_(uchar s_):s(s_)
+        changeProtocolType_(uchar s_, int j_):s(s_), j(j_)
         {}
         void operator()(ProtocolEntry & pe)
         {
-            pe.setType(s);
+            pe.setType(s, j);
         }
     };
     class changeProtocolName_
@@ -109,36 +120,38 @@ class GuardPuppyDialog_w : public QDialog, Ui::GuardPuppyDialog
     class changeProtocolBi_
     {
         bool s;
+        int j;
     public:
-        changeProtocolBi_(bool s_):s(s_)
+        changeProtocolBi_(bool s_, int j_):s(s_), j(j_)
         {}
         void operator()(ProtocolEntry & pe)
         {
-            pe.setBidirectional(s);
+            pe.setBidirectional(s, j);
         }
     };
     class changeProtocolPort_
     {
         int s;
-        QTableWidgetItem * t;
+        int j;
+        QTreeWidgetItem * t;
         bool start;
         bool changeother;
     public:
-        changeProtocolPort_(int s_, QTableWidgetItem * t_, bool start_ = true):s(s_), t(t_), start(start_), changeother(false)
+        changeProtocolPort_(int s_, int j_, QTreeWidgetItem * t_, bool start_ = true):s(s_), j(j_), t(t_),start(start_), changeother(false)
         {}
         bool pChange(){return changeother;}
         void operator()(ProtocolEntry & pe)
         {
             if(start)
             {
-                pe.setStartPort(s);
+                pe.setStartPort(s, j);
             }
             else
             {
-                pe.setEndPort(s);
+                pe.setEndPort(s, j);
             }
-            changeother = pe.getEndPorts()[0] == pe.getStartPorts()[0];
-            t->setText(pe.getRangeStrings()[0].c_str());
+            changeother = pe.getEndPorts()[j] == pe.getStartPorts()[j];
+            t->child(j)->setText(2,pe.getRangeStrings()[j].c_str());
         }
     };
 
@@ -166,7 +179,7 @@ public:
     void setZoneAddressGUI( ::Zone const & zone);
     void setZonePageEnabled( ::Zone const & thisZone, bool enabled);
     void setZoneConnectionGUI( ::Zone const & zone);
-    void setUserDefinedProtocolGUI( std::string const &) ;
+    void setUserDefinedProtocolGUI( std::string const &, int const j) ;
     void buildConnectionGUI() ;
     void createProtocolPages();
     void setProtocolPagesEnabled(bool enabled);
@@ -203,7 +216,7 @@ private slots:
     void on_newUserDefinedProtocolPushButton_clicked();
     void on_deleteUserDefinedProtocolPushButton_clicked();
 
-    void on_userDefinedProtocolTableWidget_itemSelectionChanged();
+    void on_userDefinedProtocolTreeWidget_currentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem*);
     //  All the checkbox options
     void on_logDroppedPacketsCheckBox_stateChanged( int state );
     void on_logRejectPacketsCheckBox_stateChanged( int state );
@@ -230,8 +243,8 @@ private slots:
 
     void on_userDefinedProtocolTypeComboBox_currentIndexChanged(int value);     //
     void on_userDefinedProtocolNameLineEdit_textEdited(QString const & text);  //
-    void on_userDefinedProtocolPortStartSpinBox_valueChanged( int value );      //
-    void on_userDefinedProtocolPortEndSpinBox_valueChanged( int value );        //
+    void on_userDefinedProtocolPortStartSpinBox_editingFinished( );      //
+    void on_userDefinedProtocolPortEndSpinBox_editingFinished( );        //
 
 
 private:
@@ -253,7 +266,31 @@ private:
             return zoneAddressListBox->currentItem()->text().toStdString();
         return "";
     }
+    void CurrentlySelectedUDPIndexes(int& i, int& j)
+    {
+        QTreeWidgetItem * cur,* parent,* child;
+        parent = child = 0;
+        j = i = 0;
+        cur = userDefinedProtocolTreeWidget->currentItem();
+        
+        if(cur)
+        {
+            if(!cur->childCount())//if we have no children we are at the detail level
+            {
+                parent = cur->parent();
+                child = cur;
+            }
+            else//if we do then we are at a toplevel, take the first child
+                parent = cur;
+            if(child)
+                j = parent->indexOfChild(child);
 
+            i = userDefinedProtocolTreeWidget->indexOfTopLevelItem(parent);
+        }
+        else//there isn't a current item. error out
+            i = j = -1;
+
+    }
 
 
 };
