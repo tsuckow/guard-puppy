@@ -195,6 +195,7 @@ private slots:
     void on_protocolTreeWidget_itemChanged( QTreeWidgetItem * item, int column );
     void protocolStateChanged( std::string const & zoneTo, std::string const & protocol, Zone::ProtocolState state );
     void on_zoneConnectionTableWidget_itemChanged( QTableWidgetItem * item );
+    void on_zoneCommentLineEdit_editingFinished();
 
     void on_advImportPushButton_clicked();
     void on_advExportPushButton_clicked();

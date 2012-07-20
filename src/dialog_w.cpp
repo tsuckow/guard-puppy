@@ -441,6 +441,11 @@ void GuardPuppyDialog_w::on_zoneConnectionTableWidget_itemChanged( QTableWidgetI
     firewall.updateZoneConnection( currentZoneName(), fromZone, item->checkState() == Qt::Checked);
 }
 
+void GuardPuppyDialog_w::on_zoneCommentLineEdit_editingFinished()
+{
+    firewall.getZone(currentZoneName()).setComment(zoneCommentLineEdit->text().toStdString());
+}
+
 void GuardPuppyDialog_w::setZoneConnectionGUI(::Zone const & zone)
 {
     zoneConnectionTableWidget->setRowCount( 0 );
