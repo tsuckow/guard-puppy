@@ -563,9 +563,6 @@ public:
         }
 
         // Output the User Defined Protocols
-        //            for(size_t i=0; i<userdefinedprotocols.size(); i++)
-        //
-        //
         {//kill the functor we don't care about it after it does it's work.
             OutputUDP OutputUDPm(stream);
             pdb.ApplyToDB(OutputUDPm);
@@ -661,16 +658,24 @@ private:
         public:
         OutputUDP(std::ofstream & _o):o(_o)
         {}
-        void operator()(ProtocolEntry const i)
+        void operator()(ProtocolEntry const & i)
         {
             if(i.Classification == "User Defined")
             {
                 o<<"# [UserDefinedProtocol]\n";
                 o<<"# ID="<<("0"/*currentudp.getID()*/)<<"\n";
                 o<<"# NAME="<<(i.getName())<<"\n";
-                o<<"# TYPE="<<(i.getTypes()[0]==IPPROTO_TCP ? "TCP" : "UDP")<<"\n";
-                o<<"# PORT="<<i.getStartPorts()[0]<<":"<<i.getEndPorts()[0]<<"\n";
-                o<<"# BIDIRECTIONAL="<<(i.getBidirectionals()[0] ? 1 : 0)<<"\n";
+
+                std::vector<uchar> types = i.getTypes();
+                std::vector<uint> start = i.getStartPorts();
+                std::vector<uint> end = i.getEndPorts();
+                std::vector<bool> bi = i.getBidirectionals();
+                for(uint j(0); j < types.size(); j++)
+                {
+                    o<<"# TYPE="<<(types[j]==IPPROTO_TCP ? "TCP" : "UDP")<<"\n";
+                    o<<"# PORT="<< start[j]<<":"<< end[j]<<"\n";
+                    o<<"# BIDIRECTIONAL="<<(bi[j] ? 1 : 0)<<"\n";
+                }
             }
         }
     };
