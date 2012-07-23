@@ -911,7 +911,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="DeletePortRangepushButton">
+               <widget class="QPushButton" name="deletePortRangePushButton">
                 <property name="text">
                  <string>Delete Port Range</string>
                 </property>

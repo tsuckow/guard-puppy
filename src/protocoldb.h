@@ -360,7 +360,10 @@ public:
     {
         networkuse.push_back( net );
     }
-
+    void deleteNetwork( uint n )
+    {
+        networkuse.erase(networkuse.begin()+n);
+    }
 
     ProtocolEntry( std::string const & _name = "" )
      : name( _name )

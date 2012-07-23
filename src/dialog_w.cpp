@@ -524,7 +524,6 @@ void GuardPuppyDialog_w::on_NewPortRangePushButton_clicked()
     CurrentlySelectedUDPIndexes(i, j);
     if( i>=0 && j>=0 )
     {
-        std::cerr << i << " " << j <<std::endl;
         addNewRange_ anr;
         firewall.ApplyToNthInClass(anr, i, "User Defined");
         rebuildGui();
@@ -532,6 +531,24 @@ void GuardPuppyDialog_w::on_NewPortRangePushButton_clicked()
         userDefinedProtocolTreeWidget->scrollToItem(p);
         userDefinedProtocolTreeWidget->expandItem(p);
         userDefinedProtocolTreeWidget->setCurrentItem(p->child(p->childCount()-1));
+    }
+}
+void GuardPuppyDialog_w::on_deletePortRangePushButton_clicked()
+{
+    int i; int j;
+    CurrentlySelectedUDPIndexes(i, j);
+    if( i>=0 && j>=0 )
+    {
+        QTreeWidgetItem * p = userDefinedProtocolTreeWidget->topLevelItem(i);
+        if(p->childCount()>1)
+        {
+            deleteRange_ dr(j);
+            firewall.ApplyToNthInClass(dr, i, "User Defined");
+            rebuildGui();
+            userDefinedProtocolTreeWidget->scrollToItem(p);
+            userDefinedProtocolTreeWidget->expandItem(p);
+            userDefinedProtocolTreeWidget->setCurrentItem(p->child(p->childCount()-1));
+        }
     }
 }
 

@@ -163,6 +163,17 @@ class GuardPuppyDialog_w : public QDialog, Ui::GuardPuppyDialog
             pe.addNetwork(t);
         }
     };
+    class deleteRange_
+    {
+        uint i;
+    public:
+        deleteRange_(uint i_):i(i_)
+        { }
+        void operator()(ProtocolEntry & pe)
+        {
+            pe.deleteNetwork(i);
+        }
+    };
 
 public:
     GuardPuppyDialog_w( GuardPuppyFireWall & _firewall )
@@ -225,6 +236,7 @@ private slots:
     void on_newUserDefinedProtocolPushButton_clicked();
     void on_deleteUserDefinedProtocolPushButton_clicked();
     void on_NewPortRangePushButton_clicked();
+    void on_deletePortRangePushButton_clicked();
 
     void on_userDefinedProtocolTreeWidget_currentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem*);
     //  All the checkbox options
