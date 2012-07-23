@@ -501,6 +501,10 @@ void GuardPuppyDialog_w::on_newUserDefinedProtocolPushButton_clicked()
     bool   udpBidirectional =   false;
     firewall.newUserDefinedProtocol(name, udpType, udpStartPort, udpEndPort, udpBidirectional);
     rebuildGui();
+    QTreeWidgetItem * p = userDefinedProtocolTreeWidget->topLevelItem(userDefinedProtocolTreeWidget->topLevelItemCount()-1);
+    userDefinedProtocolTreeWidget->scrollToItem(p);
+    userDefinedProtocolTreeWidget->expandItem(p);
+    userDefinedProtocolTreeWidget->setCurrentItem(p);
 }
 
 void GuardPuppyDialog_w::on_deleteUserDefinedProtocolPushButton_clicked()
@@ -536,7 +540,6 @@ void GuardPuppyDialog_w::on_userDefinedProtocolTreeWidget_currentItemChanged(QTr
     int i;
     int j;
     CurrentlySelectedUDPIndexes(i,j);
-    std::cerr << i << " " << j << std::endl ;
     if(current)
     {
         std::string s = current->text(0).toStdString();
@@ -544,8 +547,9 @@ void GuardPuppyDialog_w::on_userDefinedProtocolTreeWidget_currentItemChanged(QTr
             setUserDefinedProtocolGUI(s, j);
     }
 }
+
 void GuardPuppyDialog_w::setUserDefinedProtocolGUI(std::string const & s, int j)
-{//fix this
+{
         userDefinedProtocolNameLineEdit->setText(s.c_str());
         userDefinedProtocolTypeComboBox->setCurrentIndex(firewall.getTypes(s)[j] == IPPROTO_TCP ? 0 : 1);
         userDefinedProtocolPortStartSpinBox->setValue(firewall.getStartPorts(s)[j]);
@@ -597,17 +601,6 @@ void GuardPuppyDialog_w::setAdvancedPageEnabled(bool enabled)
 
 void GuardPuppyDialog_w::buildConnectionGUI()
 {
-#if 0
-    QListIterator<GuardPuppyFirewall::Zone> *zit;
-    QCheckListItem *item;
-
-    zit = firewall.newZonesIterator();  // Select the first zone in the list box.
-        // Fill up the connection listview
-    for(zit->toLast(); zit->current(); --(*zit)) {
-        item = new QCheckListItem((QListView *)connectionslistview,zit->current()->name,QCheckListItem::CheckBox);
-        connectiondict.insert(item,zit->current());
-    }
-#endif
 }
 
 void GuardPuppyDialog_w::on_logDroppedPacketsCheckBox_stateChanged( int state )
@@ -703,8 +696,6 @@ void GuardPuppyDialog_w::on_userDefinedProtocolTypeComboBox_currentIndexChanged(
         firewall.ApplyToNthInClass(cpn, i, "User Defined");
         userDefinedProtocolTreeWidget->topLevelItem(i)->child(j)->setText(1, value == 0?"TCP":"UDP");
         userDefinedProtocolBidirectionalCheckBox->setEnabled(value);
-            
-
     }
 }
 void GuardPuppyDialog_w::on_userDefinedProtocolNameLineEdit_textEdited(QString const & text)

@@ -151,23 +151,19 @@ public:
     }
 
     void setRangeType( RangeType const & r ) { rangetype = r; }
-    //nothing uses the range type outside of creation, so does it need to be a member? i suppose for dynamic it might make sence but then we need to actually know it is dynamic still later on.
     RangeType const & getRangeType() const { return rangetype; }
 
     void setStartPort(uint p)
     {
         start = p;
-        if(start > end) {
+        if(start > end)
             end = p;
-        }
     }
     void setEndPort(uint p)
     {
         end = p;
         if ( start > end)
-        {
             start = p;
-        }
     }
     uint getStart(PortRangeInfo const * ri = 0 ) const
     {

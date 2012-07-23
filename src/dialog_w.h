@@ -49,7 +49,6 @@ class GuardPuppyDialog_w : public QDialog, Ui::GuardPuppyDialog
         {}
         void operator()(ProtocolEntry const & pe);
     };
-    
     class AddUDPToTable_
     {
     QTreeWidget * t;
@@ -77,7 +76,6 @@ class GuardPuppyDialog_w : public QDialog, Ui::GuardPuppyDialog
             }
         }
     };
-
     class numberOfUDP_
     {
         int count;
