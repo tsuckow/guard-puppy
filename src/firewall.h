@@ -1762,74 +1762,75 @@ public:
                 throw std::string("Error parsing firewall [UserDefinedProtocol] section. Expected '# NAME='");
             }
             std::string tmpstring = s.substr(7);
-
-            // Snarf the protocol type.
-            std::getline( stream, s );
-            if(s.empty() || s=="# TYPE=TCP")
-            {
-                udptype = IPPROTO_TCP;
-            }
-            else
-            {
-                if(s=="# TYPE=UDP")
-                {
-                    udptype = IPPROTO_UDP;
-                }
-                else
-                {// Add support for other types of sockets (like RAW)?
-                    throw std::string("Error parsing firewall [UserDefinedProtocol] section. Expected '# TYPE=TCP' or '# TYPE=UDP'");
-                }
-            }
-
-            // Snarf the PORT now.
-            std::getline( stream, s );
-            if(s.empty() || s.substr(0,7) != ("# PORT="))
-            {
-                throw std::string("Error parsing firewall [UserDefinedProtocol] section. Expected '# PORT='");
-            }
-
-            // # PORT=xxx:yyy
-            // or for compatebility
-            // # PORT=xxx
-            //
-            // if the colon is missing, it's file from an older version
-            if (s.find(":") == std::string::npos)
-            {
-                udpstartport = udpendport = boost::lexical_cast<uint>(s.substr(7));
-            }
-            else
-            {
-                udpstartport = boost::lexical_cast<uint>(s.substr(7, s.find(":")-7));
-                udpendport = boost::lexical_cast<uint>(s.substr(s.find(":")+1));
-            }
-
-            // Bidirectional or not?
-            std::getline( stream, s );
-            if(s.empty() || s=="# BIDIRECTIONAL=0")
-            {
-                udpbidirectional = false;
-            }
-            else
-            {
-                if ( s=="# BIDIRECTIONAL=1" )
-                {
-                    udpbidirectional = true;
-                }
-                else
-                {
-                    throw std::string("Error parsing firewall [UserDefinedProtocol] section. Expected '# BIDIRECTIONAL=0' or '# BIDIRECTIONAL=1'");
-                }
-            }
-            try { pdb.lookup(tmpstring); }
+            ProtocolEntry * ent;
+            try { ent = &pdb.lookup(tmpstring); }
             catch(...)
-            {//we couldn't find it!
-            //so make it and add it to the list
-                pdb.UserDefinedProtocol(tmpstring, udptype, udpstartport, udpendport, udpbidirectional);
-                //userdefinedprotocols.push_back( udp );
+            {
+                ProtocolEntry t(tmpstring);
+                pdb.addProtocolEntry(t);
+                ent = &pdb.lookup(tmpstring);
+                ent->Classification = "User Defined";
+                ent->longname = tmpstring; //for udp the name and long name are the same
             }
 
             std::getline( stream, s );
-            if(s.empty()) throw std::string( "Empty string read" );
+            do
+            {
+                // Snarf the protocol type.
+                if(s.empty() || s=="# TYPE=TCP")
+                {
+                    udptype = IPPROTO_TCP;
+                }
+                else
+                {
+                    if(s=="# TYPE=UDP")
+                    {
+                        udptype = IPPROTO_UDP;
+                    }
+                    else
+                    {// Add support for other types of sockets (like RAW)?
+                        throw std::string("Error parsing firewall [UserDefinedProtocol] section. Expected '# TYPE=TCP' or '# TYPE=UDP'");
+                    }
+                }
+
+                // Snarf the PORT now.
+                std::getline( stream, s );
+                if(s.empty() || s.substr(0,7) != ("# PORT="))
+                {
+                    throw std::string("Error parsing firewall [UserDefinedProtocol] section. Expected '# PORT='");
+                }
+
+                // # PORT=xxx:yyy
+                // or for compatebility
+                // # PORT=xxx
+                //
+                // if the colon is missing, it's file from an older version
+                if (s.find(":") == std::string::npos)
+                    udpstartport = udpendport = boost::lexical_cast<uint>(s.substr(7));
+                else
+                {
+                    udpstartport = boost::lexical_cast<uint>(s.substr(7, s.find(":")-7));
+                    udpendport = boost::lexical_cast<uint>(s.substr(s.find(":")+1));
+                }
+
+                // Bidirectional or not?
+                std::getline( stream, s );
+                if(s.empty() || s=="# BIDIRECTIONAL=0")
+                    udpbidirectional = false;
+                else
+                {
+                    if ( s=="# BIDIRECTIONAL=1" )
+                        udpbidirectional = true;
+                    else
+                        throw std::string("Error parsing firewall [UserDefinedProtocol] section. Expected '# BIDIRECTIONAL=0' or '# BIDIRECTIONAL=1'");
+                }
+                ProtocolNetUse t;
+                t.addDest(ProtocolNetUseDetail(PORTRANGE_RANGE, udpstartport, udpendport));
+                t.setType(udptype);
+                t.setBidirectional(udpbidirectional);
+                ent->addNetwork(t);
+                std::getline( stream, s );
+            }while(s.empty() || s.substr(0, 7) == "# TYPE=" );
         }
 
         state = READSTATE_PROTOCOLCONFIG;

@@ -218,8 +218,8 @@ public:
     friend class ProtocolEntry;//ya it sucks. get over it
     friend class GuardPuppyFireWall;
 
-    ProtocolNetUseDetail sourcedetail;     // A list of source port ranges.
-    ProtocolNetUseDetail destdetail;       // A list of dest port ranges.
+    ProtocolNetUseDetail sourcedetail;
+    ProtocolNetUseDetail destdetail;
 
 public:
     std::string lastPragmaName;
@@ -518,7 +518,6 @@ public:
         entry.longname = name;
         entry.Classification = "User Defined";
         ProtocolNetUse netuse;
-        netuse.addSource(ProtocolNetUseDetail(PORTRANGE_ANY, 1024 , 65535));
         netuse.addDest(ProtocolNetUseDetail(PORTRANGE_RANGE, startp, endp));
         netuse.setType(udptype);
         netuse.setBidirectional(bi);
