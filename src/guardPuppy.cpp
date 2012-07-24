@@ -9,6 +9,9 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
     bool superUser = getuid() == 0;
+    //this only checks to see if the user is root. but there may be other groups or users who have superuser privlages.
+    //a better method of checking if the user can perform the needed tasks is required.
+    //in fact i don't think there should be any check at all.
     GuardPuppyFireWall firewall( superUser );
     GuardPuppyDialog_w guardPuppyDialog( firewall );
 

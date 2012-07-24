@@ -6,18 +6,18 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>866</width>
-    <height>680</height>
+    <width>864</width>
+    <height>658</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Firewall Configuration - guardPuppy</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="Zone">
       <attribute name="title">
@@ -70,8 +70,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>296</width>
-              <height>489</height>
+              <width>270</width>
+              <height>424</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -214,9 +214,79 @@
             </item>
             <item>
              <widget class="QTableWidget" name="zoneConnectionTableWidget">
+              <property name="contextMenuPolicy">
+               <enum>Qt::PreventContextMenu</enum>
+              </property>
+              <attribute name="horizontalHeaderVisible">
+               <bool>false</bool>
+              </attribute>
+              <attribute name="horizontalHeaderCascadingSectionResizes">
+               <bool>false</bool>
+              </attribute>
+              <attribute name="horizontalHeaderHighlightSections">
+               <bool>false</bool>
+              </attribute>
+              <attribute name="horizontalHeaderMinimumSectionSize">
+               <number>50</number>
+              </attribute>
+              <attribute name="horizontalHeaderStretchLastSection">
+               <bool>true</bool>
+              </attribute>
+              <attribute name="verticalHeaderVisible">
+               <bool>false</bool>
+              </attribute>
+              <attribute name="verticalHeaderDefaultSectionSize">
+               <number>40</number>
+              </attribute>
+              <attribute name="verticalHeaderHighlightSections">
+               <bool>false</bool>
+              </attribute>
+              <attribute name="verticalHeaderMinimumSectionSize">
+               <number>40</number>
+              </attribute>
+              <attribute name="verticalHeaderStretchLastSection">
+               <bool>false</bool>
+              </attribute>
+              <attribute name="verticalHeaderVisible">
+               <bool>false</bool>
+              </attribute>
+              <attribute name="verticalHeaderDefaultSectionSize">
+               <number>40</number>
+              </attribute>
+              <attribute name="horizontalHeaderStretchLastSection">
+               <bool>true</bool>
+              </attribute>
+              <attribute name="horizontalHeaderCascadingSectionResizes">
+               <bool>false</bool>
+              </attribute>
+              <attribute name="horizontalHeaderVisible">
+               <bool>false</bool>
+              </attribute>
+              <attribute name="horizontalHeaderMinimumSectionSize">
+               <number>50</number>
+              </attribute>
+              <attribute name="verticalHeaderMinimumSectionSize">
+               <number>40</number>
+              </attribute>
+              <attribute name="horizontalHeaderHighlightSections">
+               <bool>false</bool>
+              </attribute>
+              <attribute name="verticalHeaderHighlightSections">
+               <bool>false</bool>
+              </attribute>
+              <attribute name="verticalHeaderStretchLastSection">
+               <bool>false</bool>
+              </attribute>
               <column>
                <property name="text">
                 <string>Connection (To)</string>
+               </property>
+               <property name="background">
+                <color alpha="252">
+                 <red>0</red>
+                 <green>0</green>
+                 <blue>0</blue>
+                </color>
                </property>
               </column>
              </widget>
@@ -248,7 +318,7 @@
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
-         <widget class="QWidget" name="">
+         <widget class="QWidget" name="layoutWidget">
           <layout class="QVBoxLayout" name="verticalLayout_7">
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_12">
@@ -258,19 +328,6 @@
                 <string>Defined network Zones (From):</string>
                </property>
               </widget>
-             </item>
-             <item>
-              <spacer name="horizontalSpacer_4">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
              </item>
             </layout>
            </item>
@@ -661,7 +718,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="checkBox_15">
+            <widget class="QCheckBox" name="showAdvancedProtocolHelpCheckBox">
              <property name="text">
               <string>Show advanced protocol help</string>
              </property>
@@ -672,7 +729,7 @@
              <item>
               <widget class="QLabel" name="label_17">
                <property name="text">
-                <string>Localy Dynamic Port Range:</string>
+                <string>Local Dynamic Port Range:</string>
                </property>
               </widget>
              </item>
@@ -749,10 +806,55 @@
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_10">
             <item>
-             <widget class="QTableWidget" name="userDefinedProtocolTableWidget">
+             <widget class="QTreeWidget" name="userDefinedProtocolTreeWidget">
+              <property name="editTriggers">
+               <set>QAbstractItemView::NoEditTriggers</set>
+              </property>
+              <property name="alternatingRowColors">
+               <bool>true</bool>
+              </property>
+              <property name="selectionBehavior">
+               <enum>QAbstractItemView::SelectRows</enum>
+              </property>
+              <property name="allColumnsShowFocus">
+               <bool>true</bool>
+              </property>
+              <property name="columnCount">
+               <number>3</number>
+              </property>
+              <attribute name="headerVisible">
+               <bool>false</bool>
+              </attribute>
+              <attribute name="headerCascadingSectionResizes">
+               <bool>false</bool>
+              </attribute>
+              <attribute name="headerDefaultSectionSize">
+               <number>100</number>
+              </attribute>
+              <attribute name="headerMinimumSectionSize">
+               <number>30</number>
+              </attribute>
+              <attribute name="headerStretchLastSection">
+               <bool>true</bool>
+              </attribute>
+              <attribute name="headerCascadingSectionResizes">
+               <bool>false</bool>
+              </attribute>
+              <attribute name="headerDefaultSectionSize">
+               <number>100</number>
+              </attribute>
+              <attribute name="headerVisible">
+               <bool>false</bool>
+              </attribute>
+              <attribute name="headerMinimumSectionSize">
+               <number>30</number>
+              </attribute>
+              <attribute name="headerStretchLastSection">
+               <bool>true</bool>
+              </attribute>
               <column>
                <property name="text">
-                <string>Name</string>
+                <string>Protocol</string>
                </property>
               </column>
               <column>
@@ -762,7 +864,7 @@
               </column>
               <column>
                <property name="text">
-                <string>Port</string>
+                <string>Range</string>
                </property>
               </column>
              </widget>
@@ -800,6 +902,24 @@
              </layout>
             </item>
             <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_14">
+              <item>
+               <widget class="QPushButton" name="NewPortRangePushButton">
+                <property name="text">
+                 <string>New Port Range</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="deletePortRangePushButton">
+                <property name="text">
+                 <string>Delete Port Range</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
              <layout class="QHBoxLayout" name="horizontalLayout_22">
               <item>
                <widget class="QLabel" name="label_20">
@@ -810,8 +930,14 @@
               </item>
               <item>
                <widget class="QSpinBox" name="userDefinedProtocolPortStartSpinBox">
+                <property name="minimum">
+                 <number>0</number>
+                </property>
                 <property name="maximum">
-                 <number>56635</number>
+                 <number>65535</number>
+                </property>
+                <property name="value">
+                 <number>0</number>
                 </property>
                </widget>
               </item>
@@ -830,6 +956,20 @@
                </widget>
               </item>
               <item>
+               <widget class="QComboBox" name="userDefinedProtocolTypeComboBox">
+                <item>
+                 <property name="text">
+                  <string>TCP</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>UDP</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item>
                <widget class="QCheckBox" name="userDefinedProtocolBidirectionalCheckBox">
                 <property name="text">
                  <string>Bidirectional</string>
@@ -839,18 +979,7 @@
              </layout>
             </item>
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_21">
-              <item>
-               <widget class="QLabel" name="label_19">
-                <property name="text">
-                 <string>Type:</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QComboBox" name="userDefinedProtocolTypeComboBox"/>
-              </item>
-             </layout>
+             <layout class="QHBoxLayout" name="horizontalLayout_21"/>
             </item>
            </layout>
           </widget>
@@ -893,14 +1022,14 @@
               <item>
                <layout class="QHBoxLayout" name="horizontalLayout_24">
                 <item>
-                 <widget class="QPushButton" name="pushButton_13">
+                 <widget class="QPushButton" name="advImportPushButton">
                   <property name="text">
                    <string>&amp;Import...</string>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="pushButton_14">
+                 <widget class="QPushButton" name="advExportPushButton">
                   <property name="text">
                    <string>E&amp;xport ...</string>
                   </property>
@@ -912,7 +1041,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton_15">
+            <widget class="QPushButton" name="advRestoreFactoryDefaultsPushButton">
              <property name="text">
               <string>Restore to &amp;factory defaults...</string>
              </property>
