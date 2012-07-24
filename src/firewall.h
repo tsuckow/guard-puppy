@@ -1871,28 +1871,42 @@ public:
 
                                 if ( s.substr(0,11) == ("# PROTOCOL=") )
                                 {
-                                    try
+                                    if(s.substr(11,11) == "userdefined" )
                                     {
-                                        ProtocolEntry & pe = pdb.lookup(s.substr(11));
-                                        fromZone->setProtocolState( *toZone, pe, Zone::PERMIT );
+                                        std::cerr << "Attempt to import GuardDog file. Zone connection failed for "<< s.substr(11) << std::endl;
                                     }
-                                    catch ( ... )
+                                    else
                                     {
-                                        std::cout << "Shouldn't see this anymore..." << std::endl;
+                                        try
+                                        {
+                                            ProtocolEntry & pe = pdb.lookup(s.substr(11));
+                                            fromZone->setProtocolState( *toZone, pe, Zone::PERMIT );
+                                        }
+                                        catch ( ... )
+                                        {
+                                            std::cout << "Shouldn't see this anymore..." << std::endl;
+                                        }
                                     }
                                 }
                                 else
                                 {
                                     if ( s.substr(0,9) == ("# REJECT=") )
                                     {
-                                        try
+                                        if(s.substr(9,11) == "userdefined" )
                                         {
-                                            ProtocolEntry & pe = pdb.lookup(s.substr(9));
-                                            fromZone->setProtocolState( *toZone, pe, Zone::REJECT );
+                                            std::cerr << "Attempt to import GuardDog file. Zone connection failed for "<< s.substr(9) << std::endl;
                                         }
-                                        catch ( ... )
+                                        else
                                         {
-                                            std::cout << "Shouldn't see this anymore..." << std::endl;
+                                            try
+                                            {
+                                                ProtocolEntry & pe = pdb.lookup(s.substr(9));
+                                                fromZone->setProtocolState( *toZone, pe, Zone::REJECT );
+                                            }
+                                            catch ( ... )
+                                            {
+                                                std::cout << "Shouldn't see this anymore..." << std::endl;
+                                            }
                                         }
                                     }
                                     else

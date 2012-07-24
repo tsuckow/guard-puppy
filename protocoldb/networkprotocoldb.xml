@@ -27,7 +27,7 @@
 <!-- Last Modified: 26/11/2006                          -->
 <!--                                                    -->
 <protocoldb lines="3305">
-<protocol name="FTP">
+<protocol name="ftp">
   <longname>FTP - File Transfer Protocol</longname>
   <longname lang="de">FTP - File Transfer Protocol</longname>
   <longname lang="nl">FTP - File Transfer Protocol</longname>
@@ -87,7 +87,7 @@
   FAQ: Firewall Forensics (What am I seeing?)</reference>
 </protocol>
 
-<protocol name="SSH">
+<protocol name="ssh">
   <longname>SSH - Remote Login Protocol</longname>
   <longname lang="de">SSH - Protokoll für die Anmeldung auf einer entfernten Maschine</longname>
   <longname lang="nl">SSH - protocol voor het inloggen op computers op afstand</longname>
