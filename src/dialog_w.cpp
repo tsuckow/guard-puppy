@@ -726,6 +726,12 @@ void GuardPuppyDialog_w::on_localPortRangeHighSpinBox_valueChanged( int value )
 {
     firewall.setLocalDynamicPortRangeEnd( value );
 }
+
+void GuardPuppyDialog_w::on_logLevelComboBox_currentIndexChanged(int value)
+{
+    firewall.setLogLevel(value);
+}
+
 void GuardPuppyDialog_w::on_userDefinedProtocolTypeComboBox_currentIndexChanged(int value)
 {
     int i; int j;

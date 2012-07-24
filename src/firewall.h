@@ -1988,7 +1988,7 @@ public:
         logipoptions = true;
         logtcpoptions = true;
         logtcpsequence = true;
-        loglevel = LOG_ALL_OR_UNMATCHED;
+        loglevel = 4;
         logratelimit = true;
         lograte = 1;
         lograteunit = SECOND;

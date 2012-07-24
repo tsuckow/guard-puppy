@@ -262,6 +262,7 @@ private slots:
     void on_logWarnRateLimitSpinBox_valueChanged( int value );
     void on_localPortRangeLowSpinBox_valueChanged( int value );
     void on_localPortRangeHighSpinBox_valueChanged( int value );
+    void on_logLevelComboBox_currentIndexChanged(int value);
 
     void on_userDefinedProtocolTypeComboBox_currentIndexChanged(int value);     //
     void on_userDefinedProtocolNameLineEdit_textEdited(QString const & text);  //
