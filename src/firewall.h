@@ -478,8 +478,16 @@ public:
             //  There is an rc.firewall file, but don't know if it's in a format GuardPuppy knows
             waspreviousfirewall = true;
 
-            //! \todo Need to add logic if readFirewall fails because there was a parsing error
-            readFirewall( filename );
+            try
+            {
+                readFirewall( filename );
+            }
+            catch(...)
+            {
+                waspreviousfirewall = false;
+                factoryDefaults();
+            }
+
         }
         else
         {

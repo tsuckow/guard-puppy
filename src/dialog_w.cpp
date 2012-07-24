@@ -479,13 +479,37 @@ void GuardPuppyDialog_w::on_advImportPushButton_clicked()
 {
 //! \todo add logic to handle readFirewall failure
     firewall.factoryDefaults();
-    std::string filename = QFileDialog::getOpenFileName(this, tr("Export GuardPuppy Config"), "/~", tr("All Files (*)")).toStdString();
-    firewall.readFirewall(filename);
+    std::string filename;
+    try
+    {
+        filename = QFileDialog::getOpenFileName(this, tr("Export GuardPuppy Config"), "~/", tr("All Files (*)")).toStdString();
+    }
+    catch(...)
+    {//it was a bad file
+        return;
+    }
+    if(filename=="")
+        return;
+    try
+    {
+        firewall.readFirewall(filename);
+    }
+    catch(std::string s)
+    {
+        QMessageBox::warning(this, "Import Failed", s.c_str());
+        return;
+    }
+    catch(...)
+    {
+        std::string s = "Error opening file, are you sure it was a Guardpuppy or GuardDog file?";
+        QMessageBox::warning(this, "Import Failed", s.c_str());
+        return;
+    }
     rebuildGui();//TODO figure out a better way of redrawing...?
 }
 void GuardPuppyDialog_w::on_advExportPushButton_clicked()
 {
-    std::string filename = QFileDialog::getSaveFileName(this, tr("Import GuardPuppy Config"), "/~", tr("All Files (*)")).toStdString();
+    std::string filename = QFileDialog::getSaveFileName(this, tr("Import GuardPuppy Config"), "~/.firewall.sh", tr("All Files (*)")).toStdString();
     firewall.save(filename);
 }
 void GuardPuppyDialog_w::on_advRestoreFactoryDefaultsPushButton_clicked(){
