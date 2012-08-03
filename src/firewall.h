@@ -25,8 +25,8 @@
 #include "protocoldb.h"
 #include "zone.h"
 
-//#define SYSTEM_RC_FIREWALL "/etc/rc.firewall"
-#define SYSTEM_RC_FIREWALL2 "/etc/rc2.firewall"   //  This is temporary during development so that guardpuppy doesn't actually overwrite rc.firewall
+#define SYSTEM_RC_FIREWALL2 "/etc/rc.firewall"
+//#define SYSTEM_RC_FIREWALL2 "/etc/rc2.firewall"   //  This is temporary during development so that guardpuppy doesn't actually overwrite rc.firewall
 
 //! \todo These are values of logging.  However, there is a whole matching mechanism
 //!       in iptables for logging filters and rules that could be implemented.
