@@ -112,8 +112,8 @@ void GuardPuppyDialog_w::on_zoneAddressLineEdit_textChanged( QString const & tex
 
 void GuardPuppyDialog_w::on_newZonePushButton_clicked()
 {
-    firewall.addZone( "new zone" );
-    zoneListWidget->addItem( "new zone" );
+    firewall.addZone( "new_zone" );
+    zoneListWidget->addItem( "new_zone" );
 //    protocolZoneListWidget->addItem( "new zone" );
     zoneListWidget->setCurrentRow( zoneListWidget->count() - 1 );
 //    protocolZoneListWidget->setCurrentRow( protocolZoneListWidget->count() - 1 );
@@ -135,6 +135,8 @@ void GuardPuppyDialog_w::on_newZoneAddressPushButton_clicked()
     firewall.addNewMachine( currentZoneName(), "addr" );
 
     zoneAddressListBox->addItem( "addr" );
+    
+    setZoneAddressGUI( firewall.getZone( currentZoneName()) );
     zoneAddressListBox->setCurrentRow( zoneAddressListBox->count() - 1 );
 }
 
@@ -529,7 +531,9 @@ void GuardPuppyDialog_w::on_zoneFileImportPushButton_clicked()
     }
     if(filename != "")
     {
-        firewall.getZone( currentZoneName() ).ZoneImport(filename);
+        
+        firewall.getZone( currentZoneName()).ZoneImport(filename);
+        setZoneAddressGUI( firewall.getZone( currentZoneName()) );
     }
 
 }
