@@ -11,6 +11,13 @@
 
 #include "protocoldb.h"
 #include "iprange.h"
+#include "zoneImportStrategy.h"
+
+#include <iostream>
+#include <fstream>
+#include <boost/regex.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/numeric/conversion/cast.hpp>
 
 /*
 **  Each zone maintains a list of IPaddress that define this zone and
@@ -91,9 +98,6 @@ public:
         return comment;
     }
 
-    //One of these Name functions should probably sanitize for whitespace,
-    //or there needs to be another getter that does.
-    //tldr white space can't be in a name somehow.
     void setName( std::string const & n )
     {
         name = n;
@@ -183,19 +187,6 @@ public:
         return protocolsNames;
     }
 
-#if 0
-    ProtocolState getProtocolState(Zone const & toZone, ProtocolEntry const & proto)
-    {
-        if ( protocols.find( toZone.name ) != protocols.end() )
-        {
-            if ( protocols[toZone.name].find( proto.name ) != protocols[toZone.name].end() )
-            {
-                return protocols[toZone.name][proto.name];
-            }
-        }
-        return DENY;
-    }
-#endif
     void denyAllProtocols( Zone const & toZone )
     {
         if ( protocols.find( toZone.name ) != protocols.end() )
@@ -247,6 +238,16 @@ public:
             return false;
         }
         return true;
+    }
+
+    void ZoneImport(std::string const & filename)
+    {
+        std::ifstream in(filename.c_str());
+        if( in.is_open() )
+        {
+            ZoneImportABCstrategy * strategy = new ZoneImportP2P;
+            strategy->Import(in, *this);
+        }
     }
 };
 

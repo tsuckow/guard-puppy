@@ -31,3 +31,5 @@ FORMS += src/guardPuppy.ui
 SOURCES += src/aboutDialog_w.cpp
 SOURCES += src/dialog_w.cpp
 SOURCES += src/guardPuppy.cpp
+SOURCES += src/zoneImportStrategy.cpp
+

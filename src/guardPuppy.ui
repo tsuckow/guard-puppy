@@ -17,7 +17,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>3</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="Zone">
       <attribute name="title">
@@ -176,7 +176,11 @@
                </layout>
               </item>
               <item>
-               <widget class="QListWidget" name="zoneAddressListBox"/>
+               <widget class="QListWidget" name="zoneAddressListBox">
+                <property name="batchSize">
+                 <number>50</number>
+                </property>
+               </widget>
               </item>
               <item>
                <layout class="QHBoxLayout" name="horizontalLayout_6">
@@ -191,6 +195,17 @@
                  <widget class="QPushButton" name="deleteZoneAddressPushButton">
                   <property name="text">
                    <string>Dele&amp;te Address</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_28">
+                <item>
+                 <widget class="QPushButton" name="zoneFileImportPushButton">
+                  <property name="text">
+                   <string>Import from file</string>
                   </property>
                  </widget>
                 </item>

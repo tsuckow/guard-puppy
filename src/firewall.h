@@ -1892,7 +1892,7 @@ public:
                                         }
                                         catch ( ... )
                                         {
-                                            std::cout << "Shouldn't see this anymore..." << std::endl;
+                                            //std::cout << "Shouldn't see this anymore..." << std::endl;
                                         }
                                     }
                                 }
@@ -1912,8 +1912,8 @@ public:
                                                 fromZone->setProtocolState( *toZone, pe, Zone::REJECT );
                                             }
                                             catch ( ... )
-                                            {
-                                                std::cout << "Shouldn't see this anymore..." << std::endl;
+                                            {//this can happen when importing old version files
+                                                //std::cout << "Shouldn't see this anymore..." << std::endl;
                                             }
                                         }
                                     }

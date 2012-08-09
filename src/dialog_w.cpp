@@ -375,6 +375,7 @@ void GuardPuppyDialog_w::setZoneAddressGUI( ::Zone const & zone)
     }
 
     newZoneAddressPushButton->setEnabled(zone.editable());
+    zoneFileImportPushButton->setEnabled(zone.editable());
 
     if(!zone.getMemberMachineList().empty() )
     {
@@ -402,6 +403,7 @@ void GuardPuppyDialog_w::setZonePageEnabled(::Zone const & thisZone, bool enable
 
         newZoneAddressPushButton->setEnabled(thisZone.editable());
 //        deleteZoneAddressPushButton->setEnabled(thisZone.editable());
+        zoneFileImportPushButton->setEnabled(thisZone.editable());
 
         zoneNameLineEdit->setEnabled(true);
         zoneCommentLineEdit->setEnabled(true);
@@ -427,12 +429,7 @@ void GuardPuppyDialog_w::setZonePageEnabled(::Zone const & thisZone, bool enable
         zoneAddressListBox->setEnabled(false);
         zoneNameLineEdit->setEnabled(false);
         zoneCommentLineEdit->setEnabled(false);
-//        deleteZoneAddressPushButton->setEnabled(false);
-
-        newZoneAddressPushButton->setEnabled(false);
-//        deleteZoneAddressPushButton->setEnabled(false);
-        zoneAddressLineEdit->setEnabled(false);
-        zoneAddressListBox->setEnabled(false);
+        zoneFileImportPushButton->setEnabled(false);
     }
 }
 
@@ -512,10 +509,31 @@ void GuardPuppyDialog_w::on_advExportPushButton_clicked()
     std::string filename = QFileDialog::getSaveFileName(this, tr("Import GuardPuppy Config"), "~/.firewall.sh", tr("All Files (*)")).toStdString();
     firewall.save(filename);
 }
-void GuardPuppyDialog_w::on_advRestoreFactoryDefaultsPushButton_clicked(){
+void GuardPuppyDialog_w::on_advRestoreFactoryDefaultsPushButton_clicked()
+{
     firewall.factoryDefaults();
     rebuildGui();
 }
+
+
+void GuardPuppyDialog_w::on_zoneFileImportPushButton_clicked()
+{
+    std::string filename;
+    try
+    {
+        filename = QFileDialog::getOpenFileName(this, tr("IP List Import"), "~/", tr("P2P (*.p2p *.P2P)")).toStdString();
+    }
+    catch(...)
+    {
+        return;
+    }
+    if(filename != "")
+    {
+        firewall.getZone( currentZoneName() ).ZoneImport(filename);
+    }
+
+}
+
 void GuardPuppyDialog_w::on_newUserDefinedProtocolPushButton_clicked()
 {
     std::string name        =   "New Protocol";

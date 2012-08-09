@@ -232,6 +232,7 @@ private slots:
     void on_advImportPushButton_clicked();
     void on_advExportPushButton_clicked();
     void on_advRestoreFactoryDefaultsPushButton_clicked();
+    void on_zoneFileImportPushButton_clicked();
 
     void on_newUserDefinedProtocolPushButton_clicked();
     void on_deleteUserDefinedProtocolPushButton_clicked();

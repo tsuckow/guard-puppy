@@ -227,7 +227,7 @@ public:
 
     void addPragmaValue( std::string const & value )
     {
-        std::cout << "Pragma " << lastPragmaName << " = " << value << std::endl;
+        //std::cout << "Pragma " << lastPragmaName << " = " << value << std::endl;
         pragma[ lastPragmaName ] = value;
     }
 
@@ -352,7 +352,7 @@ public:
     }
     void addPragmaValue( std::string const & value )
     {
-        std::cout << "Pragma " << lastPragmaName << " = " << value << std::endl;
+        //std::cout << "Pragma " << lastPragmaName << " = " << value << std::endl;
         pragma[ lastPragmaName ] = value;
     }
 
@@ -502,7 +502,7 @@ public:
             }
         }
         if (n != i)
-            std::cerr << "Index too great" << std::endl;
+            {}//std::cerr << "Index too great" << std::endl;
     }
 
     std::vector< ProtocolEntry > const & getProtocolDataBase() const
@@ -718,16 +718,16 @@ public:
         reader.setContentHandler(this);
         reader.setErrorHandler(this);
         parseerror.clear(); //.truncate(0);
-        std::cout << "Parsing...";
+        //std::cout << "Parsing...";
         if ( reader.parse(source))
         {
-            std::cout << "success" << std::endl;
+            //std::cout << "success" << std::endl;
             rc = true;
         }
         else
         {
-            std::cout << "failed" << std::endl;
-            std::cout << errorString().toStdString() << std::endl;
+            //std::cout << "failed" << std::endl;
+            std::cerr << errorString().toStdString() << std::endl;
             rc = false;
         }
 
@@ -764,7 +764,7 @@ public:
                         i = atts.index(protocolnamespace.c_str(),nameattr.c_str());
                         if(i==-1)
                         {
-                            std::cerr << "  errorstate = PROTOCOL_ERROR_ENTRY_NAME_ATTR_NOT_FOUND" << std::endl;
+                            //std::cerr << "  errorstate = PROTOCOL_ERROR_ENTRY_NAME_ATTR_NOT_FOUND" << std::endl;
                             errorstate = PROTOCOL_ERROR_ENTRY_NAME_ATTR_NOT_FOUND;
                             return false;
                         }
@@ -901,7 +901,7 @@ public:
                                 currentnetuse.setSource( ENTITY_SERVER );
                             else
                             {
-                                std::cerr << "   errorstate = PROTOCOL_ERROR_TCP_SOURCE_UNKNOWN " << std::endl;
+                                //std::cerr << "   errorstate = PROTOCOL_ERROR_TCP_SOURCE_UNKNOWN " << std::endl;
                                 errorstate = PROTOCOL_ERROR_TCP_SOURCE_UNKNOWN;
                                 return false;
                             }
@@ -917,7 +917,7 @@ public:
                                 currentnetuse.setDest( ENTITY_SERVER );
                             else
                             {
-                                std::cerr << "   errorstate = PROTOCOL_ERROR_TCP_DEST_UNKNOWN " << std::endl;
+                                //std::cerr << "   errorstate = PROTOCOL_ERROR_TCP_DEST_UNKNOWN " << std::endl;
                                 errorstate = PROTOCOL_ERROR_TCP_DEST_UNKNOWN;
                                 return false;
                             }
@@ -940,7 +940,7 @@ public:
                                 currentnetuse.setSource( ENTITY_SERVER );
                             else
                             {
-                                std::cerr << "   errorstate = PROTOCOL_ERROR_UDP_SOURCE_UNKNOWN" << std::endl;
+                                //std::cerr << "   errorstate = PROTOCOL_ERROR_UDP_SOURCE_UNKNOWN" << std::endl;
                                 errorstate = PROTOCOL_ERROR_UDP_SOURCE_UNKNOWN;
                                 return false;
                             }
@@ -956,7 +956,7 @@ public:
                                 currentnetuse.setDest( ENTITY_SERVER );
                             else
                             {
-                                std::cerr << "   errorstate = PROTOCOL_ERROR_UDP_DEST_UNKNOWN" << std::endl;
+                                //std::cerr << "   errorstate = PROTOCOL_ERROR_UDP_DEST_UNKNOWN" << std::endl;
                                 errorstate = PROTOCOL_ERROR_UDP_DEST_UNKNOWN;
                                 return false;
                             }
@@ -984,7 +984,7 @@ public:
                                 currentnetuse.setSource( ENTITY_SERVER );
                             else
                             {
-                                std::cerr<<"   errorstate = PROTOCOL_ERROR_ICMP_SOURCE_UNKNOWN"<<std::endl;
+                                //std::cerr<<"   errorstate = PROTOCOL_ERROR_ICMP_SOURCE_UNKNOWN"<<std::endl;
                                 errorstate = PROTOCOL_ERROR_ICMP_SOURCE_UNKNOWN;
                                 return false;
                             }
@@ -1000,7 +1000,7 @@ public:
                                 currentnetuse.setDest( ENTITY_SERVER );
                             else
                             {
-                                std::cerr << "   errorstate = PROTOCOL_ERROR_ICMP_SOURCE_UNKNOWN" << std::endl;
+                                //std::cerr << "   errorstate = PROTOCOL_ERROR_ICMP_SOURCE_UNKNOWN" << std::endl;
                                 errorstate = PROTOCOL_ERROR_ICMP_DEST_UNKNOWN;
                                 return false;
                             }
@@ -1584,7 +1584,7 @@ public:
             pit = std::find_if( protocolDataBase.begin(), protocolDataBase.end(), boost::phoenix::bind( &ProtocolEntry::longname, boost::phoenix::arg_names::arg1) == name );
             if ( pit == protocolDataBase.end() )
             {
-                std::cout << "Didn't protocol database: " << name << std::endl;
+                //std::cout << "Didn't protocol database: " << name << std::endl;
                 throw std::string("Zone not found 4");
             }
         }
@@ -1599,7 +1599,7 @@ public:
             pit = std::find_if( protocolDataBase.begin(), protocolDataBase.end(), boost::phoenix::bind( &ProtocolEntry::longname, boost::phoenix::arg_names::arg1) == name );
             if ( pit == protocolDataBase.end() )
             {
-                std::cout << "Didn't protocol database: " << name << std::endl;
+                //std::cout << "Didn't protocol database: " << name << std::endl;
                 throw std::string("Zone not found 5");
             }
         }
