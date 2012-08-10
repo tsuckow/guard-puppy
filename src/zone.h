@@ -75,6 +75,7 @@ public:
         protocols     = rhs.protocols;
         id            = rhs.id;
 
+        connections   = rhs.connections;
         return *this;
     }
 
@@ -138,11 +139,6 @@ public:
     {
         protocols[ toZone.name ][ proto.name ] = state;
     }
-
-    /*!
-    **  \todo This is debatable whether it's a valid function or not.
-    **       At a minimum, it's poorly named or in the wrong place.
-    */
     bool editable() const
     {
         switch ( zonetype )
@@ -212,21 +208,33 @@ public:
             connections.push_back( zoneTo );
         }
     }
-
     void disconnect( std::string const & zoneTo )
     {
-        std::vector< std::string >::iterator i = std::find( connections.begin(), connections.end(), zoneTo );
-        if ( i != connections.end() )
+        if(!isConnectionMutable(zoneTo))
         {
-            connections.erase( i );
+            std::vector< std::string >::iterator i = std::find( connections.begin(), connections.end(), zoneTo );
+            if ( i != connections.end() )
+            {
+                connections.erase( i );
+            }
         }
     }
-
     bool isConnectedTo( std::string const & zoneName ) const
     {
         return std::find( connections.begin(), connections.end(), zoneName ) != connections.end();
     }
-
+    bool isConnectionMutable(std::string const & toZone)
+    {
+        if(isLocal() && (toZone=="Internet"))
+        {
+            return false;
+        }
+        if(isInternet() && (toZone=="Local"))
+        {
+            return false;
+        }
+        return true;
+    }
     bool isConnectionMutable(Zone const & toZone)
     {
         if(isLocal() && toZone.isInternet())

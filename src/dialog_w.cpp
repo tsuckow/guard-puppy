@@ -69,9 +69,8 @@ void GuardPuppyDialog_w::on_zoneListWidget_currentItemChanged( QListWidgetItem *
 void GuardPuppyDialog_w::on_zoneNameLineEdit_textChanged( QString const & text )
 {
     std::string s = text.toStdString();
-    BOOST_FOREACH(char & c, s)
-        if(c==' ')
-            c = '_';
+    std::replace( s.begin(), s.end(), ' ', '_');
+
     firewall.zoneRename( currentZoneName(), s );
 
     if ( zoneListWidget->currentItem() )
@@ -114,9 +113,7 @@ void GuardPuppyDialog_w::on_newZonePushButton_clicked()
 {
     firewall.addZone( "new_zone" );
     zoneListWidget->addItem( "new_zone" );
-//    protocolZoneListWidget->addItem( "new zone" );
     zoneListWidget->setCurrentRow( zoneListWidget->count() - 1 );
-//    protocolZoneListWidget->setCurrentRow( protocolZoneListWidget->count() - 1 );
 }
 
 void GuardPuppyDialog_w::on_deleteZonePushButton_clicked()
