@@ -25,7 +25,7 @@ QT += xml
 HEADERS += src/aboutDialog_w.h
 HEADERS += src/dialog_w.h
 
-FORMS += src/aboutDialog.ui 
+FORMS += src/aboutDialog.ui
 FORMS += src/guardPuppy.ui
 
 SOURCES += src/aboutDialog_w.cpp

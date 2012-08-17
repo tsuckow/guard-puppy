@@ -6,14 +6,12 @@
 #include <QFileDialog>
 #include <QCheckBox>
 #include <QErrorMessage>
-
-#include "ui_guardPuppy.h"
-
 #include <boost/foreach.hpp>
 
+#include "ui_guardPuppy.h"
 #include "firewall.h"
-
 #include "zone.h"
+#include "userDefinedProtocolTreeHelpers.h"
 
 class ProtocolCheckBox : public QCheckBox
 {
@@ -31,6 +29,8 @@ signals:
 public slots:
     void stateChanged(int);
 };
+
+
 
 
 class GuardPuppyDialog_w : public QDialog, Ui::GuardPuppyDialog
@@ -69,6 +69,7 @@ class GuardPuppyDialog_w : public QDialog, Ui::GuardPuppyDialog
                 for(uint i(0); i < rngs.size(); i++)
                 {
                     QTreeWidgetItem * child = new QTreeWidgetItem(parent);
+                    child->setFlags(child->flags()|Qt::ItemIsEditable);
                     child->setText(0, s.c_str() );
                     child->setText(1, types[i]==IPPROTO_TCP ? QObject::tr("TCP") : QObject::tr("UDP") );
                     child->setText(2, rngs[i].c_str() );
@@ -175,12 +176,21 @@ class GuardPuppyDialog_w : public QDialog, Ui::GuardPuppyDialog
         }
     };
 
+
+
+
 public:
     GuardPuppyDialog_w( GuardPuppyFireWall & _firewall )
         : guiReady( false ), firewall( _firewall )
     {
         //! \todo Read program options, i.e window geometery
         setupUi( this );
+        //setup the model of any views i have
+        QStandardItemModel * model = new QStandardItemModel(0,4, userDefinedProtocolTreeView);
+        model->setHorizontalHeaderLabels(QStringList("Name")<<"Type"<<"Range"<<"Bidirectional");
+        userDefinedProtocolTreeView->setModel(model);
+
+        //
         if ( firewall.isSuperUserMode() == false )
         {
             //it may be better to have this check in the buttons and
@@ -239,7 +249,8 @@ private slots:
     void on_NewPortRangePushButton_clicked();
     void on_deletePortRangePushButton_clicked();
 
-    void on_userDefinedProtocolTreeWidget_currentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem*);
+    void on_userDefinedProtocolTreeView_currentChanged(QModelIndex const & current, QModelIndex const &);
+
     //  All the checkbox options
     void on_logDroppedPacketsCheckBox_stateChanged( int state );
     void on_logRejectPacketsCheckBox_stateChanged( int state );
@@ -290,33 +301,25 @@ private:
             return zoneAddressListBox->currentItem()->text().toStdString();
         return "";
     }
-    void CurrentlySelectedUDPIndexes(int& i, int& j)
+    
+    void CurrentlySelectedUDPIndexes( int& i, int& j)
     {
-        QTreeWidgetItem * cur,* parent,* child;
-        parent = child = 0;
-        j = i = 0;
-        cur = userDefinedProtocolTreeWidget->currentItem();
-        
-        if(cur)
+        QModelIndex cur = userDefinedProtocolTreeView->currentIndex();
+        j = i = -1;
+        if(cur.isValid())
         {
-            if(!cur->childCount())//if we have no children we are at the detail level
+            QModelIndex parent = cur.parent();
+            if(parent.isValid())
             {
-                parent = cur->parent();
-                child = cur;
+                i = parent.row();
+                j = cur.row();
             }
-            else//if we do then we are at a toplevel, take the first child
-                parent = cur;
-            if(child)
-                j = parent->indexOfChild(child);
-
-            i = userDefinedProtocolTreeWidget->indexOfTopLevelItem(parent);
+            else
+            {
+                i = cur.row();
+            }
         }
-        else//there isn't a current item. error out
-            i = j = -1;
-
     }
-
-
 };
 
 
