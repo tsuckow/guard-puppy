@@ -591,38 +591,49 @@ void GuardPuppyDialog_w::on_deletePortRangePushButton_clicked()
 }
 
 //likely delete this.
+/*
 void GuardPuppyDialog_w::on_userDefinedProtocolTreeView_dataChanged(QModelIndex const & current, QModelIndex const &)
 {
     int i;
     int j;
-    CurrentlySelectedUDPIndexes(current, i, j);
+    CurrentlySelectedUDPIndexes(i, j);
     if(current.isValid())
     {
-        std::string s = current->text(0).toStdString();
+        std::string s = current.sibling(current.row(), 0).toStdString();
         if(j>=0)
             setUserDefinedProtocolData(s, j);//function sets the data to look like the model
     }
 }
-
+*/
+/*
 void GuardPuppyDialog_w::setUserDefinedProtocolGUI(std::string const & s, int j)
 {
-        userDefinedProtocolNameLineEdit->setText(s.c_str());
-        userDefinedProtocolTypeComboBox->setCurrentIndex(firewall.getTypes(s)[j] == IPPROTO_TCP ? 0 : 1);
-        userDefinedProtocolPortStartSpinBox->setValue(firewall.getStartPorts(s)[j]);
-        userDefinedProtocolPortEndSpinBox->setValue(firewall.getEndPorts(s)[j]);
-        userDefinedProtocolBidirectionalCheckBox->setEnabled(firewall.getTypes(s)[j]==IPPROTO_UDP);
-        userDefinedProtocolBidirectionalCheckBox->setChecked(firewall.getBidirectionals(s)[j]);
+//        userDefinedProtocolNameLineEdit->setText(s.c_str());
+//        userDefinedProtocolTypeComboBox->setCurrentIndex(firewall.getTypes(s)[j] == IPPROTO_TCP ? 0 : 1);
+//        userDefinedProtocolPortStartSpinBox->setValue(firewall.getStartPorts(s)[j]);
+//        userDefinedProtocolPortEndSpinBox->setValue(firewall.getEndPorts(s)[j]);
+//        userDefinedProtocolBidirectionalCheckBox->setEnabled(firewall.getTypes(s)[j]==IPPROTO_UDP);
+//        userDefinedProtocolBidirectionalCheckBox->setChecked(firewall.getBidirectionals(s)[j]);
 }
+*/
 
 void GuardPuppyDialog_w::createUdpTableWidget()
 {
-    userDefinedProtocolTreeView->model->clear();
+    //i have to const cast it, because itemviews don't return non const pointers.
+    //their reasoning is that many view may use the same model, and if one view decided to give
+    //away a non const pointer than it could really screw things up. however i know there is only
+    //this view using this model, and this is the only way to get this copy of it.
+    QStandardItemModel * model = dynamic_cast<QStandardItemModel*>(const_cast<QAbstractItemModel *>(userDefinedProtocolTreeView->model()));
+    model->clear();
+    //userDefinedProtocolTreeView->model().clear();
     QStringList s("Protocol");
     s << "Type";
     s << "Range";
-    userDefinedProtocolTreeView->setHeaderLabels(s);
+    s << "Bidirectional";
+    model->setHorizontalHeaderLabels(s);
     userDefinedProtocolTreeView->setHeaderHidden(false);
-    AddUDPToTable_ audptt(userDefinedProtocolTreeView);
+    //userDefinedProtocolTreeView->setModel(model);
+    AddUDPToTable_ audptt(model);
     firewall.ApplyToDB(audptt);
 }
 
@@ -634,16 +645,15 @@ void GuardPuppyDialog_w::setAdvancedPageEnabled(bool enabled)
     //std::vector< UserDefinedProtocol > const & udp = firewall.getUserDefinedProtocols();
     numberOfUDP_ count;
     firewall.ApplyToDB(count);
-    bool gotudps = count.value();///*firewall.numberOfUserDefinedProtocols() >*/ 1 ;
+    //bool gotudps = count.value();///*firewall.numberOfUserDefinedProtocols() >*/ 1 ;
     userDefinedProtocolTreeView->setEnabled(enabled);
-    userDefinedProtocolNameLineEdit->setEnabled(enabled && gotudps);
+    //userDefinedProtocolNameLineEdit->setEnabled(enabled && gotudps);
     newUserDefinedProtocolPushButton->setEnabled(enabled);
-    deleteUserDefinedProtocolPushButton->setEnabled(enabled && gotudps);
-    userDefinedProtocolTypeComboBox->setEnabled(enabled && gotudps);
-    userDefinedProtocolPortStartSpinBox->setEnabled(enabled && gotudps);
-    userDefinedProtocolPortEndSpinBox->setEnabled(enabled && gotudps);
-
-    userDefinedProtocolBidirectionalCheckBox->setEnabled(false);
+    //deleteUserDefinedProtocolPushButton->setEnabled(enabled && gotudps);
+    //userDefinedProtocolTypeComboBox->setEnabled(enabled && gotudps);
+    //userDefinedProtocolPortStartSpinBox->setEnabled(enabled && gotudps);
+    //userDefinedProtocolPortEndSpinBox->setEnabled(enabled && gotudps);
+    //userDefinedProtocolBidirectionalCheckBox->setEnabled(false);
 
     enableDhcpCheckBox->setEnabled( enabled );
     dhcpInterfaceNameLineEdit->setEnabled( enabled && firewall.isDHCPcEnabled() );
@@ -710,6 +720,7 @@ void GuardPuppyDialog_w::on_enableDhcpdCheckBox_stateChanged( int state )
     firewall.setDHCPdEnabled( state );
 }
 
+/*
 void GuardPuppyDialog_w::on_userDefinedProtocolBidirectionalCheckBox_stateChanged( int state )
 {
     int i; int j;
@@ -720,6 +731,7 @@ void GuardPuppyDialog_w::on_userDefinedProtocolBidirectionalCheckBox_stateChange
         firewall.ApplyToNthInClass(cpb, i, "User Defined");
     }
 }
+*/
 
 void GuardPuppyDialog_w::on_logRateSpinBox_valueChanged( int value )
 {
@@ -746,7 +758,7 @@ void GuardPuppyDialog_w::on_logLevelComboBox_currentIndexChanged(int value)
 {
     firewall.setLogLevel(value);
 }
-
+/*
 void GuardPuppyDialog_w::on_userDefinedProtocolTypeComboBox_currentIndexChanged(int value)
 {
     int i; int j;
@@ -760,6 +772,8 @@ void GuardPuppyDialog_w::on_userDefinedProtocolTypeComboBox_currentIndexChanged(
         userDefinedProtocolBidirectionalCheckBox->setEnabled(value);
     }
 }
+*/
+/*
 void GuardPuppyDialog_w::on_userDefinedProtocolNameLineEdit_textEdited(QString const & text)
 {
     int i; int j;
@@ -777,6 +791,8 @@ void GuardPuppyDialog_w::on_userDefinedProtocolNameLineEdit_textEdited(QString c
         }
     }
 }
+*/
+/*
 void GuardPuppyDialog_w::on_userDefinedProtocolPortStartSpinBox_editingFinished()
 {
     int i; int j;
@@ -790,6 +806,8 @@ void GuardPuppyDialog_w::on_userDefinedProtocolPortStartSpinBox_editingFinished(
             userDefinedProtocolPortEndSpinBox->setValue(value);
     }
 }
+*/
+/*
 void GuardPuppyDialog_w::on_userDefinedProtocolPortEndSpinBox_editingFinished()
 {
     int i; int j;
@@ -803,4 +821,5 @@ void GuardPuppyDialog_w::on_userDefinedProtocolPortEndSpinBox_editingFinished()
             userDefinedProtocolPortStartSpinBox->setValue(value);
     }
 }
+*/
 

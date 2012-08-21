@@ -30,9 +30,6 @@ public slots:
     void stateChanged(int);
 };
 
-
-
-
 class GuardPuppyDialog_w : public QDialog, Ui::GuardPuppyDialog
 {
     Q_OBJECT;
@@ -51,29 +48,49 @@ class GuardPuppyDialog_w : public QDialog, Ui::GuardPuppyDialog
     };
     class AddUDPToTable_
     {
-    QTreeWidget * t;
+    QStandardItemModel * t;
     public:
-        AddUDPToTable_( QTreeWidget * t_):t(t_)
+        AddUDPToTable_( QStandardItemModel * t_):t(t_)
         {}
         void operator()(ProtocolEntry const & pe)
         {
             if(pe.Classification == "User Defined")
             {
                 //create an empty item
-                QTreeWidgetItem* parent = new QTreeWidgetItem(t, 0);
+                QStandardItem* parent = new QStandardItem;
                 std::string s = pe.getName();
-                parent->setText(0, s.c_str());//set the name for the parent
+                parent->setText(s.c_str());//set the name for the parent
+                parent->setData(s.c_str(), Qt::EditRole); //"previous" name
                 //next get the list of types and range strings
                 std::vector<uchar> types = pe.getTypes();
                 std::vector<std::string> rngs = pe.getRangeStrings();
+                std::vector<bool> bid = pe.getBidirectionals();
                 for(uint i(0); i < rngs.size(); i++)
                 {
-                    QTreeWidgetItem * child = new QTreeWidgetItem(parent);
-                    child->setFlags(child->flags()|Qt::ItemIsEditable);
-                    child->setText(0, s.c_str() );
-                    child->setText(1, types[i]==IPPROTO_TCP ? QObject::tr("TCP") : QObject::tr("UDP") );
-                    child->setText(2, rngs[i].c_str() );
+                    QList<QStandardItem *> child;
+                    QStandardItem * temp;
+                    temp = new QStandardItem(s.c_str());//name
+                    //temp->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+                    child.push_back(temp);
+                    temp = new QStandardItem();
+                    //temp->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+                    temp->setData(types[i], Qt::EditRole);//type
+                    temp->setData(((types[i]==IPPROTO_TCP)? "TCP" : "UDP"), Qt::DisplayRole);
+                    child.push_back(temp);
+                    temp = new QStandardItem(rngs[i].c_str());
+                    //temp->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+                    child.push_back(temp);
+                    temp = new QStandardItem("");
+                    //if(types[i]==IPPROTO_UDP)
+                    //    temp->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
+                    //else
+                    //    temp->setFlags(0);
+                    temp->setData(bid[i]?"Bidirectional":"Unidirectional", Qt::EditRole);
+                    //temp->setCheckable(true);
+                    child.push_back(temp);
+                    parent->appendRow(child);
                 }
+                t->appendRow(parent);
             }
         }
     };
@@ -176,21 +193,16 @@ class GuardPuppyDialog_w : public QDialog, Ui::GuardPuppyDialog
         }
     };
 
-
-
-
 public:
     GuardPuppyDialog_w( GuardPuppyFireWall & _firewall )
         : guiReady( false ), firewall( _firewall )
     {
         //! \todo Read program options, i.e window geometery
         setupUi( this );
-        //setup the model of any views i have
         QStandardItemModel * model = new QStandardItemModel(0,4, userDefinedProtocolTreeView);
-        model->setHorizontalHeaderLabels(QStringList("Name")<<"Type"<<"Range"<<"Bidirectional");
         userDefinedProtocolTreeView->setModel(model);
-
-        //
+        UDPTreeDelegate* tempDelegate = new UDPTreeDelegate(this);
+        userDefinedProtocolTreeView->setItemDelegate(tempDelegate);
         if ( firewall.isSuperUserMode() == false )
         {
             //it may be better to have this check in the buttons and
@@ -249,7 +261,9 @@ private slots:
     void on_NewPortRangePushButton_clicked();
     void on_deletePortRangePushButton_clicked();
 
-    void on_userDefinedProtocolTreeView_currentChanged(QModelIndex const & current, QModelIndex const &);
+/*
+    void on_userDefinedProtocolTreeView_dataChanged(QModelIndex const & current, QModelIndex const &);
+*/
 
     //  All the checkbox options
     void on_logDroppedPacketsCheckBox_stateChanged( int state );
@@ -266,7 +280,7 @@ private slots:
     void on_enableDhcpCheckBox_stateChanged( int state );
     void on_enableDhcpdCheckBox_stateChanged( int state );
 
-    void on_userDefinedProtocolBidirectionalCheckBox_stateChanged( int state );//
+    //void on_userDefinedProtocolBidirectionalCheckBox_stateChanged( int state );//
 
     //  The spinboxes
     void on_logRateSpinBox_valueChanged( int value );
@@ -275,12 +289,12 @@ private slots:
     void on_localPortRangeLowSpinBox_valueChanged( int value );
     void on_localPortRangeHighSpinBox_valueChanged( int value );
     void on_logLevelComboBox_currentIndexChanged(int value);
-
+/*
     void on_userDefinedProtocolTypeComboBox_currentIndexChanged(int value);     //
     void on_userDefinedProtocolNameLineEdit_textEdited(QString const & text);  //
     void on_userDefinedProtocolPortStartSpinBox_editingFinished( );      //
     void on_userDefinedProtocolPortEndSpinBox_editingFinished( );        //
-
+*/
 
 private:
     std::string currentZoneName() const

@@ -24,6 +24,7 @@ QT += xml
 # Input
 HEADERS += src/aboutDialog_w.h
 HEADERS += src/dialog_w.h
+HEADERS += src/userDefinedProtocolTreeHelpers.h
 
 FORMS += src/aboutDialog.ui
 FORMS += src/guardPuppy.ui
@@ -32,4 +33,5 @@ SOURCES += src/aboutDialog_w.cpp
 SOURCES += src/dialog_w.cpp
 SOURCES += src/guardPuppy.cpp
 SOURCES += src/zoneImportStrategy.cpp
+SOURCES += src/userDefinedProtocolTreeHelpers.cpp
 
