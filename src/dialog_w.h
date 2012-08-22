@@ -201,7 +201,7 @@ public:
         setupUi( this );
         QStandardItemModel * model = new QStandardItemModel(0,4, userDefinedProtocolTreeView);
         userDefinedProtocolTreeView->setModel(model);
-        UDPTreeDelegate* tempDelegate = new UDPTreeDelegate(this);
+        UDPTreeDelegate* tempDelegate = new UDPTreeDelegate(&firewall, this);
         userDefinedProtocolTreeView->setItemDelegate(tempDelegate);
         if ( firewall.isSuperUserMode() == false )
         {

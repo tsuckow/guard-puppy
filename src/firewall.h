@@ -2019,7 +2019,6 @@ private:
         if ( rv == -1 ) throw std::string( "System command failed" );
     }
 
-
     /*!
     **  \brief This simples removes any firewall that maybe current in force on the system.
     */
@@ -2054,9 +2053,17 @@ public:
     {
         return pdb.lookup(s).getName();
     }
+    void setName(std::string current, std::string next)
+    {
+        pdb.lookup(current).setName(next);
+    }
     std::vector<uchar> getTypes(std::string s) const
     {
         return pdb.lookup(s).getTypes();
+    }
+    void setType(std::string s, uchar type, int j)
+    {
+            pdb.lookup(s).setType(type, j);
     }
 
     std::vector<uint> getStartPorts(std::string s) const
@@ -2083,7 +2090,10 @@ public:
     {
         pdb.lookup(s).setBidirectional(on, j);
     }
-
+    std::vector<std::string> getRangeStrings(std::string s) const
+    {
+        return pdb.lookup(s).getRangeStrings();
+    }
     template <class T>
     void ApplyToDB(T & func)
     {

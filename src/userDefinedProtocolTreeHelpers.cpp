@@ -30,7 +30,7 @@ void rangeEdit::value(int& i, int& j)
     j = right->value();
 }
 
-UDPTreeDelegate::UDPTreeDelegate(QObject *parent):QItemDelegate(parent)
+UDPTreeDelegate::UDPTreeDelegate(GuardPuppyFireWall * firewall, QObject *parent):QItemDelegate(parent),fw(firewall)
 {
 }
 UDPTreeDelegate::~UDPTreeDelegate()
@@ -40,6 +40,7 @@ UDPTreeDelegate::~UDPTreeDelegate()
 QWidget * UDPTreeDelegate::createEditor(QWidget *parent, QStyleOptionViewItem const &, QModelIndex const & index) const
 {
     QString string = index.model()->data(index, Qt::DisplayRole).toString();
+    uchar type = ((index.model()->data(index.sibling(index.row(), 1), Qt::DisplayRole).toString()=="TCP")?IPPROTO_TCP:IPPROTO_UDP);
     if(string=="")
         return (QWidget*)(void*)0;
     switch(index.column())
@@ -52,8 +53,8 @@ QWidget * UDPTreeDelegate::createEditor(QWidget *parent, QStyleOptionViewItem co
         case 1: //comboBox
         {
             QComboBox* editor = new QComboBox(parent);
-            editor->addItem("TCP", QVariant(0));
-            editor->addItem("UDP", QVariant(1));
+            editor->addItem("TCP", QVariant(IPPROTO_TCP));
+            editor->addItem("UDP", QVariant(IPPROTO_UDP));
             return editor;
         }
         case 2: //rangeEditWidget
@@ -63,9 +64,11 @@ QWidget * UDPTreeDelegate::createEditor(QWidget *parent, QStyleOptionViewItem co
         }
         case 3: //Combobox
         {
+            if(type == IPPROTO_TCP)
+                return (QWidget*)(void*)0;
             QComboBox* editor = new QComboBox(parent);
-            editor->addItem("Bidirectional", 0);
-            editor->addItem("Unidirectional", 1);
+            editor->addItem("Bidirectional", 1);
+            editor->addItem("Unidirectional", 0);
             return editor;
         }
         default:
@@ -77,7 +80,6 @@ QWidget * UDPTreeDelegate::createEditor(QWidget *parent, QStyleOptionViewItem co
 
 void UDPTreeDelegate::setEditorData(QWidget * editor, QModelIndex const & index) const
 {
-     int value = index.model()->data(index, Qt::EditRole).toInt();
      QString string = index.model()->data(index, Qt::DisplayRole).toString();
      if(!editor)
          return;
@@ -92,19 +94,22 @@ void UDPTreeDelegate::setEditorData(QWidget * editor, QModelIndex const & index)
         case 1: //comboBox
         {
             QComboBox * edit = static_cast<QComboBox *>(editor);
-            edit->setCurrentIndex(value);
+            edit->setCurrentIndex((string=="TCP")?0:1);
             return;
         }
         case 2: //rangeEditWidget
         {
             rangeEdit * edit = static_cast<rangeEdit *>(editor);
-            edit->setValue(value, value);
+            std::string protocolName = index.model()->data(index.sibling(index.row(),0), Qt::DisplayRole).toString().toStdString();
+            int start = fw->getStartPorts(protocolName)[index.row()];
+            int end = fw->getEndPorts(protocolName)[index.row()];
+            edit->setValue(start, end);
             return;
         }
         case 3: //comboBox
         {
             QComboBox * edit = static_cast<QComboBox *>(editor);
-            edit->setCurrentIndex(value);
+            edit->setCurrentIndex((string=="Bidirectional")?0:1);
             return;
         }
         default: //what do?
@@ -114,25 +119,59 @@ void UDPTreeDelegate::setEditorData(QWidget * editor, QModelIndex const & index)
      return;
 }
 
+void UDPTreeDelegate::applyToAllName(QString s, QAbstractItemModel * model, QModelIndex const & index) const
+{
+    QModelIndex const & parent = index.parent();
+    if(!parent.isValid())
+    {
+        int i = 0;
+        while(index.child(i,0).isValid())
+        {
+            model->setData(index.child(i,0), s, Qt::EditRole);
+            model->setData(index.child(i,0), s, Qt::DisplayRole);
+            ++i;
+        }
+        model->setData(index, s, Qt::EditRole);
+        model->setData(index, s, Qt::DisplayRole);
+        return;
+    }
+    else
+    {
+        int i = 0;
+        while(parent.child(i,0).isValid())
+        {
+            model->setData(parent.child(i,0), s, Qt::EditRole);
+            model->setData(parent.child(i,0), s, Qt::DisplayRole);
+            ++i;
+        }
+        model->setData(parent, s, Qt::EditRole);
+        model->setData(parent, s, Qt::DisplayRole);
+        return;
+    }
+}
 
 void UDPTreeDelegate::setModelData(QWidget * editor, QAbstractItemModel * model, QModelIndex const & index) const
 {//this function needs to store data to the object model AND back to the database.
     if(!editor)
         return;
+    QString protocolName = model->data(index.sibling(index.row(),0), Qt::DisplayRole).toString();
     switch(index.column())
     {
         case 0: //lineEdit
         {
             QLineEdit * line = static_cast<QLineEdit*>(editor);
-            model->setData(index, line->text(), Qt::DisplayRole);
-            model->setData(index, line->text(), Qt::EditRole);
+            fw->setName( protocolName.toStdString(), line->text().toStdString());
+            applyToAllName(line->text(), model, index);
             return;
         }
         case 1: //comboBox
         {
             QComboBox * combo = static_cast<QComboBox*>(editor);
-            model->setData(index, combo->currentIndex(), Qt::EditRole);
-            model->setData(index, combo->currentText(), Qt::DisplayRole);
+            int curindex = combo->itemData(combo->currentIndex()).toInt();
+            QString text= combo->currentText();
+            fw->setType(protocolName.toStdString(), curindex, index.row());
+            model->setData(index, curindex, Qt::EditRole);
+            model->setData(index, text, Qt::DisplayRole);
             //set the firewall data here as well
             return;
         }
@@ -141,14 +180,21 @@ void UDPTreeDelegate::setModelData(QWidget * editor, QAbstractItemModel * model,
             rangeEdit* range = static_cast<rangeEdit*>(editor);
             int i, j;
             range->value(i,j);
-            model->setData(index, i, Qt::EditRole);//get the value from the protocol
+            fw->setStartPort(protocolName.toStdString(), i, index.row());
+            fw->setEndPort(protocolName.toStdString(), j, index.row());
+            QString rangeString = fw->getRangeStrings(protocolName.toStdString())[index.row()].c_str();
+            model->setData(index, rangeString, Qt::EditRole);//get the value from the protocol
             return;
         }
         case 3:
         {
             QComboBox * combo = static_cast<QComboBox*>(editor);
-            model->setData(index, combo->currentIndex(), Qt::EditRole);
-            model->setData(index, combo->currentText(), Qt::DisplayRole);
+            int curindex = combo->itemData(combo->currentIndex()).toInt();
+            QString text= combo->currentText();
+            std::cerr << "child " << index.row() << " " << text.toStdString() << " " <<curindex << std::endl;
+            fw->setBidirectional(protocolName.toStdString(), curindex, index.row());
+            model->setData(index, curindex, Qt::EditRole);
+            model->setData(index, text, Qt::DisplayRole);
             return;
         }
         default: //do something?
