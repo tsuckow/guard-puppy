@@ -16,9 +16,15 @@ rangeEdit::rangeEdit(QWidget* parent): QWidget(parent)
     left->setMaximum(65535);
     right->setMinimum(0);
     right->setMaximum(65535);
+    QWidget::connect(left, SIGNAL(editingFinished()), this, SLOT(updateRightFromLeft()));
+    QWidget::connect(right, SIGNAL(editingFinished()), this, SLOT(updateLeftFromRight()));
 }
-
-
+/*
+void rangeEdit::updateAfromB(QSpinBox * A, QSpinBox * B)
+{
+    if
+}
+*/
 void rangeEdit::setValue(int i, int j)
 {
     left->setValue(i);
@@ -112,7 +118,7 @@ void UDPTreeDelegate::setEditorData(QWidget * editor, QModelIndex const & index)
             edit->setCurrentIndex((string=="Bidirectional")?0:1);
             return;
         }
-        default: //what do?
+        default:
         {
         }
      }
@@ -191,13 +197,12 @@ void UDPTreeDelegate::setModelData(QWidget * editor, QAbstractItemModel * model,
             QComboBox * combo = static_cast<QComboBox*>(editor);
             int curindex = combo->itemData(combo->currentIndex()).toInt();
             QString text= combo->currentText();
-            std::cerr << "child " << index.row() << " " << text.toStdString() << " " <<curindex << std::endl;
             fw->setBidirectional(protocolName.toStdString(), curindex, index.row());
             model->setData(index, curindex, Qt::EditRole);
             model->setData(index, text, Qt::DisplayRole);
             return;
         }
-        default: //do something?
+        default:
         {
         }
     }

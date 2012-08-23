@@ -12,13 +12,29 @@
 
 class rangeEdit:public QWidget
 {
+Q_OBJECT
 QSpinBox* left;
 QSpinBox* right;
+void updateAfromB(bool updateLeft)
+{
+    if(left->value()>right->value())
+    {
+        if(updateLeft)
+            left->setValue(right->value());
+        else
+            right->setValue(left->value());
+    }
+}
+
     public:
     rangeEdit(QWidget* parent);
     void setValue(int i, int j);
     void value(int& i, int& j);
 
+public slots:
+
+    void updateLeftFromRight() { updateAfromB(true); }
+    void updateRightFromLeft() { updateAfromB(false); }
 };
 
 //we need a delegate for the UserDefinedProtocolTreeView, so that we can open up very specific widgets for editing each of the different columns.

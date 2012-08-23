@@ -70,15 +70,12 @@ class GuardPuppyDialog_w : public QDialog, Ui::GuardPuppyDialog
                     QList<QStandardItem *> child;
                     QStandardItem * temp;
                     temp = new QStandardItem(s.c_str());//name
-                    //temp->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
                     child.push_back(temp);
                     temp = new QStandardItem();
-                    //temp->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
                     temp->setData(types[i], Qt::EditRole);//type
                     temp->setData(((types[i]==IPPROTO_TCP)? "TCP" : "UDP"), Qt::DisplayRole);
                     child.push_back(temp);
                     temp = new QStandardItem(rngs[i].c_str());
-                    //temp->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
                     child.push_back(temp);
                     temp = new QStandardItem("");
                     //if(types[i]==IPPROTO_UDP)
@@ -145,7 +142,6 @@ public:
     void setZonePageEnabled( ::Zone const & thisZone, bool enabled);
     void setZoneConnectionGUI( ::Zone const & zone);
     void setUserDefinedProtocolGUI( std::string const &, int const j) ;
-    void buildConnectionGUI() ;
     void createProtocolPages();
     void setProtocolPagesEnabled(bool enabled);
     void setAdvancedPageEnabled(bool enabled);

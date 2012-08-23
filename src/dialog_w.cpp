@@ -166,7 +166,6 @@ void GuardPuppyDialog_w::rebuildGui()
         zoneListWidget->setCurrentRow( 0 );
         protocolZoneListWidget->setCurrentRow( 0 );
 
-        buildConnectionGUI();
 
         if ( firewall.zoneCount() > 0 && currentZoneName() != "" )
         {
@@ -540,7 +539,13 @@ void GuardPuppyDialog_w::on_newUserDefinedProtocolPushButton_clicked()
     bool   udpBidirectional =   false;
     firewall.newUserDefinedProtocol(name, udpType, udpStartPort, udpEndPort, udpBidirectional);
     rebuildGui();
-    userDefinedProtocolTreeView->scrollToBottom();
+    int i = 0;//there is always gunna be one.
+    QStandardItemModel const * model = dynamic_cast<QStandardItemModel const *>(userDefinedProtocolTreeView->model());
+    while(model->indexFromItem(model->item(++i)).isValid());
+    QModelIndex item = model->indexFromItem(model->item(--i));
+    userDefinedProtocolTreeView->expand(item);
+    userDefinedProtocolTreeView->setCurrentIndex(item);
+    userDefinedProtocolTreeView->scrollTo(item);
 }
 
 void GuardPuppyDialog_w::on_deleteUserDefinedProtocolPushButton_clicked()
@@ -550,7 +555,17 @@ void GuardPuppyDialog_w::on_deleteUserDefinedProtocolPushButton_clicked()
     {
         std::string s = item.sibling(item.row(),0).data().toString().toStdString();
         firewall.deleteUserDefinedProtocol(s);
-        rebuildGui();//this is really uncalled for now...
+        rebuildGui();
+        int i = -1;
+        QStandardItemModel const * model = dynamic_cast<QStandardItemModel const *>(userDefinedProtocolTreeView->model());
+        while(model->indexFromItem(model->item(++i)).isValid());
+        item = model->indexFromItem(model->item(--i));
+        if(item.isValid())
+        {
+            userDefinedProtocolTreeView->expand(item);
+            userDefinedProtocolTreeView->setCurrentIndex(item);
+            userDefinedProtocolTreeView->scrollTo(item);
+        }
     }
 }
 
@@ -558,15 +573,18 @@ void GuardPuppyDialog_w::on_NewPortRangePushButton_clicked()
 {
     int i; int j;
     CurrentlySelectedUDPIndexes(i, j);
-    if( i>=0 && j>=0 )
+    if( i>=0 )
     {
-        QModelIndex p = userDefinedProtocolTreeView->currentIndex();
-        addNewRange_ anr;
-        firewall.ApplyToNthInClass(anr, i, "User Defined");
-        rebuildGui();
-        userDefinedProtocolTreeView->expand(p);
-        userDefinedProtocolTreeView->setCurrentIndex(p);
-        userDefinedProtocolTreeView->scrollTo(p);
+        {
+            addNewRange_ anr;
+            firewall.ApplyToNthInClass(anr, i, "User Defined");
+            rebuildGui();
+        }
+        QStandardItemModel const * model = dynamic_cast<QStandardItemModel const *>(userDefinedProtocolTreeView->model());
+        QModelIndex root = model->indexFromItem(model->item(0));
+        userDefinedProtocolTreeView->expand(root.sibling(i,0));
+        userDefinedProtocolTreeView->setCurrentIndex(root.sibling(i,0));
+        userDefinedProtocolTreeView->scrollTo(root.sibling(i,0));
     }
 }
 void GuardPuppyDialog_w::on_deletePortRangePushButton_clicked()
@@ -575,15 +593,18 @@ void GuardPuppyDialog_w::on_deletePortRangePushButton_clicked()
     CurrentlySelectedUDPIndexes(i, j);
     if( i>=0 && j>=0 )
     {
-        //QModelIndex * p = userDefinedProtocolTreeView->topLevelItem(i);
-        //if(p->childCount()>1)
+        if(userDefinedProtocolTreeView->currentIndex().sibling(1,0).isValid())//make sure there is more than 1
         {
-            deleteRange_ dr(j);
-            firewall.ApplyToNthInClass(dr, i, "User Defined");
-            rebuildGui();
-        //    userDefinedProtocolTreeView->scrollTo(p);
-        //    userDefinedProtocolTreeView->expand(p);
-        //    userDefinedProtocolTreeView->setCurrentItem(p->child(p->childCount()-1));
+            {
+                deleteRange_ dr(j);
+                firewall.ApplyToNthInClass(dr, i, "User Defined");
+                rebuildGui();
+            }
+            QStandardItemModel const * model = dynamic_cast<QStandardItemModel const *>(userDefinedProtocolTreeView->model());
+            QModelIndex root = model->indexFromItem(model->item(0));
+            userDefinedProtocolTreeView->expand(root.sibling(i,0));
+            userDefinedProtocolTreeView->setCurrentIndex(root.sibling(i,0).child(0,0));
+            userDefinedProtocolTreeView->scrollTo(root.sibling(i,0));
         }
     }
 }
@@ -591,20 +612,14 @@ void GuardPuppyDialog_w::on_deletePortRangePushButton_clicked()
 
 void GuardPuppyDialog_w::createUdpTableWidget()
 {
-    //i have to const cast it, because itemviews don't return non const pointers.
-    //their reasoning is that many view may use the same model, and if one view decided to give
-    //away a non const pointer than it could really screw things up. however i know there is only
-    //this view using this model, and this is the only way to get this copy of it.
     QStandardItemModel * model = dynamic_cast<QStandardItemModel*>(const_cast<QAbstractItemModel *>(userDefinedProtocolTreeView->model()));
     model->clear();
-    //userDefinedProtocolTreeView->model().clear();
     QStringList s("Protocol");
     s << "Type";
     s << "Range";
     s << "Bidirectional";
     model->setHorizontalHeaderLabels(s);
     userDefinedProtocolTreeView->setHeaderHidden(false);
-    //userDefinedProtocolTreeView->setModel(model);
     AddUDPToTable_ audptt(model);
     firewall.ApplyToDB(audptt);
 }
@@ -625,10 +640,6 @@ void GuardPuppyDialog_w::setAdvancedPageEnabled(bool enabled)
 
     allowTcpTimeStampsCheckBox->setEnabled(enabled);
 
-}
-
-void GuardPuppyDialog_w::buildConnectionGUI()
-{
 }
 
 void GuardPuppyDialog_w::on_logDroppedPacketsCheckBox_stateChanged( int state )
