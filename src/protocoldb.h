@@ -411,7 +411,7 @@ public:
     }
 
     std::string getName() const        { return name; }
-    void setName( std::string const & n ) { name = n; }
+    void setName( std::string const & n ) { name = n; longname = n;  }
 
     std::vector<uchar> getTypes() const
     {
