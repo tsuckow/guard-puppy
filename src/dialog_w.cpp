@@ -553,13 +553,12 @@ void GuardPuppyDialog_w::on_deleteUserDefinedProtocolPushButton_clicked()
     QModelIndex item = userDefinedProtocolTreeView->currentIndex();
     if(item.isValid())
     {
-        std::string s = item.sibling(item.row(),0).data().toString().toStdString();
+        int itemrow = item.row();
+        std::string s = item.sibling(itemrow, 0).data().toString().toStdString();
         firewall.deleteUserDefinedProtocol(s);
         rebuildGui();
-        int i = -1;
         QStandardItemModel const * model = dynamic_cast<QStandardItemModel const *>(userDefinedProtocolTreeView->model());
-        while(model->indexFromItem(model->item(++i)).isValid());
-        item = model->indexFromItem(model->item(--i));
+        item = model->indexFromItem(model->item(itemrow>0?itemrow-1:0));
         if(item.isValid())
         {
             userDefinedProtocolTreeView->expand(item);
