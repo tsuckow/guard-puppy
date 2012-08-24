@@ -46,7 +46,6 @@ UDPTreeDelegate::~UDPTreeDelegate()
 QWidget * UDPTreeDelegate::createEditor(QWidget *parent, QStyleOptionViewItem const &, QModelIndex const & index) const
 {
     QString string = index.model()->data(index, Qt::DisplayRole).toString();
-    uchar type = ((index.model()->data(index.sibling(index.row(), 1), Qt::DisplayRole).toString()=="TCP")?IPPROTO_TCP:IPPROTO_UDP);
     if(string=="")
         return (QWidget*)(void*)0;
     switch(index.column())
@@ -70,8 +69,6 @@ QWidget * UDPTreeDelegate::createEditor(QWidget *parent, QStyleOptionViewItem co
         }
         case 3: //Combobox
         {
-            if(type == IPPROTO_TCP)
-                return (QWidget*)(void*)0;
             QComboBox* editor = new QComboBox(parent);
             editor->addItem("Bidirectional", 1);
             editor->addItem("Unidirectional", 0);
@@ -176,6 +173,10 @@ void UDPTreeDelegate::setModelData(QWidget * editor, QAbstractItemModel * model,
             int curindex = combo->itemData(combo->currentIndex()).toInt();
             QString text= combo->currentText();
             fw->setType(protocolName.toStdString(), curindex, index.row());
+            if(curindex == IPPROTO_TCP)
+                dynamic_cast<QStandardItemModel*>(model)->itemFromIndex(index.sibling(index.row(), 3))->setFlags(0);
+            else
+                dynamic_cast<QStandardItemModel*>(model)->itemFromIndex(index.sibling(index.row(), 3))->setFlags(Qt::ItemIsEditable|Qt::ItemIsEnabled|Qt::ItemIsSelectable);
             model->setData(index, curindex, Qt::EditRole);
             model->setData(index, text, Qt::DisplayRole);
             //set the firewall data here as well

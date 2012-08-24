@@ -78,10 +78,8 @@ class GuardPuppyDialog_w : public QDialog, Ui::GuardPuppyDialog
                     temp = new QStandardItem(rngs[i].c_str());
                     child.push_back(temp);
                     temp = new QStandardItem("");
-                    //if(types[i]==IPPROTO_UDP)
-                    //    temp->setFlags(Qt::ItemIsSelectable|Qt::ItemIsEnabled);
-                    //else
-                    //    temp->setFlags(0);
+                    if(types[i]==IPPROTO_TCP)
+                        temp->setFlags(0);
                     temp->setData(bid[i]?"Bidirectional":"Unidirectional", Qt::EditRole);
                     //temp->setCheckable(true);
                     child.push_back(temp);
