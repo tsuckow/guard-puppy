@@ -592,7 +592,8 @@ void GuardPuppyDialog_w::on_deletePortRangePushButton_clicked()
     CurrentlySelectedUDPIndexes(i, j);
     if( i>=0 && j>=0 )
     {
-        if(userDefinedProtocolTreeView->currentIndex().sibling(1,0).isValid())//make sure there is more than 1
+        QModelIndex item = userDefinedProtocolTreeView->currentIndex().sibling(1,0);
+        if(item.isValid())//make sure there is more than 1
         {
             {
                 deleteRange_ dr(j);
@@ -600,10 +601,10 @@ void GuardPuppyDialog_w::on_deletePortRangePushButton_clicked()
                 rebuildGui();
             }
             QStandardItemModel const * model = dynamic_cast<QStandardItemModel const *>(userDefinedProtocolTreeView->model());
-            QModelIndex root = model->indexFromItem(model->item(0));
-            userDefinedProtocolTreeView->expand(root.sibling(i,0));
-            userDefinedProtocolTreeView->setCurrentIndex(root.sibling(i,0).child(0,0));
-            userDefinedProtocolTreeView->scrollTo(root.sibling(i,0));
+            item = model->indexFromItem(model->item(i)).child(((j>0)?j-1:0),0);
+            userDefinedProtocolTreeView->expand(item);
+            userDefinedProtocolTreeView->setCurrentIndex(item);
+            userDefinedProtocolTreeView->scrollTo(item);
         }
     }
 }
