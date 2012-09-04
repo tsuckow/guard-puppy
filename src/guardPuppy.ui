@@ -718,7 +718,7 @@
      </widget>
      <widget class="QWidget" name="advanced">
       <attribute name="title">
-       <string>Ad&amp;vanced</string>
+       <string>&amp;Advanced</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_13">
        <item>
@@ -809,7 +809,7 @@
               <item>
                <widget class="QCheckBox" name="enableDhcpCheckBox">
                 <property name="text">
-                 <string>&amp;Enable DHCP on interfaces:</string>
+                 <string>Enable DHCP on interfaces:</string>
                 </property>
                </widget>
               </item>
@@ -823,7 +823,7 @@
               <item>
                <widget class="QCheckBox" name="enableDhcpdCheckBox">
                 <property name="text">
-                 <string>&amp;Enable DHCP server on interfaces:</string>
+                 <string>Enable DHCP server on interfaces:</string>
                 </property>
                </widget>
               </item>
@@ -882,14 +882,14 @@
               <item>
                <widget class="QPushButton" name="newUserDefinedProtocolPushButton">
                 <property name="text">
-                 <string>&amp;New Protocol</string>
+                 <string>New Protocol</string>
                 </property>
                </widget>
               </item>
               <item>
                <widget class="QPushButton" name="deleteUserDefinedProtocolPushButton">
                 <property name="text">
-                 <string>&amp;Delete Protocol</string>
+                 <string>Delete Protocol</string>
                 </property>
                </widget>
               </item>
@@ -1002,7 +1002,7 @@
                </size>
               </property>
               <property name="text">
-               <string>E&amp;xport ...</string>
+               <string>&amp;Export ...</string>
               </property>
              </widget>
             </item>
@@ -1100,7 +1100,7 @@
        <item>
         <widget class="QPushButton" name="applyPushButton">
          <property name="text">
-          <string>&amp;Apply</string>
+          <string>Appl&amp;y</string>
          </property>
         </widget>
        </item>
