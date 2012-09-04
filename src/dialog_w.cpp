@@ -677,8 +677,45 @@ void GuardPuppyDialog_w::on_logTcpOptionsCheckBox_stateChanged( int state )
 
 void GuardPuppyDialog_w::on_disableFirewallCheckBox_stateChanged( int state )
 {
-    firewall.setDisabled( state );
-    rebuildGui();
+    if(firewall.isSuperUserMode())
+    {
+        if(state)
+        {
+            QMessageBox::warning(this, "Warning", "This will make your machine vulnerable to potential attacks.");
+            firewall.resetSystemFirewall();
+        }
+        else
+        {
+            firewall.apply();
+        }
+        firewall.setDisabled( state );
+        rebuildGui();
+    }
+    else
+    {
+        QMessageBox::information(this, "Not Superuser", "Unable to auto apply settings, user not privileged.");
+    }
+}
+void GuardPuppyDialog_w::on_blockEverythingCheckBox_stateChanged( int state )
+{
+    if(firewall.isSuperUserMode())
+    {
+        if(state)
+        {
+            QMessageBox::warning(this, "Warning", "This will interupt any current connections.");
+            firewall.lockSystemFirewall();
+        }
+        else
+        {
+            firewall.apply();
+        }
+        //firewall.setDisabled( state );
+        //rebuildGui();
+    }
+    else
+    {
+        QMessageBox::information(this, "Not Superuser", "Unable to auto apply settings, user not privileged.");
+    }
 }
 void GuardPuppyDialog_w::on_allowTcpTimeStampsCheckBox_stateChanged( int state )
 {

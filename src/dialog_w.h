@@ -194,6 +194,7 @@ private slots:
     void on_logTcpOptionsCheckBox_stateChanged( int state );
 
     void on_disableFirewallCheckBox_stateChanged( int state );
+    void on_blockEverythingCheckBox_stateChanged( int state );
     void on_allowTcpTimeStampsCheckBox_stateChanged( int state );
     void on_enableDhcpCheckBox_stateChanged( int state );
     void on_enableDhcpdCheckBox_stateChanged( int state );
@@ -233,7 +234,7 @@ private:
             return zoneAddressListBox->currentItem()->text().toStdString();
         return "";
     }
-    
+
     void CurrentlySelectedUDPIndexes( int& i, int& j)
     {
         QModelIndex cur = userDefinedProtocolTreeView->currentIndex();

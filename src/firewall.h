@@ -2025,6 +2025,7 @@ private:
         if ( rv == -1 ) throw std::string( "System command failed" );
     }
 
+public:
     /*!
     **  \brief This simples removes any firewall that maybe current in force on the system.
     */
@@ -2040,20 +2041,41 @@ private:
             "  /usr/bin/logger -p auth.info -t guarddog \"ERROR Can't determine the firewall command! (Is iptables installed?)\"\n"
             "fi;\n"
             "if [ $FILTERSYS -eq 2 ]; then\n"
+            "/sbin/iptables -F \n"
             "/sbin/iptables -P OUTPUT ACCEPT\n"
             "/sbin/iptables -P INPUT ACCEPT\n"
             "/sbin/iptables -P FORWARD ACCEPT\n"
-            "/sbin/iptables -F FORWARD\n"
-            "/sbin/iptables -F INPUT\n"
-            "/sbin/iptables -F OUTPUT\n"
-            "fi;\n"
-            "read -p \"Press return to continue\"\n";
+            "fi;\n";
 
         int rv = system( command.c_str() );
         if ( rv == -1 ) throw std::string( "system command returned error" );
     }
 
-public:
+    /*!
+    **  \brief This locks down the computer fully.
+    */
+    void lockSystemFirewall()
+    {
+        std::string command;
+
+        command = "FILTERSYS=0\n"
+            "if [ -e /sbin/iptables ]; then\n"
+            "  FILTERSYS=2\n"
+            "fi;\n"
+            "if [ $FILTERSYS -eq 0 ]; then\n"
+            "  /usr/bin/logger -p auth.info -t guarddog \"ERROR Can't determine the firewall command! (Is iptables installed?)\"\n"
+            "fi;\n"
+            "if [ $FILTERSYS -eq 2 ]; then\n"
+            "/sbin/iptables -F \n"
+            "/sbin/iptables -P OUTPUT DROP\n"
+            "/sbin/iptables -P INPUT DROP\n"
+            "/sbin/iptables -P FORWARD DROP\n"
+            "fi;\n";
+
+        int rv = system( command.c_str() );
+        if ( rv == -1 ) throw std::string( "system command returned error" );
+    }
+
 //TODO make these safe to call with bad strings.
     std::string getName(std::string s) const
     {

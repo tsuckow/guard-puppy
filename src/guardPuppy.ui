@@ -726,13 +726,6 @@
          <item>
           <layout class="QVBoxLayout" name="verticalLayout_9">
            <item>
-            <widget class="QCheckBox" name="disableFirewallCheckBox">
-             <property name="text">
-              <string>Disable firewall</string>
-             </property>
-            </widget>
-           </item>
-           <item>
             <widget class="QCheckBox" name="showAdvancedProtocolHelpCheckBox">
              <property name="text">
               <string>Show advanced protocol help</string>
@@ -771,6 +764,20 @@
             <widget class="QCheckBox" name="allowTcpTimeStampsCheckBox">
              <property name="text">
               <string>Allow TCP timestamps</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="disableFirewallCheckBox">
+             <property name="text">
+              <string>Disable firewall</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="blockEverythingCheckBox">
+             <property name="text">
+              <string>Block Everything</string>
              </property>
             </widget>
            </item>
