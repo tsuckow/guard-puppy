@@ -23,6 +23,7 @@ email                : simon@simonzone.com
 #include <string>
 #include <iostream>
 #include <algorithm>
+#include <sstream>
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
 
@@ -517,8 +518,28 @@ public:
 
     void UserDefinedProtocol(std::string name, uchar udptype, uint startp, uint endp, bool bi)
     {
-        ProtocolEntry entry( name );
-        entry.longname = name;
+        bool test(true);
+        int i(0);
+        ProtocolEntry entry("URPPYEPRRPOOO24601");
+        do
+        {
+            std::stringstream n;
+            n << name;
+            if(i!=0)
+                n << i;
+            try
+            {
+                lookup(n.str());
+            }
+            catch(...)
+            {
+                entry.setName(n.str());
+                test = false;
+            }
+            i++;
+        }
+        while(test);
+
         entry.Classification = "User Defined";
         ProtocolNetUse netuse;
         netuse.addDest(ProtocolNetUseDetail(PORTRANGE_RANGE, startp, endp));
