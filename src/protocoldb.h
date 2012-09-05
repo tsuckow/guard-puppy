@@ -135,10 +135,10 @@ public:
     std::string getRangeString() const
     {
         std::stringstream result;
-        if (start == end)
-            result << start;
+        if (getStart() == getEnd())
+            result << getStart();
         else
-            result << start << ":" << end;
+            result << getStart() << ":" << getEnd();
         return result.str();
     }
 
@@ -194,10 +194,9 @@ public:
     int getCode() const { return code; }
     uint getType() const { return type; }
 
-    void print() const
+    void print(std::ostream & out = std::cerr) const
     {
-        fprintf(stderr,"[ Start: %u End: %u ]",
-                start,end);
+        out << "Start: "<< (int)getStart() <<" End: "<< (int)getEnd();
     }
 };
 
@@ -266,33 +265,32 @@ public:
     ~ProtocolNetUse()
     { }
 
-    void print() const
+    void print( std::ostream & out = std::cerr) const
     {
-
-        fprintf(stderr,"[Description: %s ",(const char *)description.c_str());
+        //out << std:: endl << ;
+        if(!description.empty())
+            out << "  Description: " << description.c_str() << std::endl << " ";
+        out << "  Type: ";
         switch(type)
         {
             case IPPROTO_TCP:
-                fprintf(stderr," Type: tcp ");
+                out << "TCP ";
                 break;
 
             case IPPROTO_UDP:
-                fprintf(stderr," Type: udp ");
+                out << "UDP ";
                 break;
 
             case IPPROTO_ICMP:
-                fprintf(stderr," Type: icmp ");
+                out << "ICMP ";
                 break;
 
             default:
-                fprintf(stderr," Type: %d ",(int)type);
+                out << (int)type << " ";
                 break;
         }
-        fprintf(stderr," Source: ");
-        sourcedetail.print();
-        fprintf(stderr," Dest: ");
-        destdetail.print();
-        fprintf(stderr,"]");
+        out << std::endl << "    Source: " << sourcedetail.getRangeString();
+        out << std::endl <<  "    Dest: " << destdetail.getRangeString();
     }
     bool sourcePortEquals(uint port)
     {
@@ -380,35 +378,32 @@ public:
 
     }
 
-    void print() const
+    void print(std::ostream & out = std::cerr) const
     {
 
-        fprintf(stderr,"[ Name: %s Longname: %s Threat: ",name.c_str(),longname.c_str());
+        out << "Name: " << name.c_str() << std::endl << "Longname: "<< longname.c_str()<< std::endl;
         switch(threat)
         {
             case SCORE_LOW:
-                fprintf(stderr,"low");
+                out << "Threat: Low" << std::endl;
                 break;
             case SCORE_MEDIUM:
-                fprintf(stderr,"medium");
+                out << "Threat: Medium" << std::endl;
                 break;
             case SCORE_HIGH:
-                fprintf(stderr,"high");
-                break;
+                out << "Threat: High" << std::endl;
             default:
-                fprintf(stderr,"unknown");
-                break;
         }
-        fprintf(stderr," Classification: ");
+        out  << "Classification: ";
 
         if(Classification != "")
-            std::cerr << Classification;
-
+            out << Classification;
+        int i(1);
         BOOST_FOREACH( ProtocolNetUse const & x, networkuse )
         {
-            x.print();
+            out << std::endl << i++;
+            x.print(out);
         }
-        fprintf(stderr,"]");
     }
 
     std::string getName() const        { return name; }

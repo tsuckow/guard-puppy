@@ -194,7 +194,7 @@ private slots:
     void on_logIpOptionsCheckBox_stateChanged( int state );
     void on_logTcpSequenceCheckBox_stateChanged( int state );
     void on_logTcpOptionsCheckBox_stateChanged( int state );
-
+    void on_showAdvancedProtocolHelpCheckBox_stateChanged( int state );
     void on_disableFirewallCheckBox_stateChanged( int state );
     void on_blockEverythingCheckBox_stateChanged( int state );
     void on_allowTcpTimeStampsCheckBox_stateChanged( int state );

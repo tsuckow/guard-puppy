@@ -13,6 +13,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <sstream>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
@@ -63,7 +64,7 @@ class GuardPuppyFireWall
     uint localPortRangeEnd;
     bool disabled;
     bool routing;
-
+    bool advancedProtocolHelp;
     bool logdrop;
     bool logreject;
     bool logipoptions;
@@ -97,13 +98,18 @@ public:
     std::string getProtocolText( std::string const & protocol )
     {
         std::string text = "Not found";
+        std::stringstream temp;
         try
         {
-            text = pdb.lookup( protocol ).description;
+            temp << pdb.lookup( protocol ).description << std::endl;
+            if(isShowAdvancedProtocolHelp())
+            {
+                pdb.lookup( protocol ).print(temp);
+            }
+            text = temp.str();
         }
         catch(...)
-        {
-        }
+        { }
         return text;
     }
 
@@ -116,6 +122,8 @@ public:
     bool isLogIPOptions() { return logipoptions; }
     void setLogTCPOptions(bool on) { logtcpoptions = on; }
     bool isLogTCPOptions() { return logtcpoptions; }
+    void setShowAdvancedProtocolHelp(bool on) { advancedProtocolHelp = on; }
+    bool isShowAdvancedProtocolHelp() {return advancedProtocolHelp; }
     void setLogTCPSequence(bool on) { logtcpsequence = on; }
     bool isLogTCPSequence() { return logtcpsequence; }
     void setLogAbortedTCP(bool on) { logabortedtcp = on; }

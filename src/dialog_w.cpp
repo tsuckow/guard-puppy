@@ -677,6 +677,10 @@ void GuardPuppyDialog_w::on_logTcpOptionsCheckBox_stateChanged( int state )
     firewall.setLogTCPOptions( state );
 }
 
+void GuardPuppyDialog_w::on_showAdvancedProtocolHelpCheckBox_stateChanged( int state )
+{
+    firewall.setShowAdvancedProtocolHelp(state);
+}
 void GuardPuppyDialog_w::on_disableFirewallCheckBox_stateChanged( int state )
 {
     if(state)
