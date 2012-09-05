@@ -393,6 +393,7 @@ public:
             case SCORE_HIGH:
                 out << "Threat: High" << std::endl;
             default:
+            break;
         }
         out  << "Classification: ";
 
