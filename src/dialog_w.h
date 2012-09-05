@@ -65,6 +65,8 @@ class GuardPuppyDialog_w : public QDialog, Ui::GuardPuppyDialog
                 std::vector<uchar> types = pe.getTypes();
                 std::vector<std::string> rngs = pe.getRangeStrings();
                 std::vector<bool> bid = pe.getBidirectionals();
+                //QShortcut* del = new QShortcut(QkeySequence(Qt::Key_Delete), parent);
+
                 for(uint i(0); i < rngs.size(); i++)
                 {
                     QList<QStandardItem *> child;

@@ -200,6 +200,8 @@ void GuardPuppyDialog_w::rebuildGui()
         localPortRangeHighSpinBox->setValue(end);
 
         disableFirewallCheckBox->setChecked(firewall.isDisabled());
+        blockEverythingCheckBox->setEnabled(firewall.isSuperUserMode());
+        disableFirewallCheckBox->setEnabled(firewall.isSuperUserMode());
 
         enableDhcpCheckBox->setChecked(firewall.isDHCPcEnabled());
         dhcpInterfaceNameLineEdit->setText(firewall.getDHCPcInterfaceName().c_str());
@@ -677,45 +679,47 @@ void GuardPuppyDialog_w::on_logTcpOptionsCheckBox_stateChanged( int state )
 
 void GuardPuppyDialog_w::on_disableFirewallCheckBox_stateChanged( int state )
 {
-    if(firewall.isSuperUserMode())
+    if(state)
     {
-        if(state)
-        {
-            QMessageBox::warning(this, "Warning", "This will make your machine vulnerable to potential attacks.");
+        QMessageBox::StandardButton b = QMessageBox::warning(this, "Warning", "This will make your machine vulnerable to potential attacks.", QMessageBox::Ok | QMessageBox::Cancel);
+        if(b == QMessageBox::Ok)
             firewall.resetSystemFirewall();
-        }
         else
         {
-            firewall.apply();
+            disableFirewallCheckBox->blockSignals(true);
+            disableFirewallCheckBox->setCheckState(Qt::Unchecked);
+            disableFirewallCheckBox->blockSignals(false);
+            return;
         }
-        firewall.setDisabled( state );
-        rebuildGui();
     }
     else
     {
-        QMessageBox::information(this, "Not Superuser", "Unable to auto apply settings, user not privileged.");
+        firewall.apply();
     }
+    firewall.setDisabled( state );
+    rebuildGui();
 }
 void GuardPuppyDialog_w::on_blockEverythingCheckBox_stateChanged( int state )
 {
-    if(firewall.isSuperUserMode())
+    if(state)
     {
-        if(state)
-        {
-            QMessageBox::warning(this, "Warning", "This will interupt any current connections.");
+        QMessageBox::StandardButton b = QMessageBox::warning(this, "Warning", "This will interupt any current connections.", QMessageBox::Ok | QMessageBox::Cancel);
+
+        if(b == QMessageBox::Ok)
             firewall.lockSystemFirewall();
-        }
         else
         {
-            firewall.apply();
+            blockEverythingCheckBox->blockSignals(true);
+            blockEverythingCheckBox->setCheckState(Qt::Unchecked);
+            blockEverythingCheckBox->blockSignals(false);
         }
-        //firewall.setDisabled( state );
-        //rebuildGui();
     }
     else
     {
-        QMessageBox::information(this, "Not Superuser", "Unable to auto apply settings, user not privileged.");
+        firewall.apply();
     }
+    //firewall.setDisabled( state );
+    //rebuildGui();
 }
 void GuardPuppyDialog_w::on_allowTcpTimeStampsCheckBox_stateChanged( int state )
 {
