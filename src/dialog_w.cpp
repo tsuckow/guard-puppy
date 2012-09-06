@@ -184,8 +184,6 @@ void GuardPuppyDialog_w::rebuildGui()
         logTcpOptionsCheckBox->setChecked(firewall.isLogTCPOptions());
         logLevelComboBox->setCurrentIndex(firewall.getLogLevel());
         logUserRateLimitCheckBox->setChecked(firewall.isLogRateLimit());
-        firewall.setShowAdvancedProtocolHelp(0);
-        showAdvancedProtocolHelpCheckBox->setChecked(0);
         logRateSpinBox->setValue(firewall.getLogRate());
 
         logRateUnitComboBox->setCurrentIndex(firewall.getLogRateUnit());

@@ -124,6 +124,8 @@ public:
         userDefinedProtocolTreeView->setModel(model);
         UDPTreeDelegate* tempDelegate = new UDPTreeDelegate(&firewall, this);
         userDefinedProtocolTreeView->setItemDelegate(tempDelegate);
+        firewall.setShowAdvancedProtocolHelp(0);
+        showAdvancedProtocolHelpCheckBox->setChecked(0);
         if ( firewall.isSuperUserMode() == false )
         {
             //it may be better to have this check in the buttons and
