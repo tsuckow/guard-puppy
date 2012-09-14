@@ -45,7 +45,7 @@ enum { LOG_ALL_OR_UNMATCHED, LOG_FIRST, LOG_ALL_KNOWN_MATCHED };
 
 class GuardPuppyFireWall
 {
-    ProtocolDB  pdb;                // The protocol database we are using.
+    ProtocolDB *  pdb;                // The protocol database we are using.
     bool waspreviousfirewall;       // True if there was a previous Guarddog firewall active/available
                                     // When GuardPuppy exists, know whether to restore rc.firewall from rc.firewall~ or not
                                     // at program startup.
@@ -101,10 +101,10 @@ public:
         std::stringstream temp;
         try
         {
-            temp << pdb.lookup( protocol ).description << std::endl;
+            temp << pdb->lookup( protocol ).description << std::endl;
             if(isShowAdvancedProtocolHelp())
             {
-                pdb.lookup( protocol ).print(temp);
+                pdb->lookup( protocol ).print(temp);
             }
             text = temp.str();
         }
@@ -340,7 +340,7 @@ public:
     */
     void newUserDefinedProtocol(std::string name, uchar udpType, uint udpStartPort, uint udpEndPort, bool bi)
     {//we still have udps, we just will not access them the same way. This function will likely go away
-        pdb.UserDefinedProtocol(name, udpType, udpStartPort, udpEndPort, bi);
+        pdb->UserDefinedProtocol(name, udpType, udpStartPort, udpEndPort, bi);
         //userdefinedprotocols.push_back(p);
     }
 
@@ -350,7 +350,7 @@ public:
     */
     void deleteUserDefinedProtocol( std::string i )
     {
-        pdb.deleteProtocolEntry(i);
+        pdb->deleteProtocolEntry(i);
     }
 
     /*!
@@ -359,8 +359,31 @@ public:
     **      be if the networkprotocol database file cannot be loaded.
     */
     GuardPuppyFireWall( bool superuser )
-        : pdb( "protocoldb/networkprotocoldb.xml" ), superUserMode( superuser )
+        : superUserMode( superuser )
     {
+        
+        std::string confdir("/.config/guard-puppy/"),
+                    defdir("./protocoldb/"),
+                    filename("networkprotocoldb.xml");
+        confdir = std::string(getenv("HOME"))+ confdir;
+        if (! boost::filesystem::exists( confdir + filename ) )
+        {
+            if ( boost::filesystem::exists( defdir + filename) )
+            {
+                if(!boost::filesystem::exists(confdir))
+                {
+                    try{   boost::filesystem::create_directory( confdir ); }
+                    catch(...){ std::cerr << "WHY";}
+                }
+                copyFile(defdir+filename,  confdir+filename );
+            }
+            else
+            {//doomed
+                std::cerr << boost::filesystem::current_path()<< std::endl;
+                std::cerr << "Unable to locate "<< filename << " in "<< defdir << std::endl;
+            }
+        }
+            pdb = new ProtocolDB( confdir+filename );
         try
         {
             factoryDefaults();
@@ -371,7 +394,12 @@ public:
             std::cerr << "Exception: " << msg << std::endl;
         }
     }
-
+/*
+    ~GuardPuppyFireWall()
+    {
+        delete pdb;
+    }
+*/
     void setDisabled(bool on)
     {
         disabled = on;
@@ -513,7 +541,7 @@ public:
 
     std::vector< ProtocolNetUse > getNetworkUse( std::string const & protocolName ) const
     {
-        std::vector< ProtocolNetUse > protos = pdb.getNetworkUses( protocolName );
+        std::vector< ProtocolNetUse > protos = pdb->getNetworkUses( protocolName );
         return protos;
     }
 
@@ -587,7 +615,7 @@ public:
         // Output the User Defined Protocols
         {//kill the functor we don't care about it after it does it's work.
             OutputUDP OutputUDPm(stream);
-            pdb.ApplyToDB(OutputUDPm);
+            pdb->ApplyToDB(OutputUDPm);
         }
         // Go over each Zone and output which protocols are allowed to whom.
         BOOST_FOREACH( Zone const & toZone, zones )
@@ -1785,12 +1813,12 @@ public:
             }
             std::string tmpstring = s.substr(7);
             ProtocolEntry * ent;
-            try { ent = &pdb.lookup(tmpstring); }
+            try { ent = &pdb->lookup(tmpstring); }
             catch(...)
             {
                 ProtocolEntry t(tmpstring);
-                pdb.addProtocolEntry(t);
-                ent = &pdb.lookup(tmpstring);
+                pdb->addProtocolEntry(t);
+                ent = &pdb->lookup(tmpstring);
                 ent->Classification = "User Defined";
                 ent->longname = tmpstring; //for udp the name and long name are the same
             }
@@ -1901,7 +1929,7 @@ public:
                                     {
                                         try
                                         {
-                                            ProtocolEntry & pe = pdb.lookup(s.substr(11));
+                                            ProtocolEntry & pe = pdb->lookup(s.substr(11));
                                             fromZone->setProtocolState( *toZone, pe, Zone::PERMIT );
                                         }
                                         catch ( ... )
@@ -1922,7 +1950,7 @@ public:
                                         {
                                             try
                                             {
-                                                ProtocolEntry & pe = pdb.lookup(s.substr(9));
+                                                ProtocolEntry & pe = pdb->lookup(s.substr(9));
                                                 fromZone->setProtocolState( *toZone, pe, Zone::REJECT );
                                             }
                                             catch ( ... )
@@ -2087,59 +2115,59 @@ public:
 //TODO make these safe to call with bad strings.
     std::string getName(std::string s) const
     {
-        return pdb.lookup(s).getName();
+        return pdb->lookup(s).getName();
     }
     void setName(std::string current, std::string next)
     {
-        pdb.lookup(current).setName(next);
+        pdb->lookup(current).setName(next);
     }
     std::vector<uchar> getTypes(std::string s) const
     {
-        return pdb.lookup(s).getTypes();
+        return pdb->lookup(s).getTypes();
     }
     void setType(std::string s, uchar type, int j)
     {
-            pdb.lookup(s).setType(type, j);
+            pdb->lookup(s).setType(type, j);
     }
 
     std::vector<uint> getStartPorts(std::string s) const
     {
-        return pdb.lookup(s).getStartPorts();
+        return pdb->lookup(s).getStartPorts();
     }
     void setStartPort(std::string s, uint i, int j)
     {
-        pdb.lookup(s).setStartPort(i, j);
+        pdb->lookup(s).setStartPort(i, j);
     }
     std::vector<uint> getEndPorts(std::string s) const
     {
-        return pdb.lookup(s).getEndPorts();
+        return pdb->lookup(s).getEndPorts();
     }
     void setEndPort(std::string s, uint i, int j)
     {
-        pdb.lookup(s).setEndPort(i, j);
+        pdb->lookup(s).setEndPort(i, j);
     }
     std::vector<bool> getBidirectionals(std::string s) const
     {
-        return pdb.lookup(s).getBidirectionals();
+        return pdb->lookup(s).getBidirectionals();
     }
     void setBidirectional(std::string s, bool on, int j)
     {
-        pdb.lookup(s).setBidirectional(on, j);
+        pdb->lookup(s).setBidirectional(on, j);
     }
     std::vector<std::string> getRangeStrings(std::string s) const
     {
-        return pdb.lookup(s).getRangeStrings();
+        return pdb->lookup(s).getRangeStrings();
     }
     template <class T>
     void ApplyToDB(T & func)
     {
-        pdb.ApplyToDB(func);
+        pdb->ApplyToDB(func);
     }
 
     template<class T>
     void ApplyToNthInClass(T & func, int i, std::string c)
     {
-        pdb.ApplyToNthInClass(func, i, c);
+        pdb->ApplyToNthInClass(func, i, c);
     }
 };
 
