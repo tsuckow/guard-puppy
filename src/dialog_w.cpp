@@ -458,11 +458,12 @@ void GuardPuppyDialog_w::setZoneConnectionGUI(::Zone const & zone)
             item->setCheckState( Qt::Checked );
         else
             item->setCheckState( Qt::Unchecked );
+
         if ( zoneTo == zoneFrom )
             item->setFlags( item->flags() & ~Qt::ItemIsEnabled );  // cannot make zone connections to yourself.
         // \!todo  This is the way guarddog works, I'm not sure we need to say this.  It should be possible to have a single zone...
         // \!todo  change out for zone.editable(), since we have it.
-        if ( (zoneFrom == "Internet" || zoneFrom == "Local" ) && ( zoneTo == "Internet" || zoneTo == "Local" ) )
+        if ( (zoneFrom == "Internet" && zoneTo == "Local" ) || ( zoneTo == "Internet" && zoneFrom == "Local" ) )
             item->setFlags( item->flags() & ~Qt::ItemIsEnabled );  // cannot change default zones
 
         zoneConnectionTableWidget->setItem( zoneConnectionTableWidget->rowCount()-1, 0, item );
