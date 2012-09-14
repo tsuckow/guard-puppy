@@ -647,10 +647,12 @@ void GuardPuppyDialog_w::setAdvancedPageEnabled(bool enabled)
 void GuardPuppyDialog_w::on_logDroppedPacketsCheckBox_stateChanged( int state )
 {
     firewall.setLogDrop( state );
+    rebuildGui();
 }
 void GuardPuppyDialog_w::on_logRejectPacketsCheckBox_stateChanged( int state )
 {
     firewall.setLogReject( state );
+    rebuildGui();
 }
 void GuardPuppyDialog_w::on_logAbortedTcpCheckBox_stateChanged( int state )
 {

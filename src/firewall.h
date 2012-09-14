@@ -373,7 +373,7 @@ public:
                 if(!boost::filesystem::exists(confdir))
                 {
                     try{   boost::filesystem::create_directory( confdir ); }
-                    catch(...){ std::cerr << "This Should not happen: in GuardPuppyFireWall()";}
+                    catch(...){ std::cerr << "This should not happen: in GuardPuppyFireWall()";}
                 }
                 copyFile(defdir+filename,  confdir+filename );
             }
