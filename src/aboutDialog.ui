@@ -22,7 +22,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Guarddog 2.6.0 (Using KDE 3.5.10)</string>
+      <string>GuardPuppy 0.5.0 (Using Qt4)</string>
      </property>
      <property name="textFormat">
       <enum>Qt::RichText</enum>
@@ -57,7 +57,7 @@
       <widget class="QLabel" name="label_3">
        <property name="geometry">
         <rect>
-         <x>30</x>
+         <x>20</x>
          <y>70</y>
          <width>351</width>
          <height>21</height>
@@ -71,7 +71,7 @@
        <property name="geometry">
         <rect>
          <x>20</x>
-         <y>110</y>
+         <y>130</y>
          <width>201</width>
          <height>16</height>
         </rect>
@@ -85,12 +85,25 @@
         <rect>
          <x>20</x>
          <y>150</y>
-         <width>291</width>
+         <width>331</width>
          <height>16</height>
         </rect>
        </property>
        <property name="text">
         <string>http://www.simonzone.com/software/guarddog</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_6">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>110</y>
+         <width>201</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Forked from:</string>
        </property>
       </widget>
      </widget>
