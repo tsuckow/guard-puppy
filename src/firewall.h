@@ -366,7 +366,7 @@ public:
     GuardPuppyFireWall( bool superuser )
         : superUserMode( superuser )
     {
-        
+
         std::string confdir("/.config/guard-puppy/"),
                     defdir("./protocoldb/"),
                     filename("networkprotocoldb.xml");

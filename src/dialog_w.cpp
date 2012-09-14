@@ -132,7 +132,7 @@ void GuardPuppyDialog_w::on_newZoneAddressPushButton_clicked()
     firewall.addNewMachine( currentZoneName(), "addr" );
 
     zoneAddressListBox->addItem( "addr" );
-    
+
     setZoneAddressGUI( firewall.getZone( currentZoneName()) );
     zoneAddressListBox->setCurrentRow( zoneAddressListBox->count() - 1 );
 }
@@ -307,7 +307,7 @@ void GuardPuppyDialog_w::AddProtocolToTable_::operator()(ProtocolEntry const & p
     QTreeWidgetItem * item = new QTreeWidgetItem(parent, QStringList( pe.longname.c_str() ) );
 
     g.protocolTreeWidget->header()->setResizeMode( QHeaderView::ResizeToContents );
-    
+
     //QTreeWidgetItem *item = new QTreeWidgetItem( categoryList[pe.classification], QStringList( pe.longname.c_str() ) );
     item->setFlags( item->flags() | Qt::ItemIsUserCheckable );
 
@@ -339,13 +339,13 @@ void GuardPuppyDialog_w::setZoneGUI( ::Zone const & zone )
     {
         zoneNameLineEdit->setReadOnly(false);
         zoneCommentLineEdit->setReadOnly(false);
-        deleteZonePushButton->setEnabled(true);
+        //deleteZonePushButton->setEnabled(true);
     }
     else
     {
         zoneNameLineEdit->setReadOnly(true);
         zoneCommentLineEdit->setReadOnly(true);
-        deleteZonePushButton->setEnabled(false);
+        //deleteZonePushButton->setEnabled(false);
     }
 }
 
@@ -353,8 +353,7 @@ void GuardPuppyDialog_w::setZoneAddressGUI( ::Zone const & zone)
 {
         // Clean out the address list box.
     zoneAddressListBox->clear();
-
-    zoneAddressListBox->setEnabled( zone.editable());
+    bool f = !firewall.isDisabled();
 
     BOOST_FOREACH( IPRange const & it, zone.getMemberMachineList() )
     {
@@ -371,63 +370,47 @@ void GuardPuppyDialog_w::setZoneAddressGUI( ::Zone const & zone)
         zoneAddressListBox->addItem(QObject::tr("<< IP addresses not matching any zone >>"));
     }
 
-    newZoneAddressPushButton->setEnabled(zone.editable());
-    zoneFileImportPushButton->setEnabled(zone.editable());
-
     if(!zone.getMemberMachineList().empty() )
     {
-//        zoneAddressLineEdit->setText((zone.membermachine.at(0)).getAddress().c_str());
         zoneAddressListBox->setCurrentRow(0); //,true);
-        zoneAddressListBox->setEnabled(true);
-        deleteZoneAddressPushButton->setEnabled(true);
-        zoneAddressLineEdit->setEnabled(true);
+        zoneAddressListBox->setEnabled(f&&true);
+        deleteZoneAddressPushButton->setEnabled(f&&true);
+        zoneAddressLineEdit->setEnabled(f&&true);
     }
     else
     {
         zoneAddressLineEdit->setText("");
-        zoneAddressListBox->setEnabled(false);
-        deleteZoneAddressPushButton->setEnabled(false);
-        zoneAddressLineEdit->setEnabled(false);
+        zoneAddressListBox->setEnabled(f&&false);
+        deleteZoneAddressPushButton->setEnabled(f&&false);
+        zoneAddressLineEdit->setEnabled(f&&false);
     }
+    zoneAddressListBox->setEnabled( f&&zone.editable());
+    newZoneAddressPushButton->setEnabled(f&&zone.editable());
+    zoneFileImportPushButton->setEnabled(f&&zone.editable());
+
 }
 
 void GuardPuppyDialog_w::setZonePageEnabled(::Zone const & thisZone, bool enabled)
 {
-    if ( enabled)
+    if(!thisZone.getMemberMachineList().empty())
     {
-        newZoneAddressPushButton->setEnabled(true);
-        zoneAddressListBox->setEnabled(true);
-
-        newZoneAddressPushButton->setEnabled(thisZone.editable());
-//        deleteZoneAddressPushButton->setEnabled(thisZone.editable());
-        zoneFileImportPushButton->setEnabled(thisZone.editable());
-
-        zoneNameLineEdit->setEnabled(true);
-        zoneCommentLineEdit->setEnabled(true);
-
-        if(!thisZone.getMemberMachineList().empty())
-        {
-            zoneAddressListBox->setEnabled(true);
-//            deleteZoneAddressPushButton->setEnabled(true);
-            zoneAddressLineEdit->setEnabled(true);
-        }
-        else
-        {
-            zoneAddressListBox->setEnabled(false);
-//            deleteZoneAddressPushButton->setEnabled(false);
-            zoneAddressLineEdit->setEnabled(false);
-        }
-
+        zoneAddressListBox->setEnabled(enabled);
+        zoneAddressLineEdit->setEnabled(enabled);
     }
     else
     {
-            // Disable the widgets.
-        newZoneAddressPushButton->setEnabled(false);
         zoneAddressListBox->setEnabled(false);
-        zoneNameLineEdit->setEnabled(false);
-        zoneCommentLineEdit->setEnabled(false);
-        zoneFileImportPushButton->setEnabled(false);
+        zoneAddressLineEdit->setEnabled(false);
     }
+
+    newZoneAddressPushButton->setEnabled((enabled?thisZone.editable():false));
+    zoneFileImportPushButton->setEnabled((enabled?thisZone.editable():false));
+    zoneCommentLineEdit->setEnabled(enabled);
+    zoneNameLineEdit->setEnabled(enabled);
+    newZonePushButton->setEnabled(enabled);
+    deleteZonePushButton->setEnabled(enabled);
+    zoneConnectionTableWidget->setEnabled(enabled);
+
 }
 
 void GuardPuppyDialog_w::on_zoneConnectionTableWidget_itemChanged( QTableWidgetItem * item )
@@ -641,7 +624,12 @@ void GuardPuppyDialog_w::setAdvancedPageEnabled(bool enabled)
     dhcpdInterfaceNameLineEdit->setEnabled( enabled && firewall.isDHCPdEnabled() );
 
     allowTcpTimeStampsCheckBox->setEnabled(enabled);
-
+    advRestoreFactoryDefaultsPushButton->setEnabled(enabled);
+    deleteUserDefinedProtocolPushButton->setEnabled(enabled);
+    NewPortRangePushButton->setEnabled(enabled);
+    deletePortRangePushButton->setEnabled(enabled);
+    advExportPushButton->setEnabled(enabled);
+    advImportPushButton->setEnabled(enabled);
 }
 
 void GuardPuppyDialog_w::on_logDroppedPacketsCheckBox_stateChanged( int state )
