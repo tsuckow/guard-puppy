@@ -274,7 +274,7 @@ void GuardPuppyDialog_w::protocolStateChanged( std::string const & zoneTo, std::
 void GuardPuppyDialog_w::createProtocolPages()
 {
     protocolTreeWidget->clear();
-
+    protocolTreeWidget->setColumnCount(0);
     std::vector< std::string > connectedZones = firewall.getConnectedZones( currentProtocolZoneName() );
     QStringList columns;
     columns += "Network Protocol";

@@ -235,6 +235,11 @@ public:
     */
     void deleteZone( std::string const & zoneName )
     {
+        BOOST_FOREACH(Zone & z, zones)
+        {
+            z.disconnect(zoneName);
+        }
+
         std::vector< Zone >::iterator zit = std::find_if( zones.begin(), zones.end(), boost::phoenix::bind( &Zone::getName, boost::phoenix::arg_names::arg1) == zoneName );
         if ( zit == zones.end() )
         {
