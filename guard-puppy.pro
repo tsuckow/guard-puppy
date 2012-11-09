@@ -35,3 +35,6 @@ SOURCES += src/guardPuppy.cpp
 SOURCES += src/zoneImportStrategy.cpp
 SOURCES += src/userDefinedProtocolTreeHelpers.cpp
 
+
+target.path = /usr/bin/guard-puppy
+INSTALLS += target
